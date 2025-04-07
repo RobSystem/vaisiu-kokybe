@@ -60,7 +60,7 @@ function AllReports({ setSelectedReport }) {
         return
       }
   
-      const reportUrl = `https://tavosistema.lt/viewreport/${report.id}`
+      const reportUrl = `https://app.rochecks.nl/viewreport/${report.id}`
       const subject = `Report: ${report.container_number} | Ref: ${report.client_ref}`
       const message = `Quality Score: ${report.qualityScore || '—'}\nStorage Score: ${report.storageScore || '—'}\n\nConclusion:\n${report.conclusion || '—'}\n\nView full report: ${reportUrl}`
   

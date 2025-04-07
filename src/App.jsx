@@ -107,18 +107,18 @@ function App() {
 
   return (
     <Router>
-      <Routes>
-        {/* View-only route, visiškai atskirtas */}
-        <Route path="/report/:reportId/view" element={<ViewReport />} />
+  <Routes>
+    {/* VISIEMS prieinamas viešas maršrutas */}
+    <Route path="/viewreport/:reportId" element={<ViewReport />} />
 
-        {/* Login + Protected UI */}
-        <Route path="*" element={
-          loading ? null : !user
-            ? <Login onLogin={setUser} />
-            : <MainApp user={user} onLogout={handleLogout} />
-        } />
-      </Routes>
-    </Router>
+    {/* Visi kiti maršrutai valdomi per loginą */}
+    <Route path="*" element={
+      loading ? null : !user
+        ? <Login onLogin={setUser} />
+        : <MainApp user={user} onLogout={handleLogout} />
+    } />
+  </Routes>
+</Router>
   )
 }
 

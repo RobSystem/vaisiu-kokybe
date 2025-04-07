@@ -113,7 +113,7 @@ function AllReports({ setSelectedReport }) {
                   <td style={styles.td}>
                   <button
   style={styles.btn}
-  onClick={() => window.open(`/report/${report.id}/view`, '_blank')}
+  onClick={() => window.open(`/viewreport/${report.id}`, '_blank')}
 >
   View
 </button>

@@ -82,8 +82,7 @@ function MainApp({ user, onLogout }) {
           <Route path="/upload-photos/:sampleId" element={<UploadPhotos />} />
           <Route path="/admin" element={<AdminPanel />} />
           <Route path="/admin/clients" element={<AdminClients />} />
-          <Route path="/viewreport/:reportId" element={<ViewReport />} />
-        </Routes>
+                </Routes>
       </div>
     </div>
   )

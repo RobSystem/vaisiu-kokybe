@@ -47,7 +47,7 @@ function EditReport() {
       .from('samples')
       .select('*')
       .eq('report_id', reportId)
-      .order('created_at', { ascending: true }) // ← Rūšiuojam pagal sukūrimo laiką
+      .order('position', { ascending: true }) // ← Rūšiuojam pagal sukūrimo laiką
   
     if (!error) {
       setSamples(data)
@@ -115,10 +115,10 @@ function EditReport() {
     }
   
     const { data: updatedSamples, error: fetchError2 } = await supabase
-      .from('samples')
-      .select('*')
-      .eq('report_id', sampleToCopy.report_id)
-      .order('created_at', { ascending: true });
+  .from('samples')
+  .select('*')
+  .eq('report_id', sampleToCopy.report_id)
+  .order('position', { ascending: true });
   
     if (fetchError2) {
       console.error('Nepavyko atnaujinti sąrašo');

@@ -120,20 +120,31 @@ const handleSave = async () => {
     consistency: consistency,
   };
 
-  const { error } = sampleId
-    ? await supabase.from('samples')
-        .update(updatePayload)
-        .eq('id', sampleId)
-    : await supabase.from('samples')
-        .insert({
-          report_id: reportId,
-          ...updatePayload
-        });
+  let error;
 
-  console.log("Duomenys siunčiami į Supabase:", {
-    report_id: parseInt(reportId),
-    ...updatePayload
-  });
+  if (sampleId) {
+    // REDAGAVIMAS – išsaugom be pozicijos keitimo
+    ({ error } = await supabase
+      .from('samples')
+      .update(updatePayload)
+      .eq('id', sampleId));
+  } else {
+    // NAUJAS ĮRAŠAS – reikia pozicijos
+    const { data: existingSamples } = await supabase
+      .from('samples')
+      .select('position')
+      .eq('report_id', reportId)
+      .order('position', { ascending: false })
+      .limit(1);
+
+    const nextPosition = (existingSamples?.[0]?.position || 0) + 1;
+
+    ({ error } = await supabase.from('samples').insert({
+      report_id: reportId,
+      position: nextPosition,
+      ...updatePayload
+    }));
+  }
 
   if (error) {
     alert('Nepavyko išsaugoti');
@@ -141,8 +152,7 @@ const handleSave = async () => {
     alert('Išsaugota sėkmingai!');
     navigate(`/edit/${reportId}`);
   }
-};
-  
+}; 
 
   const renderInputField = (label, name, type = 'text') => (
     <div style={{ flex: 1 }}>

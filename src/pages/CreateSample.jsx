@@ -21,6 +21,7 @@ function CreateSample() {
       }
   
       setForm(data)
+      setCreatedAt(data.created_at)
       setFruitWeightsExtra(data.fruit_weights_extra || [])
       setExternalColoration(data.external_coloration || [])
       setInternalColoration(data.internal_coloration || [])
@@ -55,7 +56,7 @@ function CreateSample() {
     quality_score: '',
     storage_score: ''
   })
-
+  const [createdAt, setCreatedAt] = useState(null);
   const [fruitWeightsExtra, setFruitWeightsExtra] = useState([])
   const [externalColoration, setExternalColoration] = useState([])
   const [internalColoration, setInternalColoration] = useState([])
@@ -115,7 +116,8 @@ function CreateSample() {
           fruit_weights_extra: fruitWeightsExtra.length > 0 ? fruitWeightsExtra : null,
           external_coloration: externalColoration.length > 0 ? externalColoration : null,
           internal_coloration: internalColoration.length > 0 ? internalColoration : null,
-          consistency: consistency
+          consistency: consistency,
+          created_at: createdAt
         }).eq('id', sampleId)
         : await supabase.from('samples').insert({
           report_id: reportId, // ← taisyta čia!

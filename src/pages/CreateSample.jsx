@@ -54,7 +54,8 @@ function CreateSample() {
     minor_defects: '',
     major_defects: '',
     quality_score: '',
-    storage_score: ''
+    storage_score: '',
+    created_at: null
   })
   const [createdAt, setCreatedAt] = useState(null);
   const [fruitWeightsExtra, setFruitWeightsExtra] = useState([])
@@ -101,8 +102,8 @@ function CreateSample() {
     list.splice(index, 1)
     type === 'external' ? setExternalColoration(list) : setInternalColoration(list)
   }
-  console.log("sampleId:", sampleId);
-  console.log("createdAt:", createdAt);
+  console.log("DEBUG: createdAt =", createdAt);
+console.log("DEBUG: form.created_at =", form.created_at);
   const handleSave = async () => {
     const cleanedForm = Object.fromEntries(
       Object.entries(form).map(([key, value]) => [

@@ -121,8 +121,8 @@ function CreateSample() {
     };
   
     // Tik jei redaguojam sample IR turime originalų created_at – įdedam jį
-    if (sampleId && createdAt) {
-      updatePayload.created_at = createdAt;
+    if (sampleId && (createdAt || form.created_at)) {
+      updatePayload.created_at = createdAt || form.created_at;
     }
   
     // Įrašom duomenis

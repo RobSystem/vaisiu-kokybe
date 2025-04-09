@@ -94,12 +94,12 @@ function EditReport() {
   
     if (sampleToCopy) {
       // Sukuriame naują kopiją, išskyrus ID
-      const { id, ...newSample } = sampleToCopy; // Pašaliname ID lauką
+      const { id, created_at, ...newSample } = sampleToCopy;
   
       // Pridėti kopiją į duomenų bazę
       const { data, error } = await supabase
   .from('samples')
-  .upsert([newSample])
+  .insert([{ ...newSample, created_at }])
   .select();
   
       if (error) {

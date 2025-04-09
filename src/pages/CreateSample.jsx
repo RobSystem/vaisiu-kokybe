@@ -110,39 +110,41 @@ function CreateSample() {
       ])
     );
   
+    // Sukuriam payload'ą, kuris bus naudojamas ir update, ir insert atvejais
+    const updatePayload = {
+      ...cleanedForm,
+      fruit_weights_extra: fruitWeightsExtra.length > 0 ? fruitWeightsExtra : null,
+      external_coloration: externalColoration.length > 0 ? externalColoration : null,
+      internal_coloration: internalColoration.length > 0 ? internalColoration : null,
+      consistency: consistency,
+    };
+  
+    // Tik jei redaguojam sample IR turime originalų created_at – įdedam jį
+    if (sampleId && createdAt) {
+      updatePayload.created_at = createdAt;
+    }
+  
+    // Įrašom duomenis
     const { error } = sampleId
-      ? await supabase.from('samples').update({
-          ...cleanedForm,
-          fruit_weights_extra: fruitWeightsExtra.length > 0 ? fruitWeightsExtra : null,
-          external_coloration: externalColoration.length > 0 ? externalColoration : null,
-          internal_coloration: internalColoration.length > 0 ? internalColoration : null,
-          consistency: consistency,
-          created_at: createdAt
-        }).eq('id', sampleId)
-        : await supabase.from('samples').insert({
-          report_id: reportId, // ← taisyta čia!
-          ...cleanedForm,
-          fruit_weights_extra: fruitWeightsExtra.length > 0 ? fruitWeightsExtra : null,
-          external_coloration: externalColoration.length > 0 ? externalColoration : null,
-          internal_coloration: internalColoration.length > 0 ? internalColoration : null,
-          consistency: consistency
-        })
-      console.log("Duomenys siunčiami į Supabase:", {
-        report_id: parseInt(reportId),
-        ...cleanedForm,
-        fruit_weights_extra: fruitWeightsExtra.length > 0 ? fruitWeightsExtra : null,
-        external_coloration: externalColoration.length > 0 ? externalColoration : null,
-        internal_coloration: internalColoration.length > 0 ? internalColoration : null,
-        consistency: consistency
-      })
+      ? await supabase.from('samples').update(updatePayload).eq('id', sampleId)
+      : await supabase.from('samples').insert({
+          report_id: reportId,
+          ...updatePayload
+        });
+  
+    console.log("Duomenys siunčiami į Supabase:", {
+      report_id: parseInt(reportId),
+      ...updatePayload
+    });
   
     if (error) {
-      alert('Nepavyko išsaugoti')
+      alert('Nepavyko išsaugoti');
     } else {
-      alert('Išsaugota sėkmingai!')
-      navigate(`/edit/${reportId}`)
+      alert('Išsaugota sėkmingai!');
+      navigate(`/edit/${reportId}`);
     }
   }
+  
 
   const renderInputField = (label, name, type = 'text') => (
     <div style={{ flex: 1 }}>

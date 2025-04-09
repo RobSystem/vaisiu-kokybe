@@ -231,19 +231,21 @@ function EditReport() {
             </tr>
           </thead>
           <tbody>
-            {samples.map((s, i) => (
-              <tr key={s.id}>
-                <td style={styles.td}>{i + 1}</td>
-                <td style={styles.td}>{s.pallet_number}</td>
-                <td style={styles.td}>{s.quality_score}</td>
-                <td style={styles.td}>{s.storage_score}</td>
-                <td style={styles.td}>
-                  <button onClick={() => handleEditSample(s.id)} style={styles.buttonSecondary}>EDIT</button>
-                  <button onClick={() => handleCopySample(s.id)} style={styles.buttonSecondary}>COPY</button>
-                  <button onClick={() => handleDeleteSample(s.id)} style={styles.buttonSecondary}>DELETE</button>
-                </td>
-              </tr>
-            ))}
+          {[...samples]
+  .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
+  .map((s, i) => (
+    <tr key={s.id}>
+      <td style={styles.td}>{i + 1}</td>
+      <td style={styles.td}>{s.pallet_number}</td>
+      <td style={styles.td}>{s.quality_score}</td>
+      <td style={styles.td}>{s.storage_score}</td>
+      <td style={styles.td}>
+        <button onClick={() => handleEditSample(s.id)} style={styles.buttonSecondary}>EDIT</button>
+        <button onClick={() => handleCopySample(s.id)} style={styles.buttonSecondary}>COPY</button>
+        <button onClick={() => handleDeleteSample(s.id)} style={styles.buttonSecondary}>DELETE</button>
+      </td>
+    </tr>
+))}
           </tbody>
         </table>
       ) : (

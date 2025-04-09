@@ -112,10 +112,10 @@ function EditReport() {
   
           // Patikrinkime, ar turime atnaujintą sąrašą
           const { data: updatedSamples, error: fetchError } = await supabase
-            .from('samples')
-            .select('*')
-            .eq('report_id', sampleToCopy.report_id);  // Užklausa pagal report_id
-  
+  .from('samples')
+  .select('*')
+  .eq('report_id', sampleToCopy.report_id)
+  .order('created_at', { ascending: true });
           if (fetchError) {
             console.error('Klaida gauti atnaujintus duomenis:', fetchError.message);
             alert('Nepavyko atnaujinti sąrašo');

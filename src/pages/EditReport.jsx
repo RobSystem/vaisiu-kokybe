@@ -89,6 +89,7 @@ function EditReport() {
   }
 
   const handleCopySample = async (sampleId) => {
+    // 1. Gauti originalų sample
     const { data: sampleToCopy, error: fetchError } = await supabase
       .from('samples')
       .select('*')
@@ -101,11 +102,22 @@ function EditReport() {
       return;
     }
   
-    const { id, created_at, ...newSample } = sampleToCopy;
+    // 2. Gauti max poziciją
+    const { data: existingSamples } = await supabase
+      .from('samples')
+      .select('position')
+      .eq('report_id', sampleToCopy.report_id)
+      .order('position', { ascending: false })
+      .limit(1);
+  
+    const nextPosition = (existingSamples?.[0]?.position || 0) + 1;
+  
+    // 3. Sukurti naują kopiją su NAUJU position
+    const { id, position, ...newSample } = sampleToCopy;
   
     const { data, error } = await supabase
       .from('samples')
-      .insert([{ ...newSample, created_at }])
+      .insert([{ ...newSample, position: nextPosition }])
       .select();
   
     if (error) {
@@ -114,11 +126,12 @@ function EditReport() {
       return;
     }
   
+    // 4. Atnaujinti sąrašą
     const { data: updatedSamples, error: fetchError2 } = await supabase
-  .from('samples')
-  .select('*')
-  .eq('report_id', sampleToCopy.report_id)
-  .order('position', { ascending: true });
+      .from('samples')
+      .select('*')
+      .eq('report_id', sampleToCopy.report_id)
+      .order('position', { ascending: true });
   
     if (fetchError2) {
       console.error('Nepavyko atnaujinti sąrašo');

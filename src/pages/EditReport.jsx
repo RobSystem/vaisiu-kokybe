@@ -89,53 +89,45 @@ function EditReport() {
   }
 
   const handleCopySample = async (sampleId) => {
-    // Surasti esamą įrašą pagal ID
-    const sampleToCopy = samples.find(s => s.id === sampleId);
+    const { data: sampleToCopy, error: fetchError } = await supabase
+      .from('samples')
+      .select('*')
+      .eq('id', sampleId)
+      .single();
   
-    if (sampleToCopy) {
-      // Sukuriame naują kopiją, išskyrus ID
-      const { id, created_at, ...newSample } = sampleToCopy;
-  
-      // Pridėti kopiją į duomenų bazę
-      const { data, error } = await supabase
-  .from('samples')
-  .insert([{ ...newSample, created_at }])
-  .select();
-  
-      if (error) {
-        console.error('Klaida kopijuojant:', error.message);
-        alert('Nepavyko kopijuoti');
-      } else {
-        // Patikriname, ar duomenys tikrai grąžinami kaip masyvas
-        if (data && Array.isArray(data)) {
-          console.log('Kopija buvo sėkmingai įrašyta:', data);
-  
-          // Patikrinkime, ar turime atnaujintą sąrašą
-          const { data: updatedSamples, error: fetchError } = await supabase
-  .from('samples')
-  .select('*')
-  .eq('report_id', sampleToCopy.report_id)
-  .order('created_at', { ascending: true });
-          if (fetchError) {
-            console.error('Klaida gauti atnaujintus duomenis:', fetchError.message);
-            alert('Nepavyko atnaujinti sąrašo');
-          } else {
-            console.log('Gauti atnaujinti įrašai:', updatedSamples);
-  
-            if (updatedSamples && updatedSamples.length > 0) {
-              setSamples(updatedSamples);  // Atnaujiname komponentą su nauju sąrašu
-              alert('Kopija sėkmingai sukurta!');
-            } else {
-              console.error('Nepavyko gauti atnaujinto sąrašo');
-              alert('Nepavyko atnaujinti sąrašo');
-            }
-          }
-        } else {
-          console.error('Klaida: data nėra masyvas, gauta:', data);
-          alert('Klaida: duomenys negali būti gauti');
-        }
-      }
+    if (fetchError || !sampleToCopy) {
+      console.error('Nepavyko gauti sample:', fetchError?.message);
+      alert('Nepavyko gauti sample kopijai');
+      return;
     }
+  
+    const { id, created_at, ...newSample } = sampleToCopy;
+  
+    const { data, error } = await supabase
+      .from('samples')
+      .insert([{ ...newSample, created_at }])
+      .select();
+  
+    if (error) {
+      console.error('Klaida kopijuojant:', error.message);
+      alert('Nepavyko kopijuoti');
+      return;
+    }
+  
+    const { data: updatedSamples, error: fetchError2 } = await supabase
+      .from('samples')
+      .select('*')
+      .eq('report_id', sampleToCopy.report_id)
+      .order('created_at', { ascending: true });
+  
+    if (fetchError2) {
+      console.error('Nepavyko atnaujinti sąrašo');
+      alert('Nepavyko atnaujinti sąrašo');
+      return;
+    }
+  
+    setSamples(updatedSamples);
+    alert('Kopija sėkmingai sukurta!');
   };
   
   

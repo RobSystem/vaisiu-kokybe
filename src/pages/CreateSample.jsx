@@ -101,7 +101,8 @@ function CreateSample() {
     list.splice(index, 1)
     type === 'external' ? setExternalColoration(list) : setInternalColoration(list)
   }
-
+  console.log("sampleId:", sampleId);
+  console.log("createdAt:", createdAt);
   const handleSave = async () => {
     const cleanedForm = Object.fromEntries(
       Object.entries(form).map(([key, value]) => [

@@ -107,27 +107,32 @@ function ViewReport() {
     if (lower.includes('limited') || lower.includes('poor') || lower.includes('no storage')) return 'red'
     return 'black'
   }
-  const handleDownloadPdf = () => {
-    const element = document.getElementById('report-content');
+  const handleDownloadPDF = () => {
+    const element = reportRef.current
+    if (!element) return
   
-    const opt = {
-      margin:       0,
-      filename:     'report.pdf',
-      image:        { type: 'jpeg', quality: 0.98 },
-      html2canvas:  {
-        scale: 2, // padidina raišką
-        useCORS: true
-      },
-      jsPDF: {
-        unit: 'pt',
-        format: 'a4',
-        orientation: 'portrait'
-      },
-      pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
-    };
-  
-    html2pdf().set(opt).from(element).save();
-  };
+    // Palauk truputį, kad nuotraukos tikrai būtų DOM'e
+    setTimeout(() => {
+      html2pdf()
+        .set({
+          filename: `${report.client}_report.pdf`,
+          image: { type: 'jpeg', quality: 1 },
+          html2canvas: {
+            scale: 2,
+            useCORS: true, // svarbu, kad būtų įtrauktos ir nuotraukos
+            logging: true,
+          },
+          jsPDF: {
+            orientation: 'portrait',
+            unit: 'px',
+            format: 'a4', // gali būti px arba palikti default
+          },
+          pagebreak: { mode: ['avoid-all', 'css', 'legacy'] },
+        })
+        .from(element)
+        .save()
+    }, 500) // 0.5s kad DOM pilnai įsikrautų, ypač nuotraukos
+  }
   return (
     <div
   ref={reportRef}

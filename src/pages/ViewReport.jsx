@@ -125,7 +125,7 @@ function ViewReport() {
           jsPDF: {
             orientation: 'portrait',
             unit: 'pt',
-            format: 'a4', // gali būti px arba palikti default
+            format: [width, height], // gali būti px arba palikti default
           },
           pagebreak: { mode: ['avoid-all', 'css', 'legacy'] },
         })

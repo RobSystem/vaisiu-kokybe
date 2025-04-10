@@ -68,7 +68,7 @@ function DoneReports() {
   verticalAlign: 'middle'
 }}>
   <button
-  onClick={() => navigate(`/viewreport/${report.id}`)}
+  onClick={() => window.open(`/viewreport/${report.id}`, '_blank')}
   style={{
     padding: '6px 12px',
     background: '#1976d2',

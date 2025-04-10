@@ -27,9 +27,11 @@
   }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
+@media print {
+  .pdf-wrapper {
+    width: 100% !important;
+    max-width: 595pt; /* A4 plotis PDF'e */
+    margin: 0 auto !important;
   }
 }
 

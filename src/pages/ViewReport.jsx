@@ -135,9 +135,18 @@ function ViewReport() {
   }
   return (
     <div
-  ref={reportRef}
-  style={{ fontFamily: 'Arial, sans-serif', padding: '2rem', width: '100vw', minHeight: '100vh', boxSizing: 'border-box', backgroundColor: '#fff' }}
->
+    ref={reportRef}
+    className="pdf-wrapper"
+    style={{
+      fontFamily: 'Arial, sans-serif',
+      padding: '2rem',
+      width: '100vw', // rodomas per visą ekraną naršyklėje
+      minHeight: '100vh',
+      boxSizing: 'border-box',
+      backgroundColor: '#fff',
+    }}
+  >
+
       <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
         <img src="/Logoedit2.png" alt="Logo" style={{ height: '60px', marginRight: '1rem' }} />
         <h1 style={{ flex: 1, textAlign: 'center' }}>QUALITY CONTROL REPORT</h1>

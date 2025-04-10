@@ -37,7 +37,7 @@ function DoneReports() {
   }, [])
 
   return (
-    <div style={{ padding: '1rem', width: '100%' }}>
+    <div style={{ padding: '2rem', width: '100%' }}>
       <h2>Done Reports</h2>
 
       {loading ? (

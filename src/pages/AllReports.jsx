@@ -82,7 +82,23 @@ function AllReports({ setSelectedReport }) {
       alert(`Klaida siunčiant ataskaitą:\n${err?.text || err?.message || 'Nežinoma klaida'}`)
     }
   }
+  const handleDelete = async (id) => {
+    const confirm = window.confirm('Ar tikrai nori ištrinti šią ataskaitą?');
+    if (!confirm) return;
   
+    const { error } = await supabase
+      .from('reports')
+      .delete()
+      .eq('id', id);
+  
+    if (error) {
+      alert('Klaida trinant ataskaitą.');
+      console.error('Trinimo klaida:', error.message);
+    } else {
+      setReports((prev) => prev.filter((r) => r.id !== id));
+      alert('Ataskaita ištrinta sėkmingai!');
+    }
+  };
 
   return (
     <div style={styles.wrapper}>
@@ -133,6 +149,12 @@ function AllReports({ setSelectedReport }) {
   Send
 </button>
                     <button style={styles.doneBtn} onClick={() => handleDone(report.id)}>Done</button>
+                    <button
+  style={{ ...styles.btn, background: '#e53935' }}
+  onClick={() => handleDelete(report.id)}
+>
+  Delete
+</button>
                   </td>
                 </tr>
               ))}

@@ -246,12 +246,12 @@ function ViewReport() {
           </div>
 
           <div style={{ display: 'flex', justifyContent: 'start', marginTop: '1rem', gap: '3rem' }}>
-            <p style={{ color: getQualityColor(report.quality_score), fontWeight: 'bold' }}>
-              Quality Score: {samples.quality_score}
-            </p>
-            <p style={{ color: getStorageColor(report.storage_score), fontWeight: 'bold' }}>
-              Storage Score: {samples.storage_Score}
-            </p>
+          <p style={{ color: getQualityColor(sample.quality_score), fontWeight: 'bold' }}>
+  Quality Score: {sample.quality_score}
+</p>
+<p style={{ color: getStorageColor(sample.storage_score), fontWeight: 'bold' }}>
+  Storage Score: {sample.storage_score}
+</p>
           </div>
 
           <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginTop: '1rem' }}>

@@ -44,31 +44,32 @@ function ViewReport() {
     return photos.filter(p => p.sample_id === sampleId)
   }
 
-  const renderField = (label, value) => {
-    if (value === null || value === undefined || value === '') return null
+  const renderListField = (label, values) => {
+    if (!Array.isArray(values) || values.length === 0) return null
+    return (
+      <div style={{ marginBottom: '0.5rem' }}>
+        <p><strong>{label}:</strong></p>
+        <ul style={{ margin: 0, paddingLeft: '1.2rem' }}>
+          {values.map((item, index) => (
+            <li key={index}>{item.color || item.name} ({item.percent || item.percentage}%)</li>
+          ))}
+        </ul>
+      </div>
+    )
+  }
 
-    if (typeof value === 'object') {
-      if (Array.isArray(value)) {
-        const formatted = value.map(v => {
-          if (typeof v === 'object') {
-            return `${v.color || ''} (${v.percent || ''})`
-          }
-          return v
-        }).join(', ')
-        if (!formatted || formatted === ' ()') return null
-        return <p><strong>{label}:</strong> {formatted}</p>
-      }
-
-      const formatted = Object.entries(value)
-        .filter(([_, val]) => val !== '' && val !== null && val !== undefined)
-        .map(([key, val]) => `${key.charAt(0).toUpperCase() + key.slice(1)}: ${val}`)
-        .join(', ')
-
-      if (!formatted) return null
-      return <p><strong>{label}:</strong> {formatted}</p>
-    }
-
-    return <p><strong>{label}:</strong> {value}</p>
+  const renderConsistency = (consistencyObj) => {
+    if (!consistencyObj || typeof consistencyObj !== 'object') return null
+    return (
+      <div style={{ marginBottom: '0.5rem' }}>
+        <p><strong>Consistency:</strong></p>
+        <ul style={{ margin: 0, paddingLeft: '1.2rem' }}>
+          {Object.entries(consistencyObj).map(([key, val]) => (
+            <li key={key}>{key.charAt(0).toUpperCase() + key.slice(1)}: {val}%</li>
+          ))}
+        </ul>
+      </div>
+    )
   }
 
   const renderMultilineField = (label, value) => {
@@ -108,11 +109,11 @@ function ViewReport() {
     if (lower.includes('limited') || lower.includes('poor') || lower.includes('no storage')) return 'red'
     return 'black'
   }
+
   const handleDownloadPDF = () => {
     const element = reportRef.current
     if (!element) return
-  
-    // Palauk truputį, kad nuotraukos tikrai būtų DOM'e
+
     setTimeout(() => {
       html2pdf()
         .set({
@@ -120,36 +121,36 @@ function ViewReport() {
           image: { type: 'jpeg', quality: 1 },
           html2canvas: {
             scale: 1.5,
-            useCORS: true, // svarbu, kad būtų įtrauktos ir nuotraukos
+            useCORS: true,
             logging: true,
           },
           jsPDF: {
             orientation: 'landscape',
             unit: 'pt',
-            format: 'a4', // gali būti px arba palikti default
+            format: 'a4',
           },
           pagebreak: { mode: ['avoid-all', 'css', 'legacy'] },
         })
         .from(element)
         .save()
-    }, 500) // 0.5s kad DOM pilnai įsikrautų, ypač nuotraukos
+    }, 500)
   }
+
   return (
     <div
-  ref={reportRef}
-  className="pdf-wrapper"
-  style={{
-    width: '100vw',         // Naršyklėje: pilnas plotis
-    maxWidth: '100%',       // Naršyklėje: jokių ribų
-    margin: '0 auto',
-    fontFamily: 'Arial, sans-serif',
-    padding: '2rem',
-    minHeight: '100vh',
-    boxSizing: 'border-box',
-    backgroundColor: '#fff',
-  }}
->
-
+      ref={reportRef}
+      className="pdf-wrapper"
+      style={{
+        width: '100vw',
+        maxWidth: '100%',
+        margin: '0 auto',
+        fontFamily: 'Arial, sans-serif',
+        padding: '2rem',
+        minHeight: '100vh',
+        boxSizing: 'border-box',
+        backgroundColor: '#fff',
+      }}
+    >
       <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
         <img src="/Logoedit2.png" alt="Logo" style={{ height: '60px', marginRight: '1rem' }} />
         <h1 style={{ flex: 1, textAlign: 'center' }}>QUALITY CONTROL REPORT</h1>
@@ -183,17 +184,17 @@ function ViewReport() {
       <hr style={{ borderTop: '5px solid #ccc', margin: '2rem 0' }} />
 
       {samples.map(sample => (
-  <div
-    key={sample.id}
-    style={{
-      border: '1px solid #ccc',
-      borderRadius: '8px',
-      padding: '1rem',
-      marginBottom: '2rem',
-      backgroundColor: '#f9f9f9',
-      pageBreakAfter: 'always'  // <- čia svarbiausia
-    }}
-  >
+        <div
+          key={sample.id}
+          style={{
+            border: '1px solid #ccc',
+            borderRadius: '8px',
+            padding: '1rem',
+            marginBottom: '2rem',
+            backgroundColor: '#f9f9f9',
+            pageBreakAfter: 'always'
+          }}
+        >
           <h3 style={{ fontSize: '18px', marginBottom: '1rem' }}>Pallet Number: {sample.pallet_number}</h3>
 
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', gap: '2rem' }}>
@@ -211,25 +212,25 @@ function ViewReport() {
               {renderRangeField('Box Weight', sample.box_weight_min, sample.box_weight_max, 'kg')}
               {renderRangeField('Fruit Weight', sample.fruit_weight_min, sample.fruit_weight_max, 'g')}
               {sample.fruit_weights_extra && Array.isArray(sample.fruit_weights_extra) && sample.fruit_weights_extra.length > 0 && (
-  <div>
-    <p><strong>Additional Fruit Weights:</strong></p>
-    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-      {sample.fruit_weights_extra.map((val, idx) => (
-        <div key={idx} style={{ padding: '0.3rem 0.6rem', backgroundColor: '#eee', borderRadius: '4px', fontSize: '13px' }}>
-          {val}g
-        </div>
-      ))}
-    </div>
-  </div>
-)}
+                <div>
+                  <p><strong>Additional Fruit Weights:</strong></p>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                    {sample.fruit_weights_extra.map((val, idx) => (
+                      <div key={idx} style={{ padding: '0.3rem 0.6rem', backgroundColor: '#eee', borderRadius: '4px', fontSize: '13px' }}>
+                        {val}g
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
               {renderRangeField('Pressures', sample.pressures_min, sample.pressures_max, 'kg')}
               {renderRangeField('Brix', sample.brix_min, sample.brix_max, '°')}
               {renderRangeField('Fruit Diameter', sample.fruit_diameter_min, sample.fruit_diameter_max, 'mm')}
             </div>
             <div style={{ width: '32%' }}>
-              {renderField('External Coloration', sample.external_coloration)}
-              {renderField('Internal Coloration', sample.internal_coloration)}
-              {renderField('Consistency', sample.consistency)}
+              {renderListField('External Coloration', sample.external_coloration)}
+              {renderListField('Internal Coloration', sample.internal_coloration)}
+              {renderConsistency(sample.consistency)}
               {renderMultilineField('Minor Defects', sample.minor_defects)}
               {renderMultilineField('Major Defects', sample.major_defects)}
               {renderField('Comments', sample.observations)}
@@ -237,12 +238,12 @@ function ViewReport() {
           </div>
 
           <div style={{ display: 'flex', justifyContent: 'start', marginTop: '1rem', gap: '3rem' }}>
-          <p style={{ color: getQualityColor(report.quality_score), fontWeight: 'bold' }}>
-  Quality Score: {report.quality_score}
-</p>
-<p style={{ color: getStorageColor(report.storage_score), fontWeight: 'bold' }}>
-  Storage Score: {report.storage_score}
-</p>
+            <p style={{ color: getQualityColor(report.quality_score), fontWeight: 'bold' }}>
+              Quality Score: {report.quality_score}
+            </p>
+            <p style={{ color: getStorageColor(report.storage_score), fontWeight: 'bold' }}>
+              Storage Score: {report.storage_score}
+            </p>
           </div>
 
           <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginTop: '1rem' }}>
@@ -263,51 +264,50 @@ function ViewReport() {
       <hr style={{ borderTop: '5px solid #ccc', margin: '2rem 0' }} />
 
       <div style={{ display: 'flex', gap: '3rem', fontWeight: 'bold', marginBottom: '1rem' }}>
-      <p style={{ color: getQualityColor(report.qualityScore), fontWeight: 'bold' }}>
-  Quality Score: {report.qualityScore}
-</p>
-<p style={{ color: getStorageColor(report.storageScore), fontWeight: 'bold' }}>
-  Storage Score: {report.storageScore}
-  </p>
-</div>
+        <p style={{ color: getQualityColor(report.qualityScore), fontWeight: 'bold' }}>
+          Quality Score: {report.qualityScore}
+        </p>
+        <p style={{ color: getStorageColor(report.storageScore), fontWeight: 'bold' }}>
+          Storage Score: {report.storageScore}
+        </p>
+      </div>
 
-{report.conclusion && (
-  <div style={{
-    fontSize: '15px',
-    whiteSpace: 'pre-line',
-    padding: '1rem',
-    border: '1px solid #ccc',
-    borderRadius: '6px',
-    backgroundColor: '#f5f5f5'
-  }}>
-    <p><strong>Conclusion:</strong></p>
-    <p>{report.conclusion}</p>
-  </div>
-)}
+      {report.conclusion && (
+        <div style={{
+          fontSize: '15px',
+          whiteSpace: 'pre-line',
+          padding: '1rem',
+          border: '1px solid #ccc',
+          borderRadius: '6px',
+          backgroundColor: '#f5f5f5'
+        }}>
+          <p><strong>Conclusion:</strong></p>
+          <p>{report.conclusion}</p>
+        </div>
+      )}
 
       {previewUrl && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.8)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 999 }} onClick={() => setPreviewUrl(null)}>
           <img src={previewUrl} alt="preview" style={{ maxWidth: '90%', maxHeight: '90%', borderRadius: '8px' }} />
         </div>
       )}
+
       <button
-  onClick={handleDownloadPDF}
-  style={{
-    marginTop: '2rem',
-    padding: '10px 20px',
-    fontSize: '16px',
-    backgroundColor: '#1d4ed8',
-    color: 'white',
-    border: 'none',
-    borderRadius: '6px',
-    cursor: 'pointer'
-    
-  }}
->
-  Download PDF
-</button>
+        onClick={handleDownloadPDF}
+        style={{
+          marginTop: '2rem',
+          padding: '10px 20px',
+          fontSize: '16px',
+          backgroundColor: '#1d4ed8',
+          color: 'white',
+          border: 'none',
+          borderRadius: '6px',
+          cursor: 'pointer'
+        }}
+      >
+        Download PDF
+      </button>
     </div>
-    
   )
 }
 

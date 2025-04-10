@@ -29,7 +29,7 @@
 
 @media print {
   .pdf-wrapper {
-    width: 100% !important;
+    width: 100vw !important;
     max-width: 842pt !important; /* landscape A4 */
     margin: 0 auto !important;
   }

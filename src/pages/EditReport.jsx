@@ -14,6 +14,52 @@ function EditReport() {
   const [report, setReport] = useState(null)
   const [samples, setSamples] = useState([])
   const { reportId } = useParams()
+  const [showEditModal, setShowEditModal] = useState(false);
+const [editInfo, setEditInfo] = useState({
+  client_ref: '',
+  container_number: '',
+  rochecks_ref: '',
+  variety: '',
+  origin: '',
+  location: '',
+  total_pallets: '',
+  type: 'Conventional'
+});
+
+const handleEditInfoChange = (e) => {
+  const { name, value } = e.target;
+  setEditInfo((prev) => ({ ...prev, [name]: value }));
+};
+
+const handleOpenEditModal = () => {
+  setEditInfo({
+    client_ref: report?.client_ref || '',
+    container_number: report?.container_number || '',
+    rochecks_ref: report?.rochecks_ref || '',
+    variety: report?.variety || '',
+    origin: report?.origin || '',
+    location: report?.location || '',
+    total_pallets: report?.total_pallets || '',
+    type: report?.type || 'Conventional'
+  });
+  setShowEditModal(true);
+};
+
+const handleSaveEditedInfo = async () => {
+  const { error } = await supabase
+    .from('reports')
+    .update(editInfo)
+    .eq('id', report.id);
+
+  if (error) {
+    alert('Nepavyko atnaujinti informacijos');
+  } else {
+    setReport((prev) => ({ ...prev, ...editInfo }));
+    alert('Informacija atnaujinta sėkmingai!');
+    setShowEditModal(false);
+  }
+};
+
 
   useEffect(() => {
     const fetchReport = async () => {
@@ -257,12 +303,71 @@ function EditReport() {
         <p>Nėra pridėtų sample.</p>
       )}
 
-      <div style={{ display: 'flex', gap: '1rem' }}>
-        <button onClick={handleSave} style={styles.buttonPrimary}>SAVE</button>
-      </div>
+<div style={{ display: 'flex', gap: '1rem' }}>
+  <button onClick={handleSave} style={styles.buttonPrimary}>SAVE</button>
+  <button onClick={handleOpenEditModal} style={styles.buttonSecondary}>EDIT INFO</button>
+</div>
     </div>
   )
 }
+{showEditModal && (
+  <div style={{
+    position: 'fixed',
+    top: 0, left: 0, right: 0, bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    display: 'flex', justifyContent: 'center', alignItems: 'center'
+  }}>
+    <div style={{
+      background: 'white',
+      padding: '2rem',
+      borderRadius: '8px',
+      width: '500px',
+      maxHeight: '90vh',
+      overflowY: 'auto'
+    }}>
+      <h3>Edit Report Info</h3>
+
+      {[
+        ['client_ref', 'Client Ref'],
+        ['container_number', 'Container Number'],
+        ['rochecks_ref', 'ROCHECKS Ref'],
+        ['variety', 'Variety'],
+        ['origin', 'Origin'],
+        ['location', 'Location'],
+        ['total_pallets', 'Total Pallets']
+      ].map(([name, label]) => (
+        <div key={name} style={{ marginBottom: '1rem' }}>
+          <label>{label}</label>
+          <input
+            type="text"
+            name={name}
+            value={editInfo[name]}
+            onChange={handleEditInfoChange}
+            style={styles.input}
+          />
+        </div>
+      ))}
+
+      <div style={{ marginBottom: '1rem' }}>
+        <label>Type</label>
+        <select
+          name="type"
+          value={editInfo.type}
+          onChange={handleEditInfoChange}
+          style={styles.input}
+        >
+          <option value="Conventional">Conventional</option>
+          <option value="Organic">Organic</option>
+        </select>
+      </div>
+
+      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
+        <button onClick={() => setShowEditModal(false)} style={styles.buttonSecondary}>Cancel</button>
+        <button onClick={handleSaveEditedInfo} style={styles.buttonPrimary}>Save</button>
+      </div>
+    </div>
+  </div>
+)}
 
 const styles = {
   input: {

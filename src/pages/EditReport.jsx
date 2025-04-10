@@ -1,12 +1,13 @@
+// Pataisytas EditReport.jsx su tinkamai integruotu modalu
 import { useState, useEffect } from 'react'
 import { supabase } from '../supabaseClient'
 import { useParams } from 'react-router-dom'
 
 function EditReport() {
   const [form, setForm] = useState({
-        brand: '',
-        temperature: '',
-        category: 'CLASS I',
+    brand: '',
+    temperature: '',
+    category: 'CLASS I',
     qualityScore: '',
     storageScore: '',
     conclusion: ''
@@ -15,51 +16,50 @@ function EditReport() {
   const [samples, setSamples] = useState([])
   const { reportId } = useParams()
   const [showEditModal, setShowEditModal] = useState(false);
-const [editInfo, setEditInfo] = useState({
-  client_ref: '',
-  container_number: '',
-  rochecks_ref: '',
-  variety: '',
-  origin: '',
-  location: '',
-  total_pallets: '',
-  type: 'Conventional'
-});
-
-const handleEditInfoChange = (e) => {
-  const { name, value } = e.target;
-  setEditInfo((prev) => ({ ...prev, [name]: value }));
-};
-
-const handleOpenEditModal = () => {
-  setEditInfo({
-    client_ref: report?.client_ref || '',
-    container_number: report?.container_number || '',
-    rochecks_ref: report?.rochecks_ref || '',
-    variety: report?.variety || '',
-    origin: report?.origin || '',
-    location: report?.location || '',
-    total_pallets: report?.total_pallets || '',
-    type: report?.type || 'Conventional'
+  const [editInfo, setEditInfo] = useState({
+    client_ref: '',
+    container_number: '',
+    rochecks_ref: '',
+    variety: '',
+    origin: '',
+    location: '',
+    total_pallets: '',
+    type: 'Conventional'
   });
-  setShowEditModal(true);
-};
 
-const handleSaveEditedInfo = async () => {
-  const { error } = await supabase
-    .from('reports')
-    .update(editInfo)
-    .eq('id', report.id);
+  const handleEditInfoChange = (e) => {
+    const { name, value } = e.target;
+    setEditInfo((prev) => ({ ...prev, [name]: value }));
+  };
 
-  if (error) {
-    alert('Nepavyko atnaujinti informacijos');
-  } else {
-    setReport((prev) => ({ ...prev, ...editInfo }));
-    alert('Informacija atnaujinta sėkmingai!');
-    setShowEditModal(false);
-  }
-};
+  const handleOpenEditModal = () => {
+    setEditInfo({
+      client_ref: report?.client_ref || '',
+      container_number: report?.container_number || '',
+      rochecks_ref: report?.rochecks_ref || '',
+      variety: report?.variety || '',
+      origin: report?.origin || '',
+      location: report?.location || '',
+      total_pallets: report?.total_pallets || '',
+      type: report?.type || 'Conventional'
+    });
+    setShowEditModal(true);
+  };
 
+  const handleSaveEditedInfo = async () => {
+    const { error } = await supabase
+      .from('reports')
+      .update(editInfo)
+      .eq('id', report.id);
+
+    if (error) {
+      alert('Nepavyko atnaujinti informacijos');
+    } else {
+      setReport((prev) => ({ ...prev, ...editInfo }));
+      alert('Informacija atnaujinta sėkmingai!');
+      setShowEditModal(false);
+    }
+  };
 
   useEffect(() => {
     const fetchReport = async () => {
@@ -93,8 +93,8 @@ const handleSaveEditedInfo = async () => {
       .from('samples')
       .select('*')
       .eq('report_id', reportId)
-      .order('position', { ascending: true }) // ← Rūšiuojam pagal sukūrimo laiką
-  
+      .order('position', { ascending: true })
+
     if (!error) {
       setSamples(data)
     }
@@ -128,68 +128,60 @@ const handleSaveEditedInfo = async () => {
     }
   }
 
-  // Functions for sample actions
   const handleEditSample = (sampleId) => {
-  window.location.href = `/create-sample/${reportId}/${sampleId}`
-    // Galite nukreipti į redagavimo puslapį arba atidaryti modalinį langą
+    window.location.href = `/create-sample/${reportId}/${sampleId}`
   }
 
   const handleCopySample = async (sampleId) => {
-    // 1. Gauti originalų sample
     const { data: sampleToCopy, error: fetchError } = await supabase
       .from('samples')
       .select('*')
       .eq('id', sampleId)
       .single();
-  
+
     if (fetchError || !sampleToCopy) {
       console.error('Nepavyko gauti sample:', fetchError?.message);
       alert('Nepavyko gauti sample kopijai');
       return;
     }
-  
-    // 2. Gauti max poziciją
+
     const { data: existingSamples } = await supabase
       .from('samples')
       .select('position')
       .eq('report_id', sampleToCopy.report_id)
       .order('position', { ascending: false })
       .limit(1);
-  
+
     const nextPosition = (existingSamples?.[0]?.position || 0) + 1;
-  
-    // 3. Sukurti naują kopiją su NAUJU position
+
     const { id, position, ...newSample } = sampleToCopy;
-  
+
     const { data, error } = await supabase
       .from('samples')
       .insert([{ ...newSample, position: nextPosition }])
       .select();
-  
+
     if (error) {
       console.error('Klaida kopijuojant:', error.message);
       alert('Nepavyko kopijuoti');
       return;
     }
-  
-    // 4. Atnaujinti sąrašą
+
     const { data: updatedSamples, error: fetchError2 } = await supabase
       .from('samples')
       .select('*')
       .eq('report_id', sampleToCopy.report_id)
       .order('position', { ascending: true });
-  
+
     if (fetchError2) {
       console.error('Nepavyko atnaujinti sąrašo');
       alert('Nepavyko atnaujinti sąrašo');
       return;
     }
-  
+
     setSamples(updatedSamples);
     alert('Kopija sėkmingai sukurta!');
   };
-  
-  
 
   const handleDeleteSample = async (sampleId) => {
     const { error } = await supabase.from('samples').delete().eq('id', sampleId)
@@ -206,7 +198,6 @@ const handleSaveEditedInfo = async () => {
     <div style={{ padding: '2rem', width: '100%', height: '100%', boxSizing: 'border-box' }}>
       <h2>Edit Report</h2>
 
-      {/* Pirma eilutė */}
       <div style={{ display: 'flex', gap: '2rem', marginBottom: '1rem' }}>
         <div style={{ flex: 1 }}>
           <label>BRAND</label>
@@ -230,7 +221,6 @@ const handleSaveEditedInfo = async () => {
 
       <div style={styles.divider} />
 
-      {/* Quality & Storage Score */}
       <div style={{ display: 'flex', gap: '1rem', margin: '1rem 0' }}>
         <div style={{ flex: 1 }}>
           <label>QUALITY SCORE</label>
@@ -260,7 +250,6 @@ const handleSaveEditedInfo = async () => {
         </div>
       </div>
 
-      {/* Conclusion */}
       <div>
         <label>CONCLUSION</label>
         <textarea name="conclusion" value={form.conclusion} onChange={handleFormChange} style={styles.textarea} />
@@ -268,7 +257,6 @@ const handleSaveEditedInfo = async () => {
 
       <div style={styles.divider} />
 
-      {/* Sample Table */}
       <h3>SAMPLES</h3>
       <button onClick={handleAddSample} style={{ marginBottom: '1rem', ...styles.buttonSecondary }}>ADD SAMPLE</button>
 
@@ -282,92 +270,94 @@ const handleSaveEditedInfo = async () => {
             </tr>
           </thead>
           <tbody>
-          {[...samples]
-  .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
-  .map((s, i) => (
-    <tr key={s.id}>
-      <td style={styles.td}>{i + 1}</td>
-      <td style={styles.td}>{s.pallet_number}</td>
-      <td style={styles.td}>{s.quality_score}</td>
-      <td style={styles.td}>{s.storage_score}</td>
-      <td style={styles.td}>
-        <button onClick={() => handleEditSample(s.id)} style={styles.buttonSecondary}>EDIT</button>
-        <button onClick={() => handleCopySample(s.id)} style={styles.buttonSecondary}>COPY</button>
-        <button onClick={() => handleDeleteSample(s.id)} style={styles.buttonSecondary}>DELETE</button>
-      </td>
-    </tr>
-))}
+            {[...samples]
+              .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
+              .map((s, i) => (
+                <tr key={s.id}>
+                  <td style={styles.td}>{i + 1}</td>
+                  <td style={styles.td}>{s.pallet_number}</td>
+                  <td style={styles.td}>{s.quality_score}</td>
+                  <td style={styles.td}>{s.storage_score}</td>
+                  <td style={styles.td}>
+                    <button onClick={() => handleEditSample(s.id)} style={styles.buttonSecondary}>EDIT</button>
+                    <button onClick={() => handleCopySample(s.id)} style={styles.buttonSecondary}>COPY</button>
+                    <button onClick={() => handleDeleteSample(s.id)} style={styles.buttonSecondary}>DELETE</button>
+                  </td>
+                </tr>
+              ))}
           </tbody>
         </table>
       ) : (
         <p>Nėra pridėtų sample.</p>
       )}
 
-<div style={{ display: 'flex', gap: '1rem' }}>
-  <button onClick={handleSave} style={styles.buttonPrimary}>SAVE</button>
-  <button onClick={handleOpenEditModal} style={styles.buttonSecondary}>EDIT INFO</button>
-</div>
-    </div>
-  )
-}
-{showEditModal && (
-  <div style={{
-    position: 'fixed',
-    top: 0, left: 0, right: 0, bottom: 0,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    display: 'flex', justifyContent: 'center', alignItems: 'center'
-  }}>
-    <div style={{
-      background: 'white',
-      padding: '2rem',
-      borderRadius: '8px',
-      width: '500px',
-      maxHeight: '90vh',
-      overflowY: 'auto'
-    }}>
-      <h3>Edit Report Info</h3>
+      <div style={{ display: 'flex', gap: '1rem' }}>
+        <button onClick={handleSave} style={styles.buttonPrimary}>SAVE</button>
+        <button onClick={handleOpenEditModal} style={styles.buttonSecondary}>EDIT INFO</button>
+      </div>
 
-      {[
-        ['client_ref', 'Client Ref'],
-        ['container_number', 'Container Number'],
-        ['rochecks_ref', 'ROCHECKS Ref'],
-        ['variety', 'Variety'],
-        ['origin', 'Origin'],
-        ['location', 'Location'],
-        ['total_pallets', 'Total Pallets']
-      ].map(([name, label]) => (
-        <div key={name} style={{ marginBottom: '1rem' }}>
-          <label>{label}</label>
-          <input
-            type="text"
-            name={name}
-            value={editInfo[name]}
-            onChange={handleEditInfoChange}
-            style={styles.input}
-          />
+      {showEditModal && (
+        <div style={{
+          position: 'fixed',
+          top: 0, left: 0, right: 0, bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.5)',
+          display: 'flex', justifyContent: 'center', alignItems: 'center',
+          zIndex: 9999
+        }}>
+          <div style={{
+            background: 'white',
+            padding: '2rem',
+            borderRadius: '8px',
+            width: '500px',
+            maxHeight: '90vh',
+            overflowY: 'auto'
+          }}>
+            <h3>Edit Report Info</h3>
+
+            {[
+              ['client_ref', 'Client Ref'],
+              ['container_number', 'Container Number'],
+              ['rochecks_ref', 'ROCHECKS Ref'],
+              ['variety', 'Variety'],
+              ['origin', 'Origin'],
+              ['location', 'Location'],
+              ['total_pallets', 'Total Pallets']
+            ].map(([name, label]) => (
+              <div key={name} style={{ marginBottom: '1rem' }}>
+                <label>{label}</label>
+                <input
+                  type="text"
+                  name={name}
+                  value={editInfo[name]}
+                  onChange={handleEditInfoChange}
+                  style={styles.input}
+                />
+              </div>
+            ))}
+
+            <div style={{ marginBottom: '1rem' }}>
+              <label>Type</label>
+              <select
+                name="type"
+                value={editInfo.type}
+                onChange={handleEditInfoChange}
+                style={styles.input}
+              >
+                <option value="Conventional">Conventional</option>
+                <option value="Organic">Organic</option>
+              </select>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
+              <button onClick={() => setShowEditModal(false)} style={styles.buttonSecondary}>Cancel</button>
+              <button onClick={handleSaveEditedInfo} style={styles.buttonPrimary}>Save</button>
+            </div>
+          </div>
         </div>
-      ))}
-
-      <div style={{ marginBottom: '1rem' }}>
-        <label>Type</label>
-        <select
-          name="type"
-          value={editInfo.type}
-          onChange={handleEditInfoChange}
-          style={styles.input}
-        >
-          <option value="Conventional">Conventional</option>
-          <option value="Organic">Organic</option>
-        </select>
-      </div>
-
-      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
-        <button onClick={() => setShowEditModal(false)} style={styles.buttonSecondary}>Cancel</button>
-        <button onClick={handleSaveEditedInfo} style={styles.buttonPrimary}>Save</button>
-      </div>
+      )}
     </div>
-  </div>
-)}
+  );
+}
 
 const styles = {
   input: {
@@ -415,4 +405,4 @@ const styles = {
   }
 }
 
-export default EditReport
+export default EditReport;

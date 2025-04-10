@@ -24,6 +24,7 @@ function ViewReport() {
         .from('samples')
         .select('*')
         .eq('report_id', reportId)
+        .order('position', { ascending: true })
 
       const { data: photoData } = await supabase
         .from('sample_photos')

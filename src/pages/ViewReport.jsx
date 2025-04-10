@@ -169,8 +169,8 @@ function ViewReport() {
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2rem', fontSize: '14px' }}>
         <div style={{ width: '32%' }}>
           {renderField('Date', report.date)}
-          {renderField('Client', report.client)}
-          {renderField('Client Ref', report.client_ref)}
+          {renderField('Consignee', report.client)}
+          {renderField('Consignee Ref', report.client_ref)}
           {renderField('Container Number', report.container_number)}
           {renderField('RoChecks Ref', report.rochecks_ref)}
         </div>

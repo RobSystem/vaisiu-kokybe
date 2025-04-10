@@ -20,9 +20,7 @@ function AllReports({ setSelectedReport }) {
     } else {
       console.log('Atnaujinta sėkmingai:', data)
   
-      setReports((prev) =>
-        prev.map((r) => (r.id === id ? { ...r, status: 'done' } : r))
-      )
+      setReports((prev) => prev.filter((r) => r.id !== id));
     }
   }
 

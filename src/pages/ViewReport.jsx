@@ -135,18 +135,19 @@ function ViewReport() {
   }
   return (
     <div
-    ref={reportRef}
-    className="pdf-wrapper"
-    style={{
-      fontFamily: 'Arial, sans-serif',
-      padding: '2rem',
-      width: '100%',
-      margin: '0 auto', // rodomas per visą ekraną naršyklėje
-      minHeight: '100vh',
-      boxSizing: 'border-box',
-      backgroundColor: '#fff',
-    }}
-  >
+  ref={reportRef}
+  className="pdf-wrapper"
+  style={{
+    width: '100vw',         // Naršyklėje: pilnas plotis
+    maxWidth: '100%',       // Naršyklėje: jokių ribų
+    margin: '0 auto',
+    fontFamily: 'Arial, sans-serif',
+    padding: '2rem',
+    minHeight: '100vh',
+    boxSizing: 'border-box',
+    backgroundColor: '#fff',
+  }}
+>
 
       <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
         <img src="/Logoedit2.png" alt="Logo" style={{ height: '60px', marginRight: '1rem' }} />

@@ -150,7 +150,7 @@ function AllReports({ setSelectedReport }) {
 </button>
                     <button style={styles.doneBtn} onClick={() => handleDone(report.id)}>Done</button>
                     <button
-  style={{ ...styles.btn, background: '#e53935', marginLeft: '0.5rem' }}
+  style={{ ...styles.btn, background: '#e53935', marginLeft: '1rem' }}
   onClick={() => handleDelete(report.id)}
 >
   Delete

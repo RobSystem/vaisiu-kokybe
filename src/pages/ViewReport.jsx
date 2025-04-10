@@ -136,7 +136,7 @@ function ViewReport() {
   return (
     <div
   ref={reportRef}
-  style={{ fontFamily: 'Arial, sans-serif', padding: '2rem', width: '100vw', minHeight: '100vh', boxSizing: 'border-box', backgroundColor: '#fff' }}
+  style={{ fontFamily: 'Arial, sans-serif', padding: '2rem', width: '100%', minHeight: '100vh', boxSizing: 'border-box', backgroundColor: '#fff' }}
 >
       <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
         <img src="/Logoedit2.png" alt="Logo" style={{ height: '60px', marginRight: '1rem' }} />
@@ -173,14 +173,13 @@ function ViewReport() {
       {samples.map(sample => (
   <div
     key={sample.id}
-    className="pdf-break"
     style={{
       border: '1px solid #ccc',
       borderRadius: '8px',
       padding: '1rem',
       marginBottom: '2rem',
       backgroundColor: '#f9f9f9',
-      pageBreakAfter: 'avoid'  // <- čia svarbiausia
+      pageBreakAfter: 'always'  // <- čia svarbiausia
     }}
   >
           <h3 style={{ fontSize: '18px', marginBottom: '1rem' }}>Pallet Number: {sample.pallet_number}</h3>

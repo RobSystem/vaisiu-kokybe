@@ -173,13 +173,14 @@ function ViewReport() {
       {samples.map(sample => (
   <div
     key={sample.id}
+    className="pdf-break"
     style={{
       border: '1px solid #ccc',
       borderRadius: '8px',
       padding: '1rem',
       marginBottom: '2rem',
       backgroundColor: '#f9f9f9',
-      pageBreakAfter: 'always'  // <- čia svarbiausia
+      pageBreakAfter: 'avoid'  // <- čia svarbiausia
     }}
   >
           <h3 style={{ fontSize: '18px', marginBottom: '1rem' }}>Pallet Number: {sample.pallet_number}</h3>

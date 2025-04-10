@@ -30,7 +30,7 @@
 @media print {
   .pdf-wrapper {
     width: 100% !important;
-    max-width: 595pt; /* A4 plotis PDF'e */
+    max-width: 842pt !important; /* landscape A4 */
     margin: 0 auto !important;
   }
 }

@@ -118,7 +118,7 @@ function ViewReport() {
           filename: `${report.client}_report.pdf`,
           image: { type: 'jpeg', quality: 1 },
           html2canvas: {
-            scale: 2,
+            scale: 1.5,
             useCORS: true, // svarbu, kad būtų įtrauktos ir nuotraukos
             logging: true,
           },

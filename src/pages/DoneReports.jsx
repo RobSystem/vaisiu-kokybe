@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../supabaseClient'
+import { useNavigate } from 'react-router-dom';
 
 function DoneReports() {
   const [reports, setReports] = useState([])
   const [loading, setLoading] = useState(true)
+  const navigate = useNavigate();
   const cellStyle = {
     padding: '0.5rem',
     verticalAlign: 'middle',
@@ -65,16 +67,19 @@ function DoneReports() {
   textAlign: 'center',
   verticalAlign: 'middle'
 }}>
-  <button style={{
+  <button
+  onClick={() => navigate(`/viewreport/${report.id}`)}
+  style={{
     padding: '6px 12px',
     background: '#1976d2',
     color: 'white',
     border: 'none',
     borderRadius: '6px',
     cursor: 'pointer'
-  }}>
-    View
-  </button>
+  }}
+>
+  View
+</button>
 </td>
 
                 </tr>

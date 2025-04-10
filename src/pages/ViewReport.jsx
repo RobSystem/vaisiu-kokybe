@@ -140,7 +140,8 @@ function ViewReport() {
     style={{
       fontFamily: 'Arial, sans-serif',
       padding: '2rem',
-      width: '100vw', // rodomas per visą ekraną naršyklėje
+      width: '100%',
+      margin: '0 auto', // rodomas per visą ekraną naršyklėje
       minHeight: '100vh',
       boxSizing: 'border-box',
       backgroundColor: '#fff',

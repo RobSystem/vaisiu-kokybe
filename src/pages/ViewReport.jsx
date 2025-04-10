@@ -247,10 +247,10 @@ function ViewReport() {
 
           <div style={{ display: 'flex', justifyContent: 'start', marginTop: '1rem', gap: '3rem' }}>
             <p style={{ color: getQualityColor(report.quality_score), fontWeight: 'bold' }}>
-              Quality Score: {report.quality_score}
+              Quality Score: {report.qualityScore}
             </p>
             <p style={{ color: getStorageColor(report.storage_score), fontWeight: 'bold' }}>
-              Storage Score: {report.storage_score}
+              Storage Score: {report.storageScore}
             </p>
           </div>
 

@@ -136,7 +136,7 @@ function ViewReport() {
     setTimeout(() => {
       html2pdf()
         .set({
-          filename: `${report.client}_report.pdf`,
+          filename: `${report.client_ref}_report.pdf`,
           image: { type: 'jpeg', quality: 1 },
           html2canvas: {
             scale: 1.5,

@@ -98,9 +98,20 @@ function AddUserPage() {
   const handleDelete = async (userId) => {
     if (window.confirm('Ar tikrai norite istrinti si vartotoja?')) {
       const { error } = await supabaseAdmin.auth.admin.deleteUser(userId);
+  
       if (error) {
         alert('Klaida tryniant vartotoja');
       } else {
+        // Taip pat trinam iš user_profiles
+        const { error: deleteProfileError } = await supabase
+          .from('user_profiles')
+          .delete()
+          .eq('id', userId);
+  
+        if (deleteProfileError) {
+          console.error('Klaida tryniant iš user_profiles:', deleteProfileError.message);
+        }
+  
         fetchUsers();
       }
     }

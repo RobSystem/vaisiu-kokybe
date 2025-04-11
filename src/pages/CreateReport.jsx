@@ -24,6 +24,19 @@ function CreateReport() {
   const [users, setUsers] = useState([]);
 
  useEffect(() => {
+  const fetchClients = async () => {
+    const { data, error } = await supabase
+      .from('clients')
+      .select('id, name');
+
+    if (!error) {
+      setClients(data);
+    } else {
+      console.error('Klaida gaunant klientus:', error.message);
+    }
+  };
+
+  fetchClients();
   const fetchUsers = async () => {
     const { data, error } = await supabase
       .from('user_profiles')
@@ -35,6 +48,7 @@ function CreateReport() {
   };
   fetchUsers();
 }, []);
+
 
   const handleChange = (e) => {
     const { name, value } = e.target

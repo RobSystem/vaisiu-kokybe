@@ -80,6 +80,20 @@ function DoneReports() {
 >
   View
 </button>
+<button
+  onClick={() => window.open(`/edit/${report.id}`, '_blank')}
+  style={{
+    padding: '6px 12px',
+    background: '#4caf50',
+    color: 'white',
+    border: 'none',
+    borderRadius: '6px',
+    cursor: 'pointer',
+    marginLeft: '0.5rem'
+  }}
+>
+  Edit
+</button>
 </td>
 
                 </tr>

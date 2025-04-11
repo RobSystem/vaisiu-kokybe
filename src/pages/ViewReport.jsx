@@ -45,13 +45,17 @@ function ViewReport() {
   }
 
   const renderListField = (label, values) => {
-    if (!Array.isArray(values) || values.length === 0) return null
+    if (!Array.isArray(values) || values.length === 0) return null;
     return (
       <div style={{ marginBottom: '0.5rem' }}>
         <p><strong>{label}:</strong></p>
         <ul style={{ margin: 0, paddingLeft: '1.2rem' }}>
-          {values.map((item, index) => (
-            <li key={index}>{item.color || item.name} ({item.percent || item.percentage}%)</li>
+          {values
+            .filter(item => (item.percent || item.percentage) !== undefined && (item.percent || item.percentage) !== '')
+            .map((item, index) => (
+              <li key={index}>
+                {item.color || item.name} ({parseFloat(item.percent || item.percentage)}%)
+              </li>
           ))}
         </ul>
       </div>
@@ -67,13 +71,20 @@ function ViewReport() {
   };
 
   const renderConsistency = (consistencyObj) => {
-    if (!consistencyObj || typeof consistencyObj !== 'object') return null
+    if (!consistencyObj || typeof consistencyObj !== 'object') return null;
+  
+    const entries = Object.entries(consistencyObj).filter(([_, val]) => val && val !== '');
+  
+    if (entries.length === 0) return null;
+  
     return (
       <div style={{ marginBottom: '0.5rem' }}>
         <p><strong>Consistency:</strong></p>
         <ul style={{ margin: 0, paddingLeft: '1.2rem' }}>
-          {Object.entries(consistencyObj).map(([key, val]) => (
-            <li key={key}>{key.charAt(0).toUpperCase() + key.slice(1)}: {val}%</li>
+          {entries.map(([key, val]) => (
+            <li key={key}>
+              {key.charAt(0).toUpperCase() + key.slice(1)}: {parseFloat(val)}%
+            </li>
           ))}
         </ul>
       </div>

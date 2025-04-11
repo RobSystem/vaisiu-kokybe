@@ -14,7 +14,7 @@ function AddUserPage() {
   }, []);
 
   const fetchUsers = async () => {
-    const { data, error } = await supabase.auth.admin.listUsers();
+    const { data, error } = await supabaseAdmin.auth.admin.listUsers();
     if (!error && data) setUsers(data.users);
   };
 
@@ -26,7 +26,7 @@ function AddUserPage() {
   const handleSubmit = async () => {
     setLoading(true);
     if (editUserId) {
-      const { error } = await supabase.auth.admin.updateUserById(editUserId, {
+      const { error } = await supabaseAdmin.auth.admin.updateUserById(editUserId, {
         email: formData.email,
         password: formData.password,
         user_metadata: { name: formData.name, role: formData.role },
@@ -37,7 +37,7 @@ function AddUserPage() {
         setMessage('Vartotojas atnaujintas!');
       }
     } else {
-      const { error } = await supabase.auth.admin.createUser({
+      const { error } = await supabaseAdmin.auth.admin.createUser({
         email: formData.email,
         password: formData.password,
         user_metadata: { name: formData.name, role: formData.role },
@@ -70,7 +70,7 @@ function AddUserPage() {
 
   const handleDelete = async (userId) => {
     if (window.confirm('Ar tikrai norite istrinti si vartotoja?')) {
-      const { error } = await supabase.auth.admin.deleteUser(userId);
+      const { error } = await supabaseAdmin.auth.admin.deleteUser(userId);
       if (error) {
         alert('Klaida tryniant vartotoja');
       } else {

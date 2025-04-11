@@ -288,7 +288,7 @@ const handleSave = async () => {
   <div key={i} style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem' }}>
     <select onChange={(e) => updateColoration('internal', i, 'color', e.target.value)} value={item.color}>
       <option>Pasirinkti</option>
-      <option>Green</option><option>Light Green</option><option>Yellow</option><option>Orange</option><option>Light Yellow</option><option>White</option><option>Red</option><option>Purple</option>
+      <option>Green</option><option>Light Green</option><option>Yellow</option><option>Orange</option><option>Light Yellow</option><option>White</option><option>Red</option><option>Purple</option><option>Grey</option>
     </select>
     <select onChange={(e) => updateColoration('internal', i, 'percent', e.target.value)} value={item.percent}>
       {[...Array(21)].map((_, i) => <option key={i}>{i * 5}%</option>)}

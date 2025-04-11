@@ -1,13 +1,26 @@
-import { supabase } from '../supabaseClient'
+import { useEffect, useState } from 'react';
+import { supabase } from '../supabaseClient';
 
 function Sidebar({ navigate, onLogout }) {
+  const [role, setRole] = useState(null);
+
+  useEffect(() => {
+    const getUserRole = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        setRole(user.user_metadata?.role || 'user');
+      }
+    };
+    getUserRole();
+  }, []);
+
   const navItemsMain = [
     { label: 'Dashboard', path: '/' },
     { label: 'Create Report', path: '/create' },
     { label: 'All Reports', path: '/all' },
     { label: 'Done Reports', path: '/done' },
-    { label: 'Admin Panel', path: '/admin' }
-  ]
+    ...(role === 'admin' ? [{ label: 'Admin Panel', path: '/admin' }] : [])
+  ];
 
   return (
     <div style={styles.sidebar}>
@@ -32,8 +45,9 @@ function Sidebar({ navigate, onLogout }) {
         </div>
       </div>
     </div>
-  )
+  );
 }
+
 
 const styles = {
   sidebar: {

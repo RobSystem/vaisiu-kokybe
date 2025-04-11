@@ -7,13 +7,14 @@ function Sidebar({ navigate, onLogout }) {
   useEffect(() => {
     const getUserRole = async () => {
       const { data: { session } } = await supabase.auth.getSession();
+      const user = session?.user;
       if (user) {
         setRole(user.user_metadata?.role || 'user');
       }
     };
     getUserRole();
   }, []);
-
+  console.log('Vartotojo rolė:', role);
   const navItemsMain = [
     { label: 'Dashboard', path: '/' },
     { label: 'Create Report', path: '/create' },

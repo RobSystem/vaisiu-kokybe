@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import supabaseAdmin from '../supabaseAdminClient';
+import { supabase } from '../supabaseClient';
 
 function AddUserPage() {
   const [users, setUsers] = useState([]);
@@ -37,18 +38,44 @@ function AddUserPage() {
         setMessage('Vartotojas atnaujintas!');
       }
     } else {
-      const { error } = await supabaseAdmin.auth.admin.createUser({
-        email: formData.email,
-        password: formData.password,
-        user_metadata: { name: formData.name, role: formData.role },
-        email_confirm: true
-      });
-      if (error) {
-        setMessage(`Klaida: ${error.message}`);
-      } else {
-        setMessage('Vartotojas sukurtas sekmingai!');
-      }
-    }
+        const { data: newUser, error } = await supabaseAdmin.auth.admin.createUser({
+            email: formData.email,
+            password: formData.password,
+            user_metadata: { name: formData.name, role: formData.role },
+            email_confirm: true
+          });
+          
+          if (error) {
+            setMessage(`Klaida: ${error.message}`);
+          } else {
+            setMessage('Vartotojas sukurtas sekmingai!');
+          
+            // ➕ ĮRAŠOME Į user_profiles lentelę
+            const { error: insertError } = await supabase
+              .from('user_profiles')
+              .insert({
+                id: newUser.user.id, // UUID iš auth
+                name: formData.name,
+                role: formData.role
+              });
+          
+            if (insertError) {
+              console.error('Klaida įrašant į user_profiles:', insertError.message);
+            }
+          }
+  // ➕ ĮRAŠOME Į user_profiles lentelę
+  const { error: insertError } = await supabase
+    .from('user_profiles')
+    .insert({
+      id: newUser.user.id, // UUID iš auth
+      name: formData.name,
+      role: formData.role
+    });
+
+  if (insertError) {
+    console.error('Klaida įrašant į user_profiles:', insertError.message);
+  }
+}
 
     setFormData({ name: '', email: '', password: '', role: 'user' });
     setEditUserId(null);

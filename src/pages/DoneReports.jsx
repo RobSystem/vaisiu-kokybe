@@ -6,6 +6,7 @@ function DoneReports() {
   const [reports, setReports] = useState([])
   const [loading, setLoading] = useState(true)
   const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = useState('');
   const cellStyle = {
     padding: '0.5rem',
     verticalAlign: 'middle',
@@ -35,10 +36,27 @@ function DoneReports() {
 
     fetchReports()
   }, [])
-
+  const filteredReports = reports.filter((report) =>
+    [report.client, report.container_number, report.location, report.variety, report.client_ref, report.rochecks_ref]
+      .some(field => field?.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
   return (
     <div style={{ padding: '1rem', width: '100%' }}>
       <h2>Done Reports</h2>
+      <input
+  type="text"
+  placeholder="Search..."
+  value={searchTerm}
+  onChange={(e) => setSearchTerm(e.target.value)}
+  style={{
+    padding: '8px',
+    marginBottom: '1rem',
+    width: '100%',
+    maxWidth: '300px',
+    border: '1px solid #ccc',
+    borderRadius: '4px'
+  }}
+/>
 
       {loading ? (
         <p>Kraunama...</p>

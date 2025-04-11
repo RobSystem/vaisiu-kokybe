@@ -6,7 +6,7 @@ function Sidebar({ navigate, onLogout }) {
 
   useEffect(() => {
     const getUserRole = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { session } } = await supabase.auth.getSession();
       if (user) {
         setRole(user.user_metadata?.role || 'user');
       }

@@ -87,8 +87,8 @@ function AdminClients() {
               <td style={styles.td}>{client.name}</td>
 <td style={styles.td}>{client.email}</td>
 <td style={styles.td}>
-  <button onClick={() => handleEdit(client)}>Edit</button>
-  <button onClick={() => handleDelete(client.id)} style={{ marginLeft: '1rem' }}>Delete</button>
+  <button onClick={() => handleEdit(client)} style={{marginRight: '0.5rem'}}>Edit</button>
+  <button onClick={() => handleDelete(client.id)} style={{ backgroundColor: '#e53935', color: 'white' }}>Delete</button>
               </td>
             </tr>
           ))}

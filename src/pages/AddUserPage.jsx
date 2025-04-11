@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '../supabaseClient';
-import supabaseAdmin from '../utils/supabaseAdminClient'
+import supabaseAdmin from '../supabaseAdminClient';
 
 function AddUserPage() {
   const [users, setUsers] = useState([]);

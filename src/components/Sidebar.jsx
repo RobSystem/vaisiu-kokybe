@@ -28,7 +28,7 @@ function Sidebar({ navigate, onLogout }) {
   return (
     <div style={styles.sidebar}>
       <div>
-        <h2 style={styles.logo}>{username}</h2>
+        <h2 style={styles.logo}>{userName}</h2>
         <nav style={styles.nav}>
           {navItemsMain.map(item => (
             <div

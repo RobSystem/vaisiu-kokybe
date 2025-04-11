@@ -3,16 +3,18 @@ import { supabase } from '../supabaseClient';
 
 function Sidebar({ navigate, onLogout }) {
   const [role, setRole] = useState(null);
+  const [userName, setUserName] = useState('');
 
   useEffect(() => {
-    const getUserRole = async () => {
+    const getUserInfo = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       const user = session?.user;
       if (user) {
         setRole(user.user_metadata?.role || 'user');
+        setUserName(user.user_metadata?.name || 'User');
       }
     };
-    getUserRole();
+    getUserInfo();
   }, []);
   console.log('Vartotojo rolė:', role);
   const navItemsMain = [
@@ -26,7 +28,7 @@ function Sidebar({ navigate, onLogout }) {
   return (
     <div style={styles.sidebar}>
       <div>
-        <h2 style={styles.logo}>🍎 Reports</h2>
+        <h2 style={styles.logo}>{username}</h2>
         <nav style={styles.nav}>
           {navItemsMain.map(item => (
             <div

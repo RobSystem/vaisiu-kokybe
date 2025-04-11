@@ -21,14 +21,18 @@ function CreateReport() {
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
   const [clients, setClients] = useState([])
+  const [users, setUsers] = useState([]);
 
-  useEffect(() => {
-    const fetchClients = async () => {
-      const { data, error } = await supabase.from('clients').select()
-      if (!error) setClients(data)
+ useEffect(() => {
+  const fetchUsers = async () => {
+    const { data, error } = await supabase.auth.admin.listUsers();
+    if (!error) {
+      const onlyNamed = data.users.filter((u) => u.user_metadata?.name);
+      setUsers(onlyNamed);
     }
-    fetchClients()
-  }, [])
+  };
+  fetchUsers();
+}, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -123,15 +127,21 @@ function CreateReport() {
         </div>
 
         <div>
-          <label>SURVEYOR</label>
-          <input
-            type="text"
-            name="surveyor"
-            value={formData.surveyor}
-            onChange={handleChange}
-            style={{ width: '100%', padding: '0.5rem' }}
-          />
-        </div>
+  <label>SURVEYOR</label>
+  <select
+    name="surveyor"
+    value={formData.surveyor}
+    onChange={handleChange}
+    style={{ width: '100%', padding: '0.5rem' }}
+  >
+    <option value="">-- Select surveyor --</option>
+    {users.map((u) => (
+      <option key={u.id} value={u.user_metadata.name}>
+        {u.user_metadata.name}
+      </option>
+    ))}
+  </select>
+</div>
 
         <button
           type="submit"

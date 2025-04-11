@@ -25,10 +25,12 @@ function CreateReport() {
 
  useEffect(() => {
   const fetchUsers = async () => {
-    const { data, error } = await supabase.auth.admin.listUsers();
+    const { data, error } = await supabase
+      .from('user_profiles')
+      .select('id, name');
+  
     if (!error) {
-      const onlyNamed = data.users.filter((u) => u.user_metadata?.name);
-      setUsers(onlyNamed);
+      setUsers(data);
     }
   };
   fetchUsers();
@@ -136,10 +138,10 @@ function CreateReport() {
   >
     <option value="">-- Select surveyor --</option>
     {users.map((u) => (
-      <option key={u.id} value={u.user_metadata.name}>
-        {u.user_metadata.name}
-      </option>
-    ))}
+  <option key={u.id} value={u.name}>
+    {u.name}
+  </option>
+))}
   </select>
 </div>
 

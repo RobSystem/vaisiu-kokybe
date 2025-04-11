@@ -11,6 +11,7 @@ import UploadPhotos from './pages/UploadPhotos'
 import ViewReport from './pages/ViewReport'
 import AdminPanel from './pages/AdminPanel'
 import AdminClients from './pages/AdminClients'
+import AddUserPage from './pages/AddUserPage';
 
 
 function Login({ onLogin }) {
@@ -83,6 +84,7 @@ function MainApp({ user, onLogout }) {
           <Route path="/admin" element={<AdminPanel />} />
           <Route path="/admin/clients" element={<AdminClients />} />
           <Route path="/viewreport/:reportId" element={<ViewReport />} />
+          <Route path="/admin/add-user" element={<AddUserPage />} />
                 </Routes>
       </div>
     </div>

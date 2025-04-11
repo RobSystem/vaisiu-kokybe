@@ -12,6 +12,12 @@ function AdminPanel() {
       >
         Add Client
       </button>
+      <button
+  style={{ padding: '0.75rem 1.5rem', fontSize: '16px', cursor: 'pointer', marginLeft: '1rem' }}
+  onClick={() => navigate('/admin/add-user')}
+>
+  Add User
+</button>
     </div>
   );
 }

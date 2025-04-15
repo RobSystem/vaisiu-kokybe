@@ -11,6 +11,7 @@ function ViewReport() {
   const [photos, setPhotos] = useState([])
   const [previewUrl, setPreviewUrl] = useState(null)
   const reportRef = useRef()
+  const [attachments, setAttachments] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -36,6 +37,17 @@ function ViewReport() {
       setPhotos(photoData)
     }
     fetchData()
+    const fetchAttachments = async () => {
+      const { data, error } = await supabase.storage
+        .from('report-files')
+        .list(`${reportId}/`);
+  
+      if (!error && data.length) {
+        setAttachments(data);
+      }
+    };
+  
+    if (reportId) fetchAttachments();
   }, [reportId])
 
   if (!report || !Array.isArray(samples) || !Array.isArray(photos)) return null
@@ -311,6 +323,24 @@ function ViewReport() {
           <img src={previewUrl} alt="preview" style={{ maxWidth: '90%', maxHeight: '90%', borderRadius: '8px' }} />
         </div>
       )}
+      {attachments.length > 0 && (
+  <div style={{ marginTop: '2rem' }}>
+    <h3>Attachments</h3>
+    {attachments.map((file, index) => {
+      const publicUrl = supabase.storage
+        .from('report-files')
+        .getPublicUrl(`${reportId}/${file.name}`).data.publicUrl;
+
+      return (
+        <div key={file.name} style={{ marginBottom: '0.5rem' }}>
+          <a href={publicUrl} target="_blank" rel="noopener noreferrer">
+            📎 Download File {index + 1}
+          </a>
+        </div>
+      );
+    })}
+  </div>
+)}
 
       <button
         onClick={handleDownloadPDF}

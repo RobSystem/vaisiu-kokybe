@@ -16,6 +16,8 @@ function EditReport() {
   const [samples, setSamples] = useState([])
   const { reportId } = useParams()
   const [showEditModal, setShowEditModal] = useState(false);
+  const [pdfFiles, setPdfFiles] = useState([]);
+const [uploading, setUploading] = useState(false);
   const [editInfo, setEditInfo] = useState({
     client_ref: '',
     container_number: '',
@@ -64,7 +66,32 @@ function EditReport() {
       setShowEditModal(false);
     }
   };
-
+  const handleFileUpload = async (event) => {
+    const files = Array.from(event.target.files);
+    if (!reportId || files.length === 0) return;
+  
+    setUploading(true);
+  
+    for (let i = 0; i < files.length && i < 3; i++) {
+      const file = files[i];
+      const filePath = `${reportId}/file${i + 1}.pdf`;
+  
+      const { error } = await supabase.storage
+        .from('report-files')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: true,
+          contentType: 'application/pdf'
+        });
+  
+      if (error) {
+        console.error(`Klaida įkeliant file${i + 1}:`, error.message);
+      }
+    }
+  
+    setUploading(false);
+    alert('Failai įkelti sėkmingai');
+  };
   useEffect(() => {
     const fetchReport = async () => {
       const { data, error } = await supabase
@@ -299,6 +326,16 @@ function EditReport() {
         <button onClick={handleSave} style={styles.buttonPrimary}>SAVE</button>
         <button onClick={handleOpenEditModal} style={styles.buttonSecondary}>EDIT INFO</button>
       </div>
+      <div style={{ marginBottom: '1rem' }}>
+  <label><strong>Upload PDF files (max 3):</strong></label><br />
+  <input
+    type="file"
+    accept="application/pdf"
+    multiple
+    onChange={handleFileUpload}
+    disabled={uploading}
+  />
+</div>
 
       {showEditModal && (
         <div style={{

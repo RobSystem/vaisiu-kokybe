@@ -60,6 +60,7 @@ function CreateReport() {
     e.preventDefault()
     setLoading(true)
 
+    console.log('Siunčiami duomenys:', formData);
     const { error } = await supabase.from('reports').insert([formData])
     if (error) {
       setMessage('Klaida kuriant ataskaitą.')

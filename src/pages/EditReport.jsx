@@ -24,7 +24,9 @@ function EditReport() {
     origin: '',
     location: '',
     total_pallets: '',
-    type: 'Conventional'
+    type: 'Conventional',
+    supplier: '',
+    surveyor: ''
   });
 
   const handleEditInfoChange = (e) => {
@@ -41,7 +43,9 @@ function EditReport() {
       origin: report?.origin || '',
       location: report?.location || '',
       total_pallets: report?.total_pallets || '',
-      type: report?.type || 'Conventional'
+      type: report?.type || 'Conventional',
+      supplier: report?.supplier || '',
+      surveyor: report?.surveyor || ''
     });
     setShowEditModal(true);
   };
@@ -347,6 +351,26 @@ function EditReport() {
                 <option value="Organic">Organic</option>
               </select>
             </div>
+            <div style={{ marginBottom: '1rem' }}>
+  <label>Supplier</label>
+  <input
+    type="text"
+    name="supplier"
+    value={editInfo.supplier}
+    onChange={handleEditInfoChange}
+    style={styles.input}
+  />
+</div>
+<div style={{ marginBottom: '1rem' }}>
+  <label>Surveyor</label>
+  <input
+    type="text"
+    name="surveyor"
+    value={editInfo.surveyor}
+    onChange={handleEditInfoChange}
+    style={styles.input}
+  />
+</div>
 
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
               <button onClick={() => setShowEditModal(false)} style={styles.buttonSecondary}>Cancel</button>

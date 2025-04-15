@@ -325,7 +325,7 @@ function ViewReport() {
       )}
       {attachments.length > 0 && (
   <div style={{ marginTop: '2rem' }}>
-    <h3>Attachments</h3>
+    <h3>Temp. recordes:</h3>
     {attachments.map((file, index) => {
       const publicUrl = supabase.storage
         .from('report-files')

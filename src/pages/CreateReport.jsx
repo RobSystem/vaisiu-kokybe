@@ -113,7 +113,7 @@ function CreateReport() {
           ['container_number', 'CONTAINER NUMBER'],
           ['rochecks_ref', 'ROCHECKS REF'],
           ['variety', 'VARIETY'],
-          ['supllier', 'SUPPLIER']
+          ['supllier', 'SUPPLIER'],
           ['origin', 'ORIGIN'],
           ['location', 'LOCATION'],
           ['total_pallets', 'TOTAL PALLETS']

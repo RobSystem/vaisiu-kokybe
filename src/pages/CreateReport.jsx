@@ -107,12 +107,22 @@ function CreateReport() {
             ))}
           </select>
         </div>
+        <div>
+  <label>SUPPLIER</label>
+  <input
+    type="text"
+    name="supplier"
+    value={formData.supplier}
+    onChange={handleChange}
+    style={{ width: '100%', padding: '0.5rem' }}
+  />
+</div>
+
 
         {[
           ['client_ref', 'CLIENT REF'],
           ['container_number', 'CONTAINER NUMBER'],
           ['rochecks_ref', 'ROCHECKS REF'],
-          ['supplier', 'SUPPLIER'],
           ['variety', 'VARIETY'],
           ['origin', 'ORIGIN'],
           ['location', 'LOCATION'],

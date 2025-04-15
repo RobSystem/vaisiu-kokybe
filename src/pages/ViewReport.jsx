@@ -114,9 +114,9 @@ function ViewReport() {
   const getQualityColor = (text) => {
     if (!text) return 'black'
     const lower = text.toLowerCase()
+    if (lower.includes('less') || lower.includes('poor') || lower.includes('loss')) return 'red'
     if (lower.includes('good') || lower.includes('fair')) return 'green'
     if (lower.includes('reasonable') || lower.includes('moderate')) return 'orange'
-    if (lower.includes('less') || lower.includes('poor') || lower.includes('loss')) return 'red'
     return 'black'
   }
 

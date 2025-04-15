@@ -186,13 +186,14 @@ function ViewReport() {
           {renderField('RoChecks Ref', report.rochecks_ref)}
         </div>
         <div style={{ width: '32%' }}>
+        {renderField('Supplier', report.supplier)}
           {renderField('Variety', report.variety)}
           {renderField('Origin', report.origin)}
           {renderField('Location', report.location)}
-          {renderField('Total Pallets', report.total_pallets)}
-          {renderField('Type', report.type)}
+          {renderField('Total Pallets', report.total_pallets)}          
         </div>
         <div style={{ width: '32%' }}>
+        {renderField('Type', report.type)}
           {renderField('Surveyor', report.surveyor)}
           {renderField('Brand', report.brand)}
           {renderField('Temperature', report.temperature)}

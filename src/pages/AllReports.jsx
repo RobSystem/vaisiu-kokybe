@@ -26,7 +26,23 @@ function AllReports({ setSelectedReport }) {
       setReports((prev) => prev.filter((r) => r.id !== id));
     }
   }
-
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      const { data, error } = await supabase
+        .from('user_profiles')
+        .select('name, role')
+        .eq('user_id', supabase.auth.getUser?.()?.id || supabase.auth.user()?.id) // abu variantai fallback
+        .single();
+  
+      if (!error && data) {
+        setUserProfile(data);
+      } else {
+        console.error('Nepavyko gauti user profilio:', error?.message);
+      }
+    };
+  
+    fetchUserProfile();
+  }, []);
      
   useEffect(() => {
     if (!userProfile) return;

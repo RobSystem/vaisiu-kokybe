@@ -7,7 +7,8 @@ function AllReports({ setSelectedReport }) {
   const [reports, setReports] = useState([])
   const [loading, setLoading] = useState(true)
   const navigate = useNavigate()
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState('')
+  const [sentReports, setSentReports] = useState([]);
 
   const handleDone = async (id) => {
     const { data, error } = await supabase
@@ -74,7 +75,10 @@ function AllReports({ setSelectedReport }) {
         'nBddtmb09-d6gjfcl'
       )
   
-      alert('Ataskaita išsiųsta sėkmingai!')
+      if (response.status === 200) {
+        setSentReports(prev => [...prev, report.id]); // 👈 Pridedam ID
+        alert('Ataskaita išsiųsta sėkmingai!');
+      }
       console.log('Email sent:', response.status)
     } catch (err) {
       console.error('Siuntimo klaida:', err)
@@ -160,10 +164,13 @@ function AllReports({ setSelectedReport }) {
                       Edit
                     </button>
                     <button
-  style={styles.btn}
+  style={{
+    ...styles.btn,
+    background: sentReports.includes(report.id) ? '#4caf50' : '#1976d2'
+  }}
   onClick={() => handleSend(report)}
 >
-  Send
+  {sentReports.includes(report.id) ? 'Sent' : 'Send'}
 </button>
                     <button style={styles.doneBtn} onClick={() => handleDone(report.id)}>Done</button>
                     <button

@@ -33,7 +33,7 @@ function AllReports({ setSelectedReport }) {
       const { data, error } = await supabase
         .from('user_profiles')
         .select('name, role')
-        .eq('user_id', user.id)
+        .eq('id', user.id)
         .single();
     
       if (!error && data) {

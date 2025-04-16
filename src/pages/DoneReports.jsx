@@ -22,19 +22,24 @@ function DoneReports() {
   
   useEffect(() => {
     const fetchUserProfile = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+    
       const { data, error } = await supabase
         .from('user_profiles')
         .select('name, role')
-        .eq('user_id', supabase.auth.user().id)
+        .eq('id', user.id)
         .single();
-  
+    
       if (!error && data) {
         setUserProfile(data);
+      } else {
+        console.error('Nepavyko gauti user profilio:', error?.message);
       }
     };
   
     fetchUserProfile();
   }, []);
+     
   useEffect(() => {
     if (!userProfile) return;
   

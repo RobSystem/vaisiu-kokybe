@@ -18,6 +18,7 @@ function EditReport() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [pdfFiles, setPdfFiles] = useState([]);
 const [uploading, setUploading] = useState(false);
+const [users, setUsers] = useState([]);
   const [editInfo, setEditInfo] = useState({
     client_ref: '',
     container_number: '',
@@ -118,6 +119,13 @@ const [uploading, setUploading] = useState(false);
       fetchReport()
     }
   }, [reportId])
+  useEffect(() => {
+    const fetchUsers = async () => {
+      const { data, error } = await supabase.from('user_profiles').select('name');
+      if (!error) setUsers(data);
+    };
+    fetchUsers();
+  }, []);
 
   const fetchSamples = async (reportId) => {
     const { data, error } = await supabase
@@ -400,13 +408,17 @@ const [uploading, setUploading] = useState(false);
 </div>
 <div style={{ marginBottom: '1rem' }}>
   <label>Surveyor</label>
-  <input
-    type="text"
+  <select
     name="surveyor"
     value={editInfo.surveyor}
     onChange={handleEditInfoChange}
     style={styles.input}
-  />
+  >
+    <option value="">-- Pasirinkti surveyor --</option>
+    {users.map((user) => (
+      <option key={user.name} value={user.name}>{user.name}</option>
+    ))}
+  </select>
 </div>
 
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>

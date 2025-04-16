@@ -8,7 +8,8 @@ function AllReports({ setSelectedReport }) {
   const [loading, setLoading] = useState(true)
   const navigate = useNavigate()
   const [searchTerm, setSearchTerm] = useState('')
-  const [sentReports, setSentReports] = useState([]);
+  const [sentReports, setSentReports] = useState([])
+  const [userProfile, setUserProfile] = useState(null);
 
   const handleDone = async (id) => {
     const { data, error } = await supabase
@@ -27,26 +28,48 @@ function AllReports({ setSelectedReport }) {
   }
 
   useEffect(() => {
-    const fetchReports = async () => {
-      setLoading(true)
+    const fetchUserProfile = async () => {
       const { data, error } = await supabase
+        .from('user_profiles')
+        .select('name, role')
+        .eq('user_id', supabase.auth.user().id)
+        .single();
+  
+      if (!error && data) {
+        setUserProfile(data);
+      }
+    };
+  
+    fetchUserProfile();
+  }, []);
+    
+  useEffect(() => {
+    if (!userProfile) return;
+  
+    const fetchReports = async () => {
+      setLoading(true);
+  
+      let query = supabase
         .from('reports')
         .select('*')
         .eq('status', 'active')
-        .order('date', { ascending: false })
-
-      console.log('Gauti duomenys:', data)
-      console.log('Klaida:', error)
-
-      if (!error) {
-        setReports(data)
+        .order('date', { ascending: false });
+  
+      if (userProfile.role === 'user') {
+        query = query.eq('surveyor', userProfile.name);
       }
-      setLoading(false)
-    }
-
-    fetchReports()
-  }, [])
-
+  
+      const { data, error } = await query;
+  
+      if (!error && data) {
+        setReports(data);
+      }
+  
+      setLoading(false);
+    };
+  
+    fetchReports();
+  }, [userProfile]);
   const handleSend = async (report) => {
     try {
       const { data: clientData, error } = await supabase

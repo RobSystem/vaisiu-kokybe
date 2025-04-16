@@ -7,7 +7,8 @@ function DoneReports() {
   const [reports, setReports] = useState([])
   const [loading, setLoading] = useState(true)
   const navigate = useNavigate();
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState('')
+  const [userProfile, setUserProfile] = useState(null);
   const cellStyle = {
     padding: '0.5rem',
     verticalAlign: 'middle',
@@ -20,23 +21,47 @@ function DoneReports() {
   }
   
   useEffect(() => {
-    
-    const fetchReports = async () => {
-      setLoading(true)
+    const fetchUserProfile = async () => {
       const { data, error } = await supabase
+        .from('user_profiles')
+        .select('name, role')
+        .eq('user_id', supabase.auth.user().id)
+        .single();
+  
+      if (!error && data) {
+        setUserProfile(data);
+      }
+    };
+  
+    fetchUserProfile();
+  }, []);
+  useEffect(() => {
+    if (!userProfile) return;
+  
+    const fetchReports = async () => {
+      setLoading(true);
+  
+      let query = supabase
         .from('reports')
         .select('*')
-        .eq('status', 'done')
-        .order('date', { ascending: false })
-
-      if (!error) {
-        setReports(data)
+        .eq('status', 'active')
+        .order('date', { ascending: false });
+  
+      if (userProfile.role === 'user') {
+        query = query.eq('surveyor', userProfile.name);
       }
-      setLoading(false)
-    }
-
-    fetchReports()
-  }, [])
+  
+      const { data, error } = await query;
+  
+      if (!error && data) {
+        setReports(data);
+      }
+  
+      setLoading(false);
+    };
+  
+    fetchReports();
+  }, [userProfile]);
   const filteredReports = reports.filter((report) =>
     [report.client, report.container_number, report.location, report.variety, report.client_ref, report.rochecks_ref]
       .some(field => field?.toLowerCase().includes(searchTerm.toLowerCase()))

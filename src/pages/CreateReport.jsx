@@ -22,7 +22,8 @@ function CreateReport() {
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
   const [clients, setClients] = useState([])
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState([])
+  const [userProfile, setUserProfile] = useState(null);
 
  useEffect(() => {
   const fetchClients = async () => {
@@ -48,8 +49,23 @@ function CreateReport() {
     }
   };
   fetchUsers();
-}, []);
 
+const fetchUserProfile = async () => {
+  const { data: { user } } = await supabase.auth.getUser();
+
+  const { data, error } = await supabase
+    .from('user_profiles')
+    .select('name, role')
+    .eq('id', user.id)
+    .single();
+
+  if (!error && data) {
+    setUserProfile(data);
+  }
+};
+
+fetchUserProfile();
+}, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -154,11 +170,19 @@ function CreateReport() {
     style={{ width: '100%', padding: '0.5rem' }}
   >
     <option value="">-- Select surveyor --</option>
-    {users.map((u) => (
-  <option key={u.id} value={u.name}>
-    {u.name}
-  </option>
-))}
+    {userProfile?.role === 'admin'
+  ? users.map((u) => (
+      <option key={u.id} value={u.name}>
+        {u.name}
+      </option>
+    ))
+  : userProfile
+  ? (
+      <option key={userProfile.name} value={userProfile.name}>
+        {userProfile.name}
+      </option>
+    )
+  : null}
   </select>
 </div>
 

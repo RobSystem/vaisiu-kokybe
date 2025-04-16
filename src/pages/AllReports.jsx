@@ -27,22 +27,7 @@ function AllReports({ setSelectedReport }) {
     }
   }
 
-  useEffect(() => {
-    const fetchUserProfile = async () => {
-      const { data, error } = await supabase
-        .from('user_profiles')
-        .select('name, role')
-        .eq('user_id', supabase.auth.user().id)
-        .single();
-  
-      if (!error && data) {
-        setUserProfile(data);
-      }
-    };
-  
-    fetchUserProfile();
-  }, []);
-    
+     
   useEffect(() => {
     if (!userProfile) return;
   

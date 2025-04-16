@@ -44,7 +44,7 @@ function DoneReports() {
       let query = supabase
         .from('reports')
         .select('*')
-        .eq('status', 'active')
+        .eq('status', 'done')
         .order('date', { ascending: false });
   
       if (userProfile.role === 'user') {

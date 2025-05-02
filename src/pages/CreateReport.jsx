@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { supabase } from '../supabaseClient';
+import { useState, useEffect } from 'react'
+import { supabase } from '../supabaseClient'
 
 const initialForm = {
   date: '',
@@ -15,132 +15,189 @@ const initialForm = {
   type: 'Conventional',
   surveyor: '',
   status: 'active'
-};
+}
 
 function CreateReport() {
-  const [formData, setFormData] = useState(initialForm);
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState('');
-  const [clients, setClients] = useState([]);
-  const [users, setUsers] = useState([]);
+  const [formData, setFormData] = useState(initialForm)
+  const [loading, setLoading] = useState(false)
+  const [message, setMessage] = useState('')
+  const [clients, setClients] = useState([])
+  const [users, setUsers] = useState([])
   const [userProfile, setUserProfile] = useState(null);
 
-  useEffect(() => {
-    const fetchClients = async () => {
-      const { data, error } = await supabase.from('clients').select('id, name');
-      if (!error) setClients(data);
-    };
+ useEffect(() => {
+  const fetchClients = async () => {
+    const { data, error } = await supabase
+      .from('clients')
+      .select('id, name');
 
-    const fetchUsers = async () => {
-      const { data, error } = await supabase.from('user_profiles').select('id, name');
-      if (!error) setUsers(data);
-    };
+    if (!error) {
+      setClients(data);
+    } else {
+      console.error('Klaida gaunant klientus:', error.message);
+    }
+  };
 
-    const fetchUserProfile = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      const { data, error } = await supabase
-        .from('user_profiles')
-        .select('name, role')
-        .eq('id', user.id)
-        .single();
-      if (!error && data) setUserProfile(data);
-    };
+  fetchClients();
+  const fetchUsers = async () => {
+    const { data, error } = await supabase
+      .from('user_profiles')
+      .select('id, name');
+  
+    if (!error) {
+      setUsers(data);
+    }
+  };
+  fetchUsers();
 
-    fetchClients();
-    fetchUsers();
-    fetchUserProfile();
-  }, []);
+const fetchUserProfile = async () => {
+  const { data: { user } } = await supabase.auth.getUser();
+
+  const { data, error } = await supabase
+    .from('user_profiles')
+    .select('name, role')
+    .eq('id', user.id)
+    .single();
+
+  if (!error && data) {
+    setUserProfile(data);
+  }
+};
+
+fetchUserProfile();
+}, []);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+    const { name, value } = e.target
+    setFormData((prev) => ({ ...prev, [name]: value }))
+  }
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    const { error } = await supabase.from('reports').insert([formData]);
+    e.preventDefault()
+    setLoading(true)
+
+    console.log('Siunčiami duomenys:', formData);
+    const { error } = await supabase.from('reports').insert([formData])
     if (error) {
-      setMessage('Klaida kuriant ataskaitą.');
+      setMessage('Klaida kuriant ataskaitą.')
     } else {
-      setMessage('Ataskaita sėkmingai sukurta ✅');
-      setFormData(initialForm);
+      setMessage('Ataskaita sėkmingai sukurta ✅')
+      setFormData(initialForm)
     }
-    setLoading(false);
-  };
+
+    setLoading(false)
+  }
 
   return (
-    <div className="w-full max-w-4xl mx-auto px-6 py-12">
-      <h2 className="text-3xl font-bold text-center mb-8">Create Report</h2>
-      <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div style={{ maxWidth: '500px', marginLeft: '3rem' }}>
+      <h2>Create Report</h2>
+      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        {[['date', 'DATE', 'date']].map(([name, label, type]) => (
+          <div key={name}>
+            <label>{label}</label>
+            <input
+              type={type}
+              name={name}
+              value={formData[name]}
+              onChange={handleChange}
+              required
+              style={{ width: '100%', padding: '0.5rem' }}
+            />
+          </div>
+        ))}
+
+        {/* CLIENT SELECT */}
         <div>
-          <label className="block text-sm font-medium mb-1">DATE</label>
-          <input type="date" name="date" value={formData.date} onChange={handleChange} required className="w-full border border-gray-300 rounded-md p-2" />
-        </div>
-        <div>
-          <label className="block text-sm font-medium mb-1">VARIETY</label>
-          <input type="text" name="variety" value={formData.variety} onChange={handleChange} required className="w-full border border-gray-300 rounded-md p-2" />
-        </div>
-        <div>
-          <label className="block text-sm font-medium mb-1">CLIENT</label>
-          <select name="client" value={formData.client} onChange={handleChange} required className="w-full border border-gray-300 rounded-md p-2">
+          <label>CLIENT</label>
+          <select
+            name="client"
+            value={formData.client}
+            onChange={handleChange}
+            required
+            style={{ width: '100%', padding: '0.5rem' }}
+          >
             <option value="">-- Select client --</option>
             {clients.map((c) => (
-              <option key={c.id} value={c.name}>{c.name}</option>
+              <option key={c.id} value={c.name}>
+                {c.name}
+              </option>
             ))}
           </select>
         </div>
+
+        {[
+          ['client_ref', 'CLIENT REF'],
+          ['container_number', 'CONTAINER NUMBER'],
+          ['rochecks_ref', 'ROCHECKS REF'],
+          ['variety', 'VARIETY'],
+          ['supplier', 'SUPPLIER'],
+          ['origin', 'ORIGIN'],
+          ['location', 'LOCATION'],
+          ['total_pallets', 'TOTAL PALLETS']
+        ].map(([name, label]) => (
+          <div key={name}>
+            <label>{label}</label>
+            <input
+              type="text"
+              name={name}
+              value={formData[name]}
+              onChange={handleChange}
+              required
+              style={{ width: '100%', padding: '0.5rem' }}
+            />
+          </div>
+        ))}
+
         <div>
-          <label className="block text-sm font-medium mb-1">SUPPLIER</label>
-          <input type="text" name="supplier" value={formData.supplier} onChange={handleChange} required className="w-full border border-gray-300 rounded-md p-2" />
-        </div>
-        <div>
-          <label className="block text-sm font-medium mb-1">CONTAINER NUMBER</label>
-          <input type="text" name="container_number" value={formData.container_number} onChange={handleChange} required className="w-full border border-gray-300 rounded-md p-2" />
-        </div>
-        <div>
-          <label className="block text-sm font-medium mb-1">ORIGIN</label>
-          <input type="text" name="origin" value={formData.origin} onChange={handleChange} required className="w-full border border-gray-300 rounded-md p-2" />
-        </div>
-        <div>
-          <label className="block text-sm font-medium mb-1">ROCHECKS REF</label>
-          <input type="text" name="rochecks_ref" value={formData.rochecks_ref} onChange={handleChange} required className="w-full border border-gray-300 rounded-md p-2" />
-        </div>
-        <div>
-          <label className="block text-sm font-medium mb-1">LOCATION</label>
-          <input type="text" name="location" value={formData.location} onChange={handleChange} required className="w-full border border-gray-300 rounded-md p-2" />
-        </div>
-        <div>
-          <label className="block text-sm font-medium mb-1">TYPE</label>
-          <select name="type" value={formData.type} onChange={handleChange} className="w-full border border-gray-300 rounded-md p-2">
+          <label>TYPE</label>
+          <select
+            name="type"
+            value={formData.type}
+            onChange={handleChange}
+            style={{ width: '100%', padding: '0.5rem' }}
+          >
             <option value="Conventional">Conventional</option>
             <option value="Organic">Organic</option>
           </select>
         </div>
+
         <div>
-          <label className="block text-sm font-medium mb-1">TOTAL PALLETS</label>
-          <input type="text" name="total_pallets" value={formData.total_pallets} onChange={handleChange} required className="w-full border border-gray-300 rounded-md p-2" />
-        </div>
-        <div>
-          <label className="block text-sm font-medium mb-1">SURVEYOR</label>
-          <select name="surveyor" value={formData.surveyor} onChange={handleChange} required className="w-full border border-gray-300 rounded-md p-2">
-            <option value="">-- Select surveyor --</option>
-            {userProfile?.role === 'admin'
-              ? users.map((u) => <option key={u.id} value={u.name}>{u.name}</option>)
-              : userProfile && (
-                  <option key={userProfile.name} value={userProfile.name}>{userProfile.name}</option>
-                )}
-          </select>
-        </div>
-        <div className="md:col-span-2">
-          <button type="submit" disabled={loading} className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-md">
-            {loading ? 'Kuriama...' : 'Create Report'}
-          </button>
-        </div>
-        {message && <p className="md:col-span-2 text-green-600 text-sm mt-2">{message}</p>}
+  <label>SURVEYOR</label>
+  <select
+    name="surveyor"
+    value={formData.surveyor}
+    onChange={handleChange}
+    style={{ width: '100%', padding: '0.5rem' }}
+  >
+    <option value="">-- Select surveyor --</option>
+    {userProfile?.role === 'admin'
+  ? users.map((u) => (
+      <option key={u.id} value={u.name}>
+        {u.name}
+      </option>
+    ))
+  : userProfile
+  ? (
+      <option key={userProfile.name} value={userProfile.name}>
+        {userProfile.name}
+      </option>
+    )
+  : null}
+  </select>
+</div>
+
+        <button
+          type="submit"
+          disabled={loading}
+          style={{ padding: '0.75rem', background: '#4caf50', color: 'white', border: 'none', borderRadius: '6px' }}
+        >
+          {loading ? 'Kuriama...' : 'Create Report'}
+        </button>
+
+        {message && <p>{message}</p>}
       </form>
     </div>
-  );
+  )
 }
 
-export default CreateReport;
+export default CreateReport

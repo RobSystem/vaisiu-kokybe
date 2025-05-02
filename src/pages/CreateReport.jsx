@@ -108,7 +108,7 @@ fetchUserProfile();
 
         {/* CLIENT SELECT */}
         <div>
-          <label>CLIENT</label>
+          <label>CLIENTS</label>
           <select
             name="client"
             value={formData.client}

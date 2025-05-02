@@ -94,7 +94,7 @@ fetchUserProfile();
     <h2 style={{ textAlign: 'center', marginBottom: '2rem' }}>Create Report</h2>
     <form onSubmit={handleSubmit} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
       {/* DATE */}
-      <div style={{ marginBottom: '2rem' }}>
+      <div style={{ marginBottom: '1rem' }}>
         <label>DATE</label>
         <input
           type="date"
@@ -102,12 +102,12 @@ fetchUserProfile();
           value={formData.date}
           onChange={handleChange}
           required
-          style={{ width: '100%', padding: '0.5rem' }}
+          style={{ width: '100%', padding: '1rem' }}
         />
       </div>
 
       {/* VARIETY */}
-      <div style={{ marginBottom: '2rem' }}>
+      <div style={{ marginBottom: '1rem' }}>
         <label>VARIETY</label>
         <input
           type="text"
@@ -115,19 +115,19 @@ fetchUserProfile();
           value={formData.variety}
           onChange={handleChange}
           required
-          style={{ width: '100%', padding: '0.5rem' }}
+          style={{ width: '100%', padding: '1rem' }}
         />
       </div>
 
       {/* CLIENT */}
-      <div style={{ marginBottom: '2rem' }}>
+      <div style={{ marginBottom: '1rem' }}>
         <label>CLIENT</label>
         <select
           name="client"
           value={formData.client}
           onChange={handleChange}
           required
-          style={{ width: '100%', padding: '0.5rem' }}
+          style={{ width: '100%', padding: '1rem' }}
         >
           <option value="">-- Select client --</option>
           {clients.map((c) => (
@@ -139,7 +139,7 @@ fetchUserProfile();
       </div>
 
       {/* SUPPLIER */}
-      <div style={{ marginBottom: '2rem' }}>
+      <div style={{ marginBottom: '1rem' }}>
         <label>SUPPLIER</label>
         <input
           type="text"
@@ -147,12 +147,12 @@ fetchUserProfile();
           value={formData.supplier}
           onChange={handleChange}
           required
-          style={{ width: '100%', padding: '0.5rem' }}
+          style={{ width: '100%', padding: '1rem' }}
         />
       </div>
 
       {/* CLIENT REF */}
-      <div style={{ marginBottom: '2rem' }}>
+      <div style={{ marginBottom: '1rem' }}>
         <label>CLIENT REF</label>
         <input
           type="text"
@@ -160,12 +160,12 @@ fetchUserProfile();
           value={formData.client_ref}
           onChange={handleChange}
           required
-          style={{ width: '100%', padding: '0.5rem' }}
+          style={{ width: '100%', padding: '1rem' }}
         />
       </div>
 
       {/* ORIGIN */}
-      <div style={{ marginBottom: '2rem' }}> 
+      <div style={{ marginBottom: '1rem' }}> 
         <label>ORIGIN</label>
         <input
           type="text"
@@ -173,12 +173,12 @@ fetchUserProfile();
           value={formData.origin}
           onChange={handleChange}
           required
-          style={{ width: '100%', padding: '0.5rem' }}
+          style={{ width: '100%', padding: '1rem' }}
         />
       </div>
 
       {/* CONTAINER NUMBER */}
-      <div style={{ marginBottom: '2rem' }}>
+      <div style={{ marginBottom: '1rem' }}>
         <label>CONTAINER NUMBER</label>
         <input
           type="text"
@@ -186,12 +186,12 @@ fetchUserProfile();
           value={formData.container_number}
           onChange={handleChange}
           required
-          style={{ width: '100%', padding: '0.5rem' }}
+          style={{ width: '100%', padding: '1rem' }}
         />
       </div>
 
       {/* LOCATION */}
-      <div style={{ marginBottom: '2rem' }}>
+      <div style={{ marginBottom: '1rem' }}>
         <label>LOCATION</label>
         <input
           type="text"
@@ -199,12 +199,12 @@ fetchUserProfile();
           value={formData.location}
           onChange={handleChange}
           required
-          style={{ width: '100%', padding: '0.5rem' }}
+          style={{ width: '100%', padding: '1rem' }}
         />
       </div>
 
       {/* ROCHECKS REF */}
-      <div style={{ marginBottom: '2rem' }}>
+      <div style={{ marginBottom: '1rem' }}>
         <label>ROCHECKS REF</label>
         <input
           type="text"
@@ -212,12 +212,12 @@ fetchUserProfile();
           value={formData.rochecks_ref}
           onChange={handleChange}
           required
-          style={{ width: '100%', padding: '0.5rem' }}
+          style={{ width: '100%', padding: '1rem' }}
         />
       </div>
 
       {/* TOTAL PALLETS */}
-      <div style={{ marginBottom: '2rem' }}>
+      <div style={{ marginBottom: '1rem' }}>
         <label>TOTAL PALLETS</label>
         <input
           type="text"
@@ -225,18 +225,18 @@ fetchUserProfile();
           value={formData.total_pallets}
           onChange={handleChange}
           required
-          style={{ width: '100%', padding: '0.5rem' }}
+          style={{ width: '100%', padding: '1rem' }}
         />
       </div>
 
       {/* TYPE */}
-      <div style={{ marginBottom: '2rem' }}>
+      <div style={{ marginBottom: '1rem' }}>
         <label>TYPE</label>
         <select
           name="type"
           value={formData.type}
           onChange={handleChange}
-          style={{ width: '100%', padding: '0.5rem' }}
+          style={{ width: '100%', padding: '1rem' }}
         >
           <option value="Conventional">Conventional</option>
           <option value="Organic">Organic</option>
@@ -244,13 +244,13 @@ fetchUserProfile();
       </div>
 
       {/* SURVEYOR */}
-      <div style={{ marginBottom: '2rem' }}>
+      <div style={{ marginBottom: '1rem' }}>
         <label>SURVEYOR</label>
         <select
           name="surveyor"
           value={formData.surveyor}
           onChange={handleChange}
-          style={{ width: '100%', padding: '0.5rem' }}
+          style={{ width: '100%', padding: '1rem' }}
         >
           <option value="">-- Select surveyor --</option>
           {userProfile?.role === 'admin'

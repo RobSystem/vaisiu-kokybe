@@ -64,7 +64,7 @@ function MainApp({ user, onLogout }) {
   const navigate = useNavigate()
 
   return (
-    <div style={{ height: '100vh', display: 'flex' }}>
+    <div style={{ width: '100vw', height: '100vh', display: 'flex' }}>
       <Sidebar onLogout={onLogout} navigate={navigate} />
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         <Routes>

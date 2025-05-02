@@ -70,10 +70,12 @@ function CreateReport() {
   };
 
   return (
-    <div className="w-full max-w-5xl mx-auto px-6 py-8">
-      <h2 className="text-3xl font-semibold mb-8 text-gray-800">Create Report</h2>
+    <div className="w-full max-w-5xl mx-auto px-6 py-10">
+      <h2 className="text-3xl font-semibold mb-10 text-center text-gray-800">Create Report</h2>
       <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <input type="date" name="date" value={formData.date} onChange={handleChange} required className="w-full border border-gray-300 rounded-md p-2" />
+
+        <input type="text" name="variety" placeholder="VARIETY" value={formData.variety} onChange={handleChange} required className="w-full border border-gray-300 rounded-md p-2" />
 
         <select name="client" value={formData.client} onChange={handleChange} required className="w-full border border-gray-300 rounded-md p-2">
           <option value="">-- Select client --</option>
@@ -82,32 +84,22 @@ function CreateReport() {
           ))}
         </select>
 
-        {[
-          ['client_ref', 'CLIENT REF'],
-          ['container_number', 'CONTAINER NUMBER'],
-          ['rochecks_ref', 'ROCHECKS REF'],
-          ['supplier', 'SUPPLIER'],
-          ['variety', 'VARIETY'],
-          ['origin', 'ORIGIN'],
-          ['location', 'LOCATION'],
-          ['total_pallets', 'TOTAL PALLETS']
-        ].map(([name, label]) => (
-          <input
-            key={name}
-            type="text"
-            name={name}
-            placeholder={label}
-            value={formData[name]}
-            onChange={handleChange}
-            required
-            className="w-full border border-gray-300 rounded-md p-2"
-          />
-        ))}
+        <input type="text" name="supplier" placeholder="SUPPLIER" value={formData.supplier} onChange={handleChange} required className="w-full border border-gray-300 rounded-md p-2" />
+
+        <input type="text" name="container_number" placeholder="CONTAINER NUMBER" value={formData.container_number} onChange={handleChange} required className="w-full border border-gray-300 rounded-md p-2" />
+
+        <input type="text" name="origin" placeholder="ORIGIN" value={formData.origin} onChange={handleChange} required className="w-full border border-gray-300 rounded-md p-2" />
+
+        <input type="text" name="rochecks_ref" placeholder="ROCHECKS REF" value={formData.rochecks_ref} onChange={handleChange} required className="w-full border border-gray-300 rounded-md p-2" />
+
+        <input type="text" name="location" placeholder="LOCATION" value={formData.location} onChange={handleChange} required className="w-full border border-gray-300 rounded-md p-2" />
 
         <select name="type" value={formData.type} onChange={handleChange} className="w-full border border-gray-300 rounded-md p-2">
           <option value="Conventional">Conventional</option>
           <option value="Organic">Organic</option>
         </select>
+
+        <input type="text" name="total_pallets" placeholder="TOTAL PALLETS" value={formData.total_pallets} onChange={handleChange} required className="w-full border border-gray-300 rounded-md p-2" />
 
         <select name="surveyor" value={formData.surveyor} onChange={handleChange} className="w-full border border-gray-300 rounded-md p-2">
           <option value="">-- Select surveyor --</option>

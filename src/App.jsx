@@ -12,6 +12,7 @@ import ViewReport from './pages/ViewReport'
 import AdminPanel from './pages/AdminPanel'
 import AdminClients from './pages/AdminClients'
 import AddUserPage from './pages/AddUserPage';
+import './App.css'
 
 
 function Login({ onLogin }) {

@@ -89,114 +89,205 @@ fetchUserProfile();
   }
 
   return (
-    <div style={{ maxWidth: '500px', marginLeft: '3rem' }}>
-      <h2>Create Report</h2>
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-        {[['date', 'DATE', 'date']].map(([name, label, type]) => (
-          <div key={name}>
-            <label>{label}</label>
-            <input
-              type={type}
-              name={name}
-              value={formData[name]}
-              onChange={handleChange}
-              required
-              style={{ width: '100%', padding: '0.5rem' }}
-            />
-          </div>
-        ))}
+    <div style={{ display: 'flex', justifyContent: 'center', padding: '2rem' }}>
+  <div style={{ maxWidth: '900px', width: '100%' }}>
+    <h2 style={{ textAlign: 'center', marginBottom: '2rem' }}>Create Report</h2>
+    <form onSubmit={handleSubmit} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+      {/* DATE */}
+      <div>
+        <label>DATE</label>
+        <input
+          type="date"
+          name="date"
+          value={formData.date}
+          onChange={handleChange}
+          required
+          style={{ width: '100%', padding: '0.5rem' }}
+        />
+      </div>
 
-        {/* CLIENT SELECT */}
-        <div>
-          <label>CLIENTS</label>
-          <select
-            name="client"
-            value={formData.client}
-            onChange={handleChange}
-            required
-            style={{ width: '100%', padding: '0.5rem' }}
-          >
-            <option value="">-- Select client --</option>
-            {clients.map((c) => (
-              <option key={c.id} value={c.name}>
-                {c.name}
+      {/* VARIETY */}
+      <div>
+        <label>VARIETY</label>
+        <input
+          type="text"
+          name="variety"
+          value={formData.variety}
+          onChange={handleChange}
+          required
+          style={{ width: '100%', padding: '0.5rem' }}
+        />
+      </div>
+
+      {/* CLIENT */}
+      <div>
+        <label>CLIENT</label>
+        <select
+          name="client"
+          value={formData.client}
+          onChange={handleChange}
+          required
+          style={{ width: '100%', padding: '0.5rem' }}
+        >
+          <option value="">-- Select client --</option>
+          {clients.map((c) => (
+            <option key={c.id} value={c.name}>
+              {c.name}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* SUPPLIER */}
+      <div>
+        <label>SUPPLIER</label>
+        <input
+          type="text"
+          name="supplier"
+          value={formData.supplier}
+          onChange={handleChange}
+          required
+          style={{ width: '100%', padding: '0.5rem' }}
+        />
+      </div>
+
+      {/* CLIENT REF */}
+      <div>
+        <label>CLIENT REF</label>
+        <input
+          type="text"
+          name="client_ref"
+          value={formData.client_ref}
+          onChange={handleChange}
+          required
+          style={{ width: '100%', padding: '0.5rem' }}
+        />
+      </div>
+
+      {/* ORIGIN */}
+      <div>
+        <label>ORIGIN</label>
+        <input
+          type="text"
+          name="origin"
+          value={formData.origin}
+          onChange={handleChange}
+          required
+          style={{ width: '100%', padding: '0.5rem' }}
+        />
+      </div>
+
+      {/* CONTAINER NUMBER */}
+      <div>
+        <label>CONTAINER NUMBER</label>
+        <input
+          type="text"
+          name="container_number"
+          value={formData.container_number}
+          onChange={handleChange}
+          required
+          style={{ width: '100%', padding: '0.5rem' }}
+        />
+      </div>
+
+      {/* LOCATION */}
+      <div>
+        <label>LOCATION</label>
+        <input
+          type="text"
+          name="location"
+          value={formData.location}
+          onChange={handleChange}
+          required
+          style={{ width: '100%', padding: '0.5rem' }}
+        />
+      </div>
+
+      {/* ROCHECKS REF */}
+      <div>
+        <label>ROCHECKS REF</label>
+        <input
+          type="text"
+          name="rochecks_ref"
+          value={formData.rochecks_ref}
+          onChange={handleChange}
+          required
+          style={{ width: '100%', padding: '0.5rem' }}
+        />
+      </div>
+
+      {/* TOTAL PALLETS */}
+      <div>
+        <label>TOTAL PALLETS</label>
+        <input
+          type="text"
+          name="total_pallets"
+          value={formData.total_pallets}
+          onChange={handleChange}
+          required
+          style={{ width: '100%', padding: '0.5rem' }}
+        />
+      </div>
+
+      {/* TYPE */}
+      <div>
+        <label>TYPE</label>
+        <select
+          name="type"
+          value={formData.type}
+          onChange={handleChange}
+          style={{ width: '100%', padding: '0.5rem' }}
+        >
+          <option value="Conventional">Conventional</option>
+          <option value="Organic">Organic</option>
+        </select>
+      </div>
+
+      {/* SURVEYOR */}
+      <div>
+        <label>SURVEYOR</label>
+        <select
+          name="surveyor"
+          value={formData.surveyor}
+          onChange={handleChange}
+          style={{ width: '100%', padding: '0.5rem' }}
+        >
+          <option value="">-- Select surveyor --</option>
+          {userProfile?.role === 'admin'
+            ? users.map((u) => (
+              <option key={u.id} value={u.name}>
+                {u.name}
               </option>
-            ))}
-          </select>
-        </div>
+            ))
+            : userProfile && (
+              <option key={userProfile.name} value={userProfile.name}>
+                {userProfile.name}
+              </option>
+            )}
+        </select>
+      </div>
 
-        {[
-          ['client_ref', 'CLIENT REF'],
-          ['container_number', 'CONTAINER NUMBER'],
-          ['rochecks_ref', 'ROCHECKS REF'],
-          ['variety', 'VARIETY'],
-          ['supplier', 'SUPPLIER'],
-          ['origin', 'ORIGIN'],
-          ['location', 'LOCATION'],
-          ['total_pallets', 'TOTAL PALLETS']
-        ].map(([name, label]) => (
-          <div key={name}>
-            <label>{label}</label>
-            <input
-              type="text"
-              name={name}
-              value={formData[name]}
-              onChange={handleChange}
-              required
-              style={{ width: '100%', padding: '0.5rem' }}
-            />
-          </div>
-        ))}
-
-        <div>
-          <label>TYPE</label>
-          <select
-            name="type"
-            value={formData.type}
-            onChange={handleChange}
-            style={{ width: '100%', padding: '0.5rem' }}
-          >
-            <option value="Conventional">Conventional</option>
-            <option value="Organic">Organic</option>
-          </select>
-        </div>
-
-        <div>
-  <label>SURVEYOR</label>
-  <select
-    name="surveyor"
-    value={formData.surveyor}
-    onChange={handleChange}
-    style={{ width: '100%', padding: '0.5rem' }}
-  >
-    <option value="">-- Select surveyor --</option>
-    {userProfile?.role === 'admin'
-  ? users.map((u) => (
-      <option key={u.id} value={u.name}>
-        {u.name}
-      </option>
-    ))
-  : userProfile
-  ? (
-      <option key={userProfile.name} value={userProfile.name}>
-        {userProfile.name}
-      </option>
-    )
-  : null}
-  </select>
-</div>
-
+      {/* BUTTON - center across both columns */}
+      <div style={{ gridColumn: 'span 2', textAlign: 'center' }}>
         <button
           type="submit"
           disabled={loading}
-          style={{ padding: '0.75rem', background: '#4caf50', color: 'white', border: 'none', borderRadius: '6px' }}
+          style={{
+            padding: '0.75rem',
+            background: '#4caf50',
+            color: 'white',
+            border: 'none',
+            borderRadius: '6px',
+            width: '50%'
+          }}
         >
           {loading ? 'Kuriama...' : 'Create Report'}
         </button>
-
         {message && <p>{message}</p>}
-      </form>
-    </div>
+      </div>
+    </form>
+  </div>
+</div>
   )
 }
 

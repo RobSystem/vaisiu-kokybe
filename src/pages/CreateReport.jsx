@@ -94,7 +94,7 @@ fetchUserProfile();
     <h2 style={{ textAlign: 'center', marginBottom: '2rem' }}>Create Report</h2>
     <form onSubmit={handleSubmit} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
       {/* DATE */}
-      <div>
+      <div style={{ marginBottom: '1rem' }}>
         <label>DATE</label>
         <input
           type="date"
@@ -107,7 +107,7 @@ fetchUserProfile();
       </div>
 
       {/* VARIETY */}
-      <div>
+      <div style={{ marginBottom: '1rem' }}>
         <label>VARIETY</label>
         <input
           type="text"
@@ -120,7 +120,7 @@ fetchUserProfile();
       </div>
 
       {/* CLIENT */}
-      <div>
+      <div style={{ marginBottom: '1rem' }}>
         <label>CLIENT</label>
         <select
           name="client"
@@ -139,7 +139,7 @@ fetchUserProfile();
       </div>
 
       {/* SUPPLIER */}
-      <div>
+      <div style={{ marginBottom: '1rem' }}>
         <label>SUPPLIER</label>
         <input
           type="text"
@@ -152,7 +152,7 @@ fetchUserProfile();
       </div>
 
       {/* CLIENT REF */}
-      <div>
+      <div style={{ marginBottom: '1rem' }}>
         <label>CLIENT REF</label>
         <input
           type="text"
@@ -165,7 +165,7 @@ fetchUserProfile();
       </div>
 
       {/* ORIGIN */}
-      <div>
+      <div style={{ marginBottom: '1rem' }}> 
         <label>ORIGIN</label>
         <input
           type="text"
@@ -178,7 +178,7 @@ fetchUserProfile();
       </div>
 
       {/* CONTAINER NUMBER */}
-      <div>
+      <div style={{ marginBottom: '1rem' }}>
         <label>CONTAINER NUMBER</label>
         <input
           type="text"
@@ -191,7 +191,7 @@ fetchUserProfile();
       </div>
 
       {/* LOCATION */}
-      <div>
+      <div style={{ marginBottom: '1rem' }}>
         <label>LOCATION</label>
         <input
           type="text"
@@ -204,7 +204,7 @@ fetchUserProfile();
       </div>
 
       {/* ROCHECKS REF */}
-      <div>
+      <div style={{ marginBottom: '1rem' }}>
         <label>ROCHECKS REF</label>
         <input
           type="text"
@@ -217,7 +217,7 @@ fetchUserProfile();
       </div>
 
       {/* TOTAL PALLETS */}
-      <div>
+      <div style={{ marginBottom: '1rem' }}>
         <label>TOTAL PALLETS</label>
         <input
           type="text"
@@ -230,7 +230,7 @@ fetchUserProfile();
       </div>
 
       {/* TYPE */}
-      <div>
+      <div style={{ marginBottom: '1rem' }}>
         <label>TYPE</label>
         <select
           name="type"
@@ -244,7 +244,7 @@ fetchUserProfile();
       </div>
 
       {/* SURVEYOR */}
-      <div>
+      <div style={{ marginBottom: '1rem' }}>
         <label>SURVEYOR</label>
         <select
           name="surveyor"

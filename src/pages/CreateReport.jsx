@@ -92,7 +92,17 @@ fetchUserProfile();
     <div style={{ display: 'flex', justifyContent: 'center', padding: '2rem' }}>
   <div style={{ maxWidth: '900px', width: '100%' }}>
     <h2 style={{ textAlign: 'center', marginBottom: '2rem' }}>Create Report</h2>
-    <form onSubmit={handleSubmit} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+    <form
+  onSubmit={handleSubmit}
+  style={{
+    display: 'grid',
+    gridTemplateColumns: '1fr 1fr',
+    columnGap: '2rem',
+    rowGap: '1.5rem',
+    maxWidth: '900px',
+    margin: '0 auto',
+  }}
+>
       {/* DATE */}
       <div style={{ marginBottom: '1rem' }}>
         <label>DATE</label>

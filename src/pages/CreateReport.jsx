@@ -70,7 +70,7 @@ function CreateReport() {
   };
 
   return (
-    <div className="w-full px-12 py-8">
+    <div className="w-full max-w-5xl mx-auto px-6 py-8">
       <h2 className="text-3xl font-semibold mb-8 text-gray-800">Create Report</h2>
       <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <input type="date" name="date" value={formData.date} onChange={handleChange} required className="w-full border border-gray-300 rounded-md p-2" />

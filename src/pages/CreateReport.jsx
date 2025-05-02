@@ -102,7 +102,7 @@ fetchUserProfile();
           value={formData.date}
           onChange={handleChange}
           required
-          style={{ width: '100%', padding: '1rem' }}
+          style={{ width: '100%', padding: '0.5rem' }}
         />
       </div>
 
@@ -115,7 +115,7 @@ fetchUserProfile();
           value={formData.variety}
           onChange={handleChange}
           required
-          style={{ width: '100%', padding: '1rem' }}
+          style={{ width: '100%', padding: '0.5rem' }}
         />
       </div>
 
@@ -127,7 +127,7 @@ fetchUserProfile();
           value={formData.client}
           onChange={handleChange}
           required
-          style={{ width: '100%', padding: '1rem' }}
+          style={{ width: '100%', padding: '0.5rem' }}
         >
           <option value="">-- Select client --</option>
           {clients.map((c) => (
@@ -147,7 +147,7 @@ fetchUserProfile();
           value={formData.supplier}
           onChange={handleChange}
           required
-          style={{ width: '100%', padding: '1rem' }}
+          style={{ width: '100%', padding: '0.5rem' }}
         />
       </div>
 
@@ -160,7 +160,7 @@ fetchUserProfile();
           value={formData.client_ref}
           onChange={handleChange}
           required
-          style={{ width: '100%', padding: '1rem' }}
+          style={{ width: '100%', padding: '0.5rem' }}
         />
       </div>
 
@@ -173,7 +173,7 @@ fetchUserProfile();
           value={formData.origin}
           onChange={handleChange}
           required
-          style={{ width: '100%', padding: '1rem' }}
+          style={{ width: '100%', padding: '0.5rem' }}
         />
       </div>
 
@@ -186,7 +186,7 @@ fetchUserProfile();
           value={formData.container_number}
           onChange={handleChange}
           required
-          style={{ width: '100%', padding: '1rem' }}
+          style={{ width: '100%', padding: '0.5rem' }}
         />
       </div>
 
@@ -199,7 +199,7 @@ fetchUserProfile();
           value={formData.location}
           onChange={handleChange}
           required
-          style={{ width: '100%', padding: '1rem' }}
+          style={{ width: '100%', padding: '0.5rem' }}
         />
       </div>
 
@@ -212,7 +212,7 @@ fetchUserProfile();
           value={formData.rochecks_ref}
           onChange={handleChange}
           required
-          style={{ width: '100%', padding: '1rem' }}
+          style={{ width: '100%', padding: '0.5rem' }}
         />
       </div>
 
@@ -225,7 +225,7 @@ fetchUserProfile();
           value={formData.total_pallets}
           onChange={handleChange}
           required
-          style={{ width: '100%', padding: '1rem' }}
+          style={{ width: '100%', padding: '0.5rem' }}
         />
       </div>
 
@@ -236,7 +236,7 @@ fetchUserProfile();
           name="type"
           value={formData.type}
           onChange={handleChange}
-          style={{ width: '100%', padding: '1rem' }}
+          style={{ width: '100%', padding: '0.5rem' }}
         >
           <option value="Conventional">Conventional</option>
           <option value="Organic">Organic</option>
@@ -250,7 +250,7 @@ fetchUserProfile();
           name="surveyor"
           value={formData.surveyor}
           onChange={handleChange}
-          style={{ width: '100%', padding: '1rem' }}
+          style={{ width: '100%', padding: '0.5rem' }}
         >
           <option value="">-- Select surveyor --</option>
           {userProfile?.role === 'admin'

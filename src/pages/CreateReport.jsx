@@ -73,20 +73,28 @@ fetchUserProfile();
   }
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setLoading(true)
-
-    console.log('Siunčiami duomenys:', formData);
-    const { error } = await supabase.from('reports').insert([formData])
-    if (error) {
-      setMessage('Klaida kuriant ataskaitą.')
-    } else {
-      setMessage('Ataskaita sėkmingai sukurta ✅')
-      setFormData(initialForm)
+    e.preventDefault();
+  
+    // Paprasta validacija
+    for (const [key, value] of Object.entries(formData)) {
+      if (!value) {
+        setMessage(`Laukas "${key}" yra privalomas.`);
+        return;
+      }
     }
-
-    setLoading(false)
-  }
+  
+    setLoading(true);
+    const { error } = await supabase.from('reports').insert([formData]);
+  
+    if (error) {
+      setMessage('Klaida kuriant ataskaitą.');
+    } else {
+      setMessage('Ataskaita sėkmingai sukurta ✅');
+      setFormData(initialForm);
+    }
+  
+    setLoading(false);
+  };
 
   return (
     <div className="flex justify-center p-8">
@@ -266,13 +274,14 @@ fetchUserProfile();
   
           {/* BUTTON */}
           <div className="col-span-1 md:col-span-2 text-center">
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-1/2 py-3 bg-green-600 text-white rounded hover:bg-green-700 transition duration-200"
-            >
-              {loading ? 'Kuriama...' : 'Create Report'}
-            </button>
+          <button
+  type="submit"
+  disabled={loading}
+  className={`w-full py-3 rounded-md text-white font-semibold transition duration-200
+    ${loading ? 'bg-gray-400 cursor-not-allowed animate-pulse' : 'bg-green-600 hover:bg-green-700'}`}
+>
+  {loading ? 'Kuriama...' : 'Create Report'}
+</button>
             {message && <p className="mt-4 text-sm text-gray-600">{message}</p>}
           </div>
         </form>

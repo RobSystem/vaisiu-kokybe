@@ -56,7 +56,7 @@ const styles = {
   sidebar: {
     width: '220px',
     height: '100vh',
-    background: '#ffffff',
+    background: '#f5f5f5',
     borderRight: '1px solid #ddd',
     display: 'flex',
     flexDirection: 'column',

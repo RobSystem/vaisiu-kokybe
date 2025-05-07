@@ -179,7 +179,6 @@ function EditReport() {
 
       <div className="flex gap-4 mb-4">
         <button onClick={handleSave} className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">Save</button>
-        <button onClick={handleOpenEditModal} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Edit Info</button>
       </div>
 
       <div className="mb-4">

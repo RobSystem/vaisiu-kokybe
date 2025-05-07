@@ -21,6 +21,7 @@ function CreateSample() {
   const [externalColoration, setExternalColoration] = useState([]);
   const [internalColoration, setInternalColoration] = useState([]);
   const [consistency, setConsistency] = useState({ hard: '', sensitive: '', soft: '' });
+  const [showGeneralInfo, setShowGeneralInfo] = useState(false);
 
   useEffect(() => {
     const fetchSample = async () => {
@@ -109,7 +110,17 @@ function CreateSample() {
     <div className="w-full px-4 py-6 text-sm">
       <h2 className="text-lg font-semibold mb-6">New Sample</h2>
 
-      <h3 className="font-semibold mb-2">General Information</h3>
+      <div className="mb-4">
+  <div
+    onClick={() => setShowGeneralInfo(!showGeneralInfo)}
+    className="flex items-center justify-between cursor-pointer bg-gray-100 px-4 py-2 rounded"
+  >
+    <h3 className="font-semibold">General Information</h3>
+    <span className="text-lg">{showGeneralInfo ? '−' : '+'}</span>
+  </div>
+
+  {showGeneralInfo && (
+    <div className="pl-4 border-l-4 border-blue-300 mt-4">
       <div className="grid md:grid-cols-2 gap-4 mb-4">
         {['pallet_number', 'ggn_number', 'ggn_exp_date', 'grower_code'].map(field => (
           <div key={field}>
@@ -118,7 +129,7 @@ function CreateSample() {
           </div>
         ))}
       </div>
-      <div className="grid md:grid-cols-3 gap-4 mb-4">
+      <div className="grid md:grid-cols-3 gap-4">
         {['packing_code', 'variety', 'brand'].map(field => (
           <div key={field}>
             <label className="block text-gray-700 mb-1 capitalize">{field.replace(/_/g, ' ')}</label>
@@ -126,6 +137,9 @@ function CreateSample() {
           </div>
         ))}
       </div>
+    </div>
+  )}
+</div>
 
       <h3 className="font-semibold mb-2">Extra Information</h3>
       <div className="grid md:grid-cols-2 gap-4 mb-4">

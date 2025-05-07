@@ -29,26 +29,26 @@ const [pressuresExtra, setPressuresExtra] = useState([]);
 const [brixExtra, setBrixExtra] = useState([]);
 const [diameterExtra, setDiameterExtra] = useState([]);
 
-  useEffect(() => {
-    const fetchSample = async () => {
-      if (!sampleId) return;
-      const { data } = await supabase.from('samples').select('*').eq('id', sampleId).single();
-      if (data) {
-        setForm(data);
-        setCreatedAt(data.created_at);
-        setFruitWeightsExtra(data.fruit_weights_extra || []);
-        setBoxWeightExtra(data.box_weight_extra || []);
-        setFruitWeightExtra(data.fruit_weight_extra || []);
-        setPressuresExtra(data.pressures_extra || []);
-        setBrixExtra(data.brix_extra || []);
-        setDiameterExtra(data.diameter_extra || []);
-        setExternalColoration(data.external_coloration || []);
-        setInternalColoration(data.internal_coloration || []);
-        setConsistency(data.consistency || { hard: '', sensitive: '', soft: '' });
-      }
-    };
-    fetchSample();
-  }, [sampleId]);
+useEffect(() => {
+  const fetchSample = async () => {
+    if (!sampleId) return;
+    const { data } = await supabase.from('samples').select('*').eq('id', sampleId).single();
+    if (data) {
+      setForm(data);
+      setCreatedAt(data.created_at);
+      setFruitWeightsExtra(Array.isArray(data.fruit_weights_extra) ? data.fruit_weights_extra : []);
+      setBoxWeightExtra(Array.isArray(data.box_weight_extra) ? data.box_weight_extra : []);
+      setFruitWeightExtra(Array.isArray(data.fruit_weight_extra) ? data.fruit_weight_extra : []);
+      setPressuresExtra(Array.isArray(data.pressures_extra) ? data.pressures_extra : []);
+      setBrixExtra(Array.isArray(data.brix_extra) ? data.brix_extra : []);
+      setDiameterExtra(Array.isArray(data.diameter_extra) ? data.diameter_extra : []);
+      setExternalColoration(Array.isArray(data.external_coloration) ? data.external_coloration : []);
+      setInternalColoration(Array.isArray(data.internal_coloration) ? data.internal_coloration : []);
+      setConsistency(data.consistency || { hard: '', sensitive: '', soft: '' });
+    }
+  };
+  fetchSample();
+}, [sampleId]);
 
   const handleChange = (e) => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
   const handleConsistencyChange = (type, value) => setConsistency(prev => ({ ...prev, [type]: value }));
@@ -228,7 +228,7 @@ const [diameterExtra, setDiameterExtra] = useState([]);
 </div>
 
 {/* Papildomi laukai su Delete mygtuku šalia jų */}
-{boxWeightExtra.length > 0 && (
+{Array.isArray(boxWeightExtra) && boxWeightExtra.length > 0 && (
   <div className="mt-2 flex flex-wrap items-start gap-2">
     <div className="flex flex-wrap gap-2">
       {boxWeightExtra.map((val, i) => (
@@ -290,7 +290,7 @@ const [diameterExtra, setDiameterExtra] = useState([]);
   </button>
 </div>
 
-{fruitWeightExtra.length > 0 && (
+{Array.isArray(fruitWeightExtra) && fruitWeightExtra.length > 0 && (
   <div className="mt-2 flex flex-wrap items-start gap-2">
     <div className="flex flex-wrap gap-2">
       {fruitWeightExtra.map((val, i) => (
@@ -348,7 +348,7 @@ const [diameterExtra, setDiameterExtra] = useState([]);
   </button>
 </div>
 
-{pressuresExtra.length > 0 && (
+{Array.isArray(pressuresExtra) && pressuresExtra.length > 0 && (
   <div className="mt-2 flex flex-wrap items-start gap-2">
     <div className="flex flex-wrap gap-2">
       {pressuresExtra.map((val, i) => (
@@ -407,7 +407,7 @@ const [diameterExtra, setDiameterExtra] = useState([]);
   </button>
 </div>
 
-{brixExtra.length > 0 && (
+{Array.isArray(brixExtra) && brixExtra.length > 0 && (
   <div className="mt-2 flex flex-wrap items-start gap-2">
     <div className="flex flex-wrap gap-2">
       {brixExtra.map((val, i) => (
@@ -465,7 +465,7 @@ const [diameterExtra, setDiameterExtra] = useState([]);
   </button>
 </div>
 
-{diameterExtra.length > 0 && (
+{Array.isArray(diameterExtra) && diameterExtra.length > 0 && (
   <div className="mt-2 flex flex-wrap items-start gap-2">
     <div className="flex flex-wrap gap-2">
       {diameterExtra.map((val, i) => (

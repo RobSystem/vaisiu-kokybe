@@ -409,14 +409,14 @@ const [diameterExtra, setDiameterExtra] = useState([]);
   >
     Save and Back
     </button>
-        {(sampleId || form.id) && (
-          <button
-            onClick={() => navigate(`/upload-photos/${sampleId || form.id}`)}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
-          >
-            Upload Photos
-          </button>
-  )}
+    {(sampleId || form.id) && (
+  <button
+    onClick={() => navigate(`/upload-photos/${sampleId || form.id}`)}
+    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+  >
+    Upload Photos
+  </button>
+)}
 </div>
     </div>
   );

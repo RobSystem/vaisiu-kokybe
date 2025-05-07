@@ -248,14 +248,14 @@ function CreateSample() {
     className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
   >
     Save and Back
-  </button>
-  {sampleId && (
-    <button
-      onClick={() => navigate(`/upload-photos/${sampleId}`)}
-      className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
-    >
-      Upload Photos
     </button>
+        {(sampleId || form.id) && (
+          <button
+            onClick={() => navigate(`/upload-photos/${sampleId || form.id}`)}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+          >
+            Upload Photos
+          </button>
   )}
 </div>
     </div>

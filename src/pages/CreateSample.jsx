@@ -199,7 +199,7 @@ const [diameterExtra, setDiameterExtra] = useState([]);
     className="bg-blue-500 hover:bg-blue-600 text-white text-xs px-2 py-1 rounded"
     type="button"
   >
-    + Extra
+    Add extra 
   </button>
 </div>
 
@@ -227,7 +227,7 @@ const [diameterExtra, setDiameterExtra] = useState([]);
       className="bg-red-500 hover:bg-red-600 text-white text-xs px-2 py-1 rounded self-start"
       type="button"
     >
-      Delete Extra
+      Delete 
     </button>
   </div>
 )}
@@ -235,93 +235,237 @@ const [diameterExtra, setDiameterExtra] = useState([]);
 
 
       {/* Line 3: fruit weight */}
-      <div className="grid grid-cols-2 gap-4 items-end">
-        {['fruit_weight_min', 'fruit_weight_max'].map(field => (
-          <div key={field}>
-            <label className="block text-gray-700 mb-1 capitalize">{field.replace(/_/g, ' ')}</label>
-            <input name={field} value={form[field]} onChange={handleChange} className="p-2 border rounded w-full" />
-          </div>
-        ))}
-        <button onClick={() => setFruitWeightExtra(Array(10).fill(''))} className="bg-blue-500 hover:bg-blue-600 text-white text-xs px-2 py-1 rounded">Add extra fruit weight</button>
-        {fruitWeightExtra.length > 0 && (
-          <div className="col-span-2 flex gap-2 flex-wrap">
-            {fruitWeightExtra.map((val, i) => (
-              <input key={i} value={val} onChange={e => {
-                const updated = [...fruitWeightExtra];
-                updated[i] = e.target.value;
-                setFruitWeightExtra(updated);
-              }} className="p-1 border w-16 rounded" />
-            ))}
-          </div>
-        )}
-      </div>
+      <div className="flex flex-wrap items-end gap-4">
+  <div className="flex-1">
+    <label className="block text-gray-700 mb-1">Fruit Weight Min</label>
+    <input
+      name="fruit_weight_min"
+      value={form.fruit_weight_min}
+      onChange={handleChange}
+      className="p-2 border rounded w-full"
+    />
+  </div>
+  <div className="flex-1">
+    <label className="block text-gray-700 mb-1">Fruit Weight Max</label>
+    <input
+      name="fruit_weight_max"
+      value={form.fruit_weight_max}
+      onChange={handleChange}
+      className="p-2 border rounded w-full"
+    />
+  </div>
+</div>
+
+<div className="mt-2">
+  <button
+    onClick={() => setFruitWeightExtra(Array(10).fill(''))}
+    className="bg-blue-500 hover:bg-blue-600 text-white text-xs px-2 py-1 rounded"
+    type="button"
+  >
+    Add extra
+  </button>
+</div>
+
+{fruitWeightExtra.length > 0 && (
+  <div className="mt-2 flex flex-wrap items-start gap-2">
+    <div className="flex flex-wrap gap-2">
+      {fruitWeightExtra.map((val, i) => (
+        <input
+          key={i}
+          value={val}
+          onChange={e => {
+            const updated = [...fruitWeightExtra];
+            updated[i] = e.target.value;
+            setFruitWeightExtra(updated);
+          }}
+          className="p-1 border rounded w-16"
+        />
+      ))}
+    </div>
+    <button
+      onClick={() => setFruitWeightExtra([])}
+      className="bg-red-500 hover:bg-red-600 text-white text-xs px-2 py-1 rounded self-start"
+      type="button"
+    >
+      Delete 
+    </button>
+  </div>
+)}
 
       {/* Line 4: pressures */}
-      <div className="grid grid-cols-2 gap-4 items-end">
-        {['pressures_min', 'pressures_max'].map(field => (
-          <div key={field}>
-            <label className="block text-gray-700 mb-1 capitalize">{field.replace(/_/g, ' ')}</label>
-            <input name={field} value={form[field]} onChange={handleChange} className="p-2 border rounded w-full" />
-          </div>
-        ))}
-        <button onClick={() => setPressuresExtra(Array(10).fill(''))} className="bg-blue-500 hover:bg-blue-600 text-white text-xs px-2 py-1 rounded">Add extra pressures</button>
-        {pressuresExtra.length > 0 && (
-          <div className="col-span-2 flex gap-2 flex-wrap">
-            {pressuresExtra.map((val, i) => (
-              <input key={i} value={val} onChange={e => {
-                const updated = [...pressuresExtra];
-                updated[i] = e.target.value;
-                setPressuresExtra(updated);
-              }} className="p-1 border w-16 rounded" />
-            ))}
-          </div>
-        )}
-      </div>
+      <div className="flex flex-wrap items-end gap-4">
+  <div className="flex-1">
+    <label className="block text-gray-700 mb-1">Pressures Min</label>
+    <input
+      name="pressures_min"
+      value={form.pressures_min}
+      onChange={handleChange}
+      className="p-2 border rounded w-full"
+    />
+  </div>
+  <div className="flex-1">
+    <label className="block text-gray-700 mb-1">Pressures Max</label>
+    <input
+      name="pressures_max"
+      value={form.pressures_max}
+      onChange={handleChange}
+      className="p-2 border rounded w-full"
+    />
+  </div>
+</div>
+
+<div className="mt-2">
+  <button
+    onClick={() => setPressuresExtra(Array(10).fill(''))}
+    className="bg-blue-500 hover:bg-blue-600 text-white text-xs px-2 py-1 rounded"
+    type="button"
+  >
+    Add extra
+  </button>
+</div>
+
+{pressuresExtra.length > 0 && (
+  <div className="mt-2 flex flex-wrap items-start gap-2">
+    <div className="flex flex-wrap gap-2">
+      {pressuresExtra.map((val, i) => (
+        <input
+          key={i}
+          value={val}
+          onChange={e => {
+            const updated = [...pressuresExtra];
+            updated[i] = e.target.value;
+            setPressuresExtra(updated);
+          }}
+          className="p-1 border rounded w-16"
+        />
+      ))}
+    </div>
+    <button
+      onClick={() => setPressuresExtra([])}
+      className="bg-red-500 hover:bg-red-600 text-white text-xs px-2 py-1 rounded self-start"
+      type="button"
+    >
+      Delete 
+    </button>
+  </div>
+)}
+
 
       {/* Line 5: brix */}
-      <div className="grid grid-cols-2 gap-4 items-end">
-        {['brix_min', 'brix_max'].map(field => (
-          <div key={field}>
-            <label className="block text-gray-700 mb-1 capitalize">{field.replace(/_/g, ' ')}</label>
-            <input name={field} value={form[field]} onChange={handleChange} className="p-2 border rounded w-full" />
-          </div>
-        ))}
-        <button onClick={() => setBrixExtra(Array(10).fill(''))} className="bg-blue-500 hover:bg-blue-600 text-white text-xs px-2 py-1 rounded">Add extra brix</button>
-        {brixExtra.length > 0 && (
-          <div className="col-span-2 flex gap-2 flex-wrap">
-            {brixExtra.map((val, i) => (
-              <input key={i} value={val} onChange={e => {
-                const updated = [...brixExtra];
-                updated[i] = e.target.value;
-                setBrixExtra(updated);
-              }} className="p-1 border w-16 rounded" />
-            ))}
-          </div>
-        )}
-      </div>
+      <div className="flex flex-wrap items-end gap-4">
+  <div className="flex-1">
+    <label className="block text-gray-700 mb-1">Brix Min</label>
+    <input
+      name="brix_min"
+      value={form.brix_min}
+      onChange={handleChange}
+      className="p-2 border rounded w-full"
+    />
+  </div>
+  <div className="flex-1">
+    <label className="block text-gray-700 mb-1">Brix Max</label>
+    <input
+      name="brix_max"
+      value={form.brix_max}
+      onChange={handleChange}
+      className="p-2 border rounded w-full"
+    />
+  </div>
+</div>
+
+<div className="mt-2">
+  <button
+    onClick={() => setBrixExtra(Array(10).fill(''))}
+    className="bg-blue-500 hover:bg-blue-600 text-white text-xs px-2 py-1 rounded"
+    type="button"
+  >
+    Add extra
+  </button>
+</div>
+
+{brixExtra.length > 0 && (
+  <div className="mt-2 flex flex-wrap items-start gap-2">
+    <div className="flex flex-wrap gap-2">
+      {brixExtra.map((val, i) => (
+        <input
+          key={i}
+          value={val}
+          onChange={e => {
+            const updated = [...brixExtra];
+            updated[i] = e.target.value;
+            setBrixExtra(updated);
+          }}
+          className="p-1 border rounded w-16"
+        />
+      ))}
+    </div>
+    <button
+      onClick={() => setBrixExtra([])}
+      className="bg-red-500 hover:bg-red-600 text-white text-xs px-2 py-1 rounded self-start"
+      type="button"
+    >
+      Delete 
+    </button>
+  </div>
+)}
 
       {/* Line 6: diameter */}
-      <div className="grid grid-cols-2 gap-4 items-end">
-        {['fruit_diameter_min', 'fruit_diameter_max'].map(field => (
-          <div key={field}>
-            <label className="block text-gray-700 mb-1 capitalize">{field.replace(/_/g, ' ')}</label>
-            <input name={field} value={form[field]} onChange={handleChange} className="p-2 border rounded w-full" />
-          </div>
-        ))}
-        <button onClick={() => setDiameterExtra(Array(10).fill(''))} className="bg-blue-500 hover:bg-blue-600 text-white text-xs px-2 py-1 rounded">Add extra diameters</button>
-        {diameterExtra.length > 0 && (
-          <div className="col-span-2 flex gap-2 flex-wrap">
-            {diameterExtra.map((val, i) => (
-              <input key={i} value={val} onChange={e => {
-                const updated = [...diameterExtra];
-                updated[i] = e.target.value;
-                setDiameterExtra(updated);
-              }} className="p-1 border w-16 rounded" />
-            ))}
-          </div>
-        )}
-      </div>
+      <div className="flex flex-wrap items-end gap-4">
+  <div className="flex-1">
+    <label className="block text-gray-700 mb-1">Fruit Diameter Min</label>
+    <input
+      name="fruit_diameter_min"
+      value={form.fruit_diameter_min}
+      onChange={handleChange}
+      className="p-2 border rounded w-full"
+    />
+  </div>
+  <div className="flex-1">
+    <label className="block text-gray-700 mb-1">Fruit Diameter Max</label>
+    <input
+      name="fruit_diameter_max"
+      value={form.fruit_diameter_max}
+      onChange={handleChange}
+      className="p-2 border rounded w-full"
+    />
+  </div>
+</div>
 
+<div className="mt-2">
+  <button
+    onClick={() => setDiameterExtra(Array(10).fill(''))}
+    className="bg-blue-500 hover:bg-blue-600 text-white text-xs px-2 py-1 rounded"
+    type="button"
+  >
+    + Extra
+  </button>
+</div>
+
+{diameterExtra.length > 0 && (
+  <div className="mt-2 flex flex-wrap items-start gap-2">
+    <div className="flex flex-wrap gap-2">
+      {diameterExtra.map((val, i) => (
+        <input
+          key={i}
+          value={val}
+          onChange={e => {
+            const updated = [...diameterExtra];
+            updated[i] = e.target.value;
+            setDiameterExtra(updated);
+          }}
+          className="p-1 border rounded w-16"
+        />
+      ))}
+    </div>
+    <button
+      onClick={() => setDiameterExtra([])}
+      className="bg-red-500 hover:bg-red-600 text-white text-xs px-2 py-1 rounded self-start"
+      type="button"
+    >
+      Delete Extra
+    </button>
+  </div>
+)}
     </div>
   )}
 </div>

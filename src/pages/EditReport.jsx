@@ -114,8 +114,11 @@ function EditReport() {
 
   return (
     <div className="w-full px-4 py-6 text-xs">
-      <h2 className="text-lg font-semibold mb-4">Edit Report</h2>
-
+      <h2 className="text-base font-semibold mb-4 text-gray-700">
+        {report
+          ? `Container: ${report.container_number || '—'} | Variety: ${report.variety || '—'} | Origin: ${report.origin || '—'} | Total Pallets: ${report.total_pallets || '—'}`
+          : 'Loading...'}
+      </h2>
       <div className="grid md:grid-cols-3 gap-4 mb-6">
         <input name="brand" placeholder="Brand" value={form.brand} onChange={handleFormChange} className="p-2 border rounded w-full" />
         <input name="temperature" placeholder="Temperature" value={form.temperature} onChange={handleFormChange} className="p-2 border rounded w-full" />

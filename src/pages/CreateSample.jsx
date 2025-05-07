@@ -192,8 +192,8 @@ const [diameterExtra, setDiameterExtra] = useState([]);
   </div>
 </div>
 
-{/* +Extra ir Delete */}
-<div className="mt-2 flex items-center gap-2">
+{/* +Extra mygtukas po laukais kairėje */}
+<div className="mt-2">
   <button
     onClick={() => setBoxWeightExtra(Array(10).fill(''))}
     className="bg-blue-500 hover:bg-blue-600 text-white text-xs px-2 py-1 rounded"
@@ -201,17 +201,37 @@ const [diameterExtra, setDiameterExtra] = useState([]);
   >
     + Extra
   </button>
-
-  {boxWeightExtra.length > 0 && (
-    <button
-      onClick={() => setBoxWeightExtra([])}
-      className="bg-red-500 hover:bg-red-600 text-white text-xs px-2 py-1 rounded"
-      type="button"
-    >
-      Delete Extra
-    </button>
-  )}
 </div>
+
+{/* Papildomi laukai su Delete dešinėje */}
+{boxWeightExtra.length > 0 && (
+  <div className="mt-2">
+    <div className="flex justify-between items-center mb-1">
+      <span className="text-sm text-gray-600">Extra Box Weights</span>
+      <button
+        onClick={() => setBoxWeightExtra([])}
+        className="bg-red-500 hover:bg-red-600 text-white text-xs px-2 py-1 rounded"
+        type="button"
+      >
+        Delete Extra
+      </button>
+    </div>
+    <div className="flex gap-2 flex-wrap">
+      {boxWeightExtra.map((val, i) => (
+        <input
+          key={i}
+          value={val}
+          onChange={e => {
+            const updated = [...boxWeightExtra];
+            updated[i] = e.target.value;
+            setBoxWeightExtra(updated);
+          }}
+          className="p-1 border rounded w-16"
+        />
+      ))}
+    </div>
+  </div>
+)}
 
 {/* Rodomi papildomi laukai */}
 {boxWeightExtra.length > 0 && (

@@ -181,26 +181,66 @@ const [diameterExtra, setDiameterExtra] = useState([]);
       </div>
 
       {/* Line 2: box_weight */}
-      <div className="grid grid-cols-2 gap-4 items-end">
-        {['box_weight_min', 'box_weight_max'].map(field => (
-          <div key={field}>
-            <label className="block text-gray-700 mb-1 capitalize">{field.replace(/_/g, ' ')}</label>
-            <input name={field} value={form[field]} onChange={handleChange} className="p-2 border rounded w-full" />
-          </div>
-        ))}
-        <button onClick={() => setBoxWeightExtra(Array(10).fill(''))} className="bg-blue-500 hover:bg-blue-600 text-white text-xs px-2 py-1 rounded">Add extra box weight</button>
-        {boxWeightExtra.length > 0 && (
-          <div className="col-span-2 flex gap-2 flex-wrap">
-            {boxWeightExtra.map((val, i) => (
-              <input key={i} value={val} onChange={e => {
-                const updated = [...boxWeightExtra];
-                updated[i] = e.target.value;
-                setBoxWeightExtra(updated);
-              }} className="p-1 border w-16 rounded" />
-            ))}
-          </div>
-        )}
+      <div className="flex flex-wrap items-end gap-4">
+  {/* Pagrindiniai du laukai */}
+  <div className="flex-1">
+    <label className="block text-gray-700 mb-1">Box Weight Min</label>
+    <input
+      name="box_weight_min"
+      value={form.box_weight_min}
+      onChange={handleChange}
+      className="p-2 border rounded w-full"
+    />
+  </div>
+  <div className="flex-1">
+    <label className="block text-gray-700 mb-1">Box Weight Max</label>
+    <input
+      name="box_weight_max"
+      value={form.box_weight_max}
+      onChange={handleChange}
+      className="p-2 border rounded w-full"
+    />
+  </div>
+
+  {/* Mygtukas „Add Extra“ */}
+  <button
+    onClick={() => setBoxWeightExtra(Array(10).fill(''))}
+    className="bg-blue-500 hover:bg-blue-600 text-white text-xs px-2 py-1 rounded"
+  >
+    + Extra
+  </button>
+</div>
+
+{/* Rodomi papildomi laukeliai */}
+{boxWeightExtra.length > 0 && (
+  <div className="flex gap-2 flex-wrap mt-2">
+    {boxWeightExtra.map((val, i) => (
+      <div key={i} className="relative">
+        <input
+          value={val}
+          onChange={e => {
+            const updated = [...boxWeightExtra];
+            updated[i] = e.target.value;
+            setBoxWeightExtra(updated);
+          }}
+          className="p-1 border rounded w-16"
+        />
+        {/* Delete mygtukas prie inputo */}
+        <button
+          onClick={() => {
+            const updated = [...boxWeightExtra];
+            updated.splice(i, 1);
+            setBoxWeightExtra(updated);
+          }}
+          className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center"
+          type="button"
+        >
+          ✕
+        </button>
       </div>
+    ))}
+  </div>
+)}
 
       {/* Line 3: fruit weight */}
       <div className="grid grid-cols-2 gap-4 items-end">

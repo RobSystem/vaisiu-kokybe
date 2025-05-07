@@ -125,6 +125,15 @@ const [diameterExtra, setDiameterExtra] = useState([]);
     onClick={() => setShowGeneralInfo(!showGeneralInfo)}
     className="flex items-center justify-between cursor-pointer bg-gray-100 px-4 py-2 rounded"
   >
+    <div className="flex justify-end mt-2">
+  <button
+    onClick={handleSave}
+    className="bg-green-500 hover:bg-green-600 text-white text-xs px-3 py-1 rounded"
+    type="button"
+  >
+    Save
+  </button>
+</div>
     <h3 className="font-semibold">General Information</h3>
     <span className="text-lg">{showGeneralInfo ? '−' : '+'}</span>
   </div>
@@ -169,7 +178,15 @@ const [diameterExtra, setDiameterExtra] = useState([]);
 
   {showExtraInfo && (
     <div className="pl-4 border-l-4 border-blue-300 mt-4 space-y-4">
-
+<div className="flex justify-end">
+  <button
+    onClick={handleSave}
+    className="bg-green-500 hover:bg-green-600 text-white text-xs px-3 py-1 rounded"
+    type="button"
+  >
+    Save
+  </button>
+</div>
       {/* Line 1 */}
       <div className="flex flex-wrap items-end gap-4">
   <div className="flex-1">

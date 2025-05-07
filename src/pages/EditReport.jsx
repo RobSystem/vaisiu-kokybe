@@ -113,12 +113,18 @@ function EditReport() {
   }
 
   return (
-    <div className="w-full px-4 py-6 text-xs">
-      <h2 className="text-base font-semibold mb-4 text-gray-700">
-        {report
-          ? `Container: ${report.container_number || '—'} | Variety: ${report.variety || '—'} | Origin: ${report.origin || '—'} | Total Pallets: ${report.total_pallets || '—'}`
-          : 'Loading...'}
-      </h2>
+    <div className="flex justify-between items-center mb-4">
+  <h2 className="text-base font-semibold text-gray-700">
+    {report
+      ? `Container: ${report.container_number || '—'} | Variety: ${report.variety || '—'} | Origin: ${report.origin || '—'} | Total Pallets: ${report.total_pallets || '—'}`
+      : 'Loading...'}
+  </h2>
+  <button
+    onClick={handleOpenEditModal}
+    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+  >
+    Edit Info
+  </button>
       <div className="grid md:grid-cols-3 gap-4 mb-6">
         <input name="brand" placeholder="Brand" value={form.brand} onChange={handleFormChange} className="p-2 border rounded w-full" />
         <input name="temperature" placeholder="Temperature" value={form.temperature} onChange={handleFormChange} className="p-2 border rounded w-full" />

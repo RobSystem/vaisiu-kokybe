@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import supabase from '../utils/supabaseClient';
+import { supabase } from '../supabaseClient';
 
 const EditReport = () => {
   const { id } = useParams();

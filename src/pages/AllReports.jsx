@@ -1,261 +1,217 @@
-import { useEffect, useState } from 'react'
-import { supabase } from '../supabaseClient'
-import { useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react';
+import { supabase } from '../supabaseClient';
+import { useNavigate } from 'react-router-dom';
 import emailjs from '@emailjs/browser';
 
 function AllReports({ setSelectedReport }) {
-  const [reports, setReports] = useState([])
-  const [loading, setLoading] = useState(true)
-  const navigate = useNavigate()
-  const [searchTerm, setSearchTerm] = useState('')
-  const [sentReports, setSentReports] = useState([])
+  const [reports, setReports] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sentReports, setSentReports] = useState([]);
   const [userProfile, setUserProfile] = useState(null);
+  const navigate = useNavigate();
 
   const handleDone = async (id) => {
     const { data, error } = await supabase
       .from('reports')
       .update({ status: 'done' })
       .eq('id', id)
-      .select() // Kad gautume atnaujintą įrašą
-  
-    if (error) {
-      console.error('Supabase klaida:', error.message)
-    } else {
-      console.log('Atnaujinta sėkmingai:', data)
-  
+      .select();
+
+    if (!error) {
       setReports((prev) => prev.filter((r) => r.id !== id));
     }
-  }
-  useEffect(() => {
-    const fetchUserProfile = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-    
-      const { data, error } = await supabase
-        .from('user_profiles')
-        .select('name, role')
-        .eq('id', user.id)
-        .single();
-    
-      if (!error && data) {
-        setUserProfile(data);
-      } else {
-        console.error('Nepavyko gauti user profilio:', error?.message);
-      }
-    };
-  
-    fetchUserProfile();
-  }, []);
-     
-  useEffect(() => {
-    if (!userProfile) return;
-  
-    const fetchReports = async () => {
-      setLoading(true);
-  
-      let query = supabase
-        .from('reports')
-        .select('*')
-        .eq('status', 'active')
-        .order('date', { ascending: false });
-  
-      if (userProfile.role === 'user') {
-        query = query.eq('surveyor', userProfile.name);
-      }
-  
-      const { data, error } = await query;
-  
-      if (!error && data) {
-        setReports(data);
-      }
-  
-      setLoading(false);
-    };
-  
-    fetchReports();
-  }, [userProfile]);
+  };
+
   const handleSend = async (report) => {
     try {
       const { data: clientData, error } = await supabase
         .from('clients')
         .select('email')
         .eq('name', report.client)
-        .single()
-  
+        .single();
+
       if (error || !clientData?.email) {
-        alert('Nepavyko rasti kliento el. pašto.')
-        return
+        alert('Nepavyko rasti kliento el. pašto.');
+        return;
       }
-  
-      const reportUrl = `https://app.rochecks.nl/viewreport/${report.id}`
-      const subject = `Report: ${report.container_number} | Ref: ${report.client_ref}`
-      const message = `Quality Score: ${report.qualityScore || '—'}\nStorage Score: ${report.storageScore || '—'}\n\nConclusion:\n${report.conclusion || '—'}\n\nView full report: ${reportUrl}`
-  
+
+      const reportUrl = `https://app.rochecks.nl/viewreport/${report.id}`;
+      const subject = `Report: ${report.container_number} | Ref: ${report.client_ref}`;
+      const message = `Quality Score: ${report.qualityScore || '—'}\nStorage Score: ${report.storageScore || '—'}\n\nConclusion:\n${report.conclusion || '—'}\n\nView full report: ${reportUrl}`;
+
       const response = await emailjs.send(
         'service_t7xay1d',
         'template_cr4luhy',
         {
           to_email: clientData.email,
-          subject: subject,
-          message: message
+          subject,
+          message,
         },
         'nBddtmb09-d6gjfcl'
-      )
-  
+      );
+
       if (response.status === 200) {
-        setSentReports(prev => [...prev, report.id]); // 👈 Pridedam ID
+        setSentReports((prev) => [...prev, report.id]);
         alert('Ataskaita išsiųsta sėkmingai!');
       }
-      console.log('Email sent:', response.status)
     } catch (err) {
-      console.error('Siuntimo klaida:', err)
-      alert(`Klaida siunčiant ataskaitą:\n${err?.text || err?.message || 'Nežinoma klaida'}`)
+      console.error('Siuntimo klaida:', err);
+      alert(`Klaida siunčiant ataskaitą:\n${err?.message || 'Nežinoma klaida'}`);
     }
-  }
+  };
+
   const handleDelete = async (id) => {
-    const confirm = window.confirm('Ar tikrai nori ištrinti šią ataskaitą?');
-    if (!confirm) return;
-  
-    const { error } = await supabase
-      .from('reports')
-      .delete()
-      .eq('id', id);
-  
-    if (error) {
-      alert('Klaida trinant ataskaitą.');
-      console.error('Trinimo klaida:', error.message);
-    } else {
+    if (!window.confirm('Ar tikrai nori ištrinti šią ataskaitą?')) return;
+
+    const { error } = await supabase.from('reports').delete().eq('id', id);
+
+    if (!error) {
       setReports((prev) => prev.filter((r) => r.id !== id));
       alert('Ataskaita ištrinta sėkmingai!');
     }
   };
-  const filteredReports = reports.filter((report) =>
-    [report.client, report.container_number, report.location, report.variety, report.client_ref, report.rochecks_ref]
-      .some(field => field?.toLowerCase().includes(searchTerm.toLowerCase()))
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+
+      const { data, error } = await supabase
+        .from('user_profiles')
+        .select('name, role')
+        .eq('id', user.id)
+        .single();
+
+      if (!error) {
+        setUserProfile(data);
+      }
+    };
+
+    fetchUserProfile();
+  }, []);
+
+  useEffect(() => {
+    if (!userProfile) return;
+
+    const fetchReports = async () => {
+      setLoading(true);
+
+      let query = supabase
+        .from('reports')
+        .select('*')
+        .eq('status', 'active')
+        .order('date', { ascending: false });
+
+      if (userProfile.role === 'user') {
+        query = query.eq('surveyor', userProfile.name);
+      }
+
+      const { data, error } = await query;
+
+      if (!error && data) {
+        setReports(data);
+      }
+
+      setLoading(false);
+    };
+
+    fetchReports();
+  }, [userProfile]);
+
+  const filteredReports = reports.filter((r) =>
+    [r.client, r.container_number, r.location, r.variety, r.client_ref, r.rochecks_ref]
+      .some((field) => field?.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   return (
-    <div style={styles.wrapper}>
-      <h2>All Reports</h2>
+    <div className="p-6 w-full">
+      <h2 className="text-xl font-bold mb-4">All Reports</h2>
+
       <input
-  type="text"
-  placeholder="Search..."
-  value={searchTerm}
-  onChange={(e) => setSearchTerm(e.target.value)}
-  style={{
-    padding: '8px',
-    marginBottom: '1rem',
-    width: '100%',
-    maxWidth: '300px',
-    border: '1px solid #ccc',
-    borderRadius: '4px'
-  }}
-/>
+        type="text"
+        placeholder="Search..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        className="border px-3 py-2 mb-4 rounded w-full max-w-xs"
+      />
 
       {loading ? (
         <p>Kraunama...</p>
       ) : (
         <>
-          <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '1rem' }}>
-            <thead>
-              <tr>
-                {['DATE', 'CONTAINER', 'CLIENT REF', 'ROCHECKS REF', 'CLIENT', 'VARIETY', 'LOCATION', 'ACTION'].map((header) => (
-                  <th key={header} style={styles.th}>{header}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {reports.map((report) => (
-                <tr key={report.id}>
-                  <td style={styles.td}>{report.date}</td>
-                  <td style={styles.td}>{report.container_number}</td>
-                  <td style={styles.td}>{report.client_ref}</td>
-                  <td style={styles.td}>{report.rochecks_ref}</td>
-                  <td style={styles.td}>{report.client}</td>
-                  <td style={styles.td}>{report.variety}</td>
-                  <td style={styles.td}>{report.location}</td>
-                  <td style={styles.td}>
-                  <button
-  style={styles.btn}
-  onClick={() => window.open(`/viewreport/${report.id}`, '_blank')}
->
-  View
-</button>
-                    <button
-                      style={styles.btn}
-                      onClick={() => {
-                        setSelectedReport(report)
-                        navigate(`/edit/${report.id}`)
-                      }}
-                    >
-                      Edit
-                    </button>
-                    <button
-  style={{
-    ...styles.btn,
-    background: sentReports.includes(report.id) ? '#4caf50' : '#1976d2'
-  }}
-  onClick={() => handleSend(report)}
->
-  {sentReports.includes(report.id) ? 'Sent' : 'Send'}
-</button>
-                    <button style={styles.doneBtn} onClick={() => handleDone(report.id)}>Done</button>
-                    <button
-  style={{ ...styles.btn, background: '#e53935', marginLeft: '1.5rem' }}
-  onClick={() => handleDelete(report.id)}
->
-  Delete
-</button>
-                  </td>
+          <div className="overflow-x-auto rounded-lg shadow">
+            <table className="min-w-full divide-y divide-gray-200 text-sm">
+              <thead className="bg-gray-100 text-left">
+                <tr>
+                  {['DATE', 'CONTAINER', 'CLIENT REF', 'ROCHECKS REF', 'CLIENT', 'VARIETY', 'LOCATION', 'ACTION'].map(header => (
+                    <th key={header} className="px-4 py-2 font-semibold text-gray-600 whitespace-nowrap">
+                      {header}
+                    </th>
+                  ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
-
-          <div style={{ fontStyle: 'italic' }}>
-            Showing 1 to {reports.length} of {reports.length} entries
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-100">
+                {filteredReports.map((report) => (
+                  <tr key={report.id}>
+                    <td className="px-4 py-2 whitespace-nowrap">{report.date}</td>
+                    <td className="px-4 py-2 whitespace-nowrap">{report.container_number}</td>
+                    <td className="px-4 py-2 whitespace-nowrap">{report.client_ref}</td>
+                    <td className="px-4 py-2 whitespace-nowrap">{report.rochecks_ref}</td>
+                    <td className="px-4 py-2 whitespace-nowrap">{report.client}</td>
+                    <td className="px-4 py-2 whitespace-nowrap">{report.variety}</td>
+                    <td className="px-4 py-2 whitespace-nowrap">{report.location}</td>
+                    <td className="px-4 py-2 flex flex-wrap gap-1">
+                      <button
+                        className="bg-gray-500 hover:bg-gray-600 text-white px-3 py-1 rounded"
+                        onClick={() => window.open(`/viewreport/${report.id}`, '_blank')}
+                      >
+                        View
+                      </button>
+                      <button
+                        className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded"
+                        onClick={() => {
+                          setSelectedReport(report);
+                          navigate(`/edit/${report.id}`);
+                        }}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        className={`text-white px-3 py-1 rounded ${
+                          sentReports.includes(report.id)
+                            ? 'bg-green-500'
+                            : 'bg-indigo-500 hover:bg-indigo-600'
+                        }`}
+                        onClick={() => handleSend(report)}
+                      >
+                        {sentReports.includes(report.id) ? 'Sent' : 'Send'}
+                      </button>
+                      <button
+                        className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded"
+                        onClick={() => handleDone(report.id)}
+                      >
+                        Done
+                      </button>
+                      <button
+                        className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded ml-2"
+                        onClick={() => handleDelete(report.id)}
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
+
+          <p className="text-sm text-gray-500 mt-4 italic">
+            Showing 1 to {filteredReports.length} of {filteredReports.length} entries
+          </p>
         </>
       )}
-          </div>
-  )
+    </div>
+  );
 }
 
-const styles = {
-  th: {
-    textAlign: 'left',
-    borderBottom: '2px solid #ccc',
-    padding: '0.5rem',
-    whiteSpace: 'nowrap'
-  },
-  td: {
-    borderBottom: '1px solid #eee',
-    padding: '0.5rem',
-    whiteSpace: 'nowrap'
-  },
-  wrapper: {
-    padding: '2rem',
-    width: '100%',
-    height: '100%',
-    overflowX: 'auto',
-    boxSizing: 'border-box'
-  },
-  btn: {
-    background: '#1976d2',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '4px',
-    padding: '4px 8px',
-    marginRight: '5px',
-    cursor: 'pointer'
-  },
-  doneBtn: {
-    background: '#4caf50',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '4px',
-    padding: '4px 8px',
-    cursor: 'pointer'
-  }
-}
-
-export default AllReports
+export default AllReports;

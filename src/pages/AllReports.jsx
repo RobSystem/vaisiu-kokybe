@@ -24,22 +24,25 @@ function AllReports({ setSelectedReport }) {
   };
 
   const handleSend = async (report) => {
+    const confirmed = window.confirm('Ar tikrai norite išsiųsti ataskaitą?');
+    if (!confirmed) return;
+  
     try {
       const { data: clientData, error } = await supabase
         .from('clients')
         .select('email')
         .eq('name', report.client)
         .single();
-
+  
       if (error || !clientData?.email) {
         alert('Nepavyko rasti kliento el. pašto.');
         return;
       }
-
+  
       const reportUrl = `https://app.rochecks.nl/viewreport/${report.id}`;
       const subject = `Report: ${report.container_number} | Ref: ${report.client_ref}`;
       const message = `Quality Score: ${report.qualityScore || '—'}\nStorage Score: ${report.storageScore || '—'}\n\nConclusion:\n${report.conclusion || '—'}\n\nView full report: ${reportUrl}`;
-
+  
       const response = await emailjs.send(
         'service_t7xay1d',
         'template_cr4luhy',
@@ -50,7 +53,7 @@ function AllReports({ setSelectedReport }) {
         },
         'nBddtmb09-d6gjfcl'
       );
-
+  
       if (response.status === 200) {
         setSentReports((prev) => [...prev, report.id]);
         alert('Ataskaita išsiųsta sėkmingai!');

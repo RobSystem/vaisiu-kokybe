@@ -1,4 +1,4 @@
-// Pataisytas EditReport.jsx su tinkamai integruotu modalu
+// Tailwind-based version of EditReport.jsx
 import { useState, useEffect } from 'react'
 import { supabase } from '../supabaseClient'
 import { useParams } from 'react-router-dom'
@@ -17,487 +17,212 @@ function EditReport() {
   const { reportId } = useParams()
   const [showEditModal, setShowEditModal] = useState(false);
   const [pdfFiles, setPdfFiles] = useState([]);
-const [uploading, setUploading] = useState(false);
-const [users, setUsers] = useState([])
-const [userProfile, setUserProfile] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [users, setUsers] = useState([]);
+  const [userProfile, setUserProfile] = useState(null);
   const [editInfo, setEditInfo] = useState({
-    client_ref: '',
-    container_number: '',
-    rochecks_ref: '',
-    variety: '',
-    origin: '',
-    location: '',
-    total_pallets: '',
-    type: 'Conventional',
-    supplier: '',
-    surveyor: ''
+    client_ref: '', container_number: '', rochecks_ref: '', variety: '',
+    origin: '', location: '', total_pallets: '', type: 'Conventional',
+    supplier: '', surveyor: ''
   });
 
-  const handleEditInfoChange = (e) => {
-    const { name, value } = e.target;
-    setEditInfo((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleOpenEditModal = () => {
-    setEditInfo({
-      client_ref: report?.client_ref || '',
-      container_number: report?.container_number || '',
-      rochecks_ref: report?.rochecks_ref || '',
-      variety: report?.variety || '',
-      origin: report?.origin || '',
-      location: report?.location || '',
-      total_pallets: report?.total_pallets || '',
-      type: report?.type || 'Conventional',
-      supplier: report?.supplier || '',
-      surveyor: report?.surveyor || ''
-    });
-    setShowEditModal(true);
-  };
-
-  const handleSaveEditedInfo = async () => {
-    const { error } = await supabase
-      .from('reports')
-      .update(editInfo)
-      .eq('id', report.id);
-
-    if (error) {
-      alert('Nepavyko atnaujinti informacijos');
-    } else {
-      setReport((prev) => ({ ...prev, ...editInfo }));
-      alert('Informacija atnaujinta sėkmingai!');
-      setShowEditModal(false);
-    }
-  };
-  const handleFileUpload = async (event) => {
-    const files = Array.from(event.target.files);
-    if (!reportId || files.length === 0) return;
-  
-    setUploading(true);
-  
-    for (let i = 0; i < files.length && i < 3; i++) {
-      const file = files[i];
-      const filePath = `${reportId}/file${i + 1}.pdf`;
-  
-      const { error } = await supabase.storage
-        .from('report-files')
-        .upload(filePath, file, {
-          cacheControl: '3600',
-          upsert: true,
-          contentType: 'application/pdf'
-        });
-  
-      if (error) {
-        console.error(`Klaida įkeliant file${i + 1}:`, error.message);
-      }
-    }
-  
-    setUploading(false);
-    alert('Failai įkelti sėkmingai');
-  };
   useEffect(() => {
     const fetchReport = async () => {
-      const { data, error } = await supabase
-        .from('reports')
-        .select('*')
-        .eq('id', reportId)
-        .single()
-      setReport(data)
-
+      const { data, error } = await supabase.from('reports').select('*').eq('id', reportId).single();
       if (data) {
+        setReport(data)
         setForm({
-          brand: data.brand || '',
-          temperature: data.temperature || '',
-          category: data.category || 'CLASS I',
-          qualityScore: data.qualityScore || '',
-          storageScore: data.storageScore || '',
-          conclusion: data.conclusion || ''
-        })
+          brand: data.brand || '', temperature: data.temperature || '', category: data.category || 'CLASS I',
+          qualityScore: data.qualityScore || '', storageScore: data.storageScore || '', conclusion: data.conclusion || ''
+        });
         fetchSamples(data.id)
       }
     }
-
-    if (reportId) {
-      fetchReport()
-    }
+    if (reportId) fetchReport();
   }, [reportId])
+
   useEffect(() => {
     const fetchUsers = async () => {
-      const { data, error } = await supabase.from('user_profiles').select('name');
-      if (!error) setUsers(data);
-    };
+      const { data } = await supabase.from('user_profiles').select('name');
+      if (data) setUsers(data);
+    }
     fetchUsers();
+
     const fetchUserProfile = async () => {
       const { data: { user } } = await supabase.auth.getUser();
-  
-      const { data, error } = await supabase
-        .from('user_profiles')
-        .select('name, role')
-        .eq('id', user.id)
-        .single();
-  
-      if (!error && data) {
-        setUserProfile(data);
-      }
-    };
-  
+      const { data } = await supabase.from('user_profiles').select('name, role').eq('id', user.id).single();
+      if (data) setUserProfile(data);
+    }
     fetchUserProfile();
-  }, []);
+  }, [])
 
   const fetchSamples = async (reportId) => {
-    const { data, error } = await supabase
-      .from('samples')
-      .select('*')
-      .eq('report_id', reportId)
-      .order('position', { ascending: true })
-
-    if (!error) {
-      setSamples(data)
-    }
+    const { data } = await supabase.from('samples').select('*').eq('report_id', reportId).order('position', { ascending: true });
+    if (data) setSamples(data);
   }
 
-  const handleFormChange = (e) => {
-    const { name, value } = e.target
-    setForm((prev) => ({ ...prev, [name]: value }))
-  }
-
-  const handleAddSample = () => {
-    if (report?.id) {
-      window.location.href = `/create-sample/${report.id}`
-    }
-  }
+  const handleFormChange = e => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))
+  const handleEditInfoChange = e => setEditInfo(prev => ({ ...prev, [e.target.name]: e.target.value }))
+  const handleAddSample = () => window.location.href = `/create-sample/${report.id}`
 
   const handleSave = async () => {
-    const { error } = await supabase
-      .from('reports')
-      .update({
-        ...form,
-        samples: samples
-      })
-      .eq('id', report.id)
-
-    if (error) {
-      console.error('Klaida saugant:', error.message)
-      alert('Nepavyko išsaugoti')
-    } else {
-      alert('Sėkmingai išsaugota!')
-    }
+    const { error } = await supabase.from('reports').update({ ...form, samples }).eq('id', report.id)
+    if (!error) alert('Sėkmingai įsaugota!')
   }
 
-  const handleEditSample = (sampleId) => {
-    window.location.href = `/create-sample/${reportId}/${sampleId}`
+  const handleEditSample = id => window.location.href = `/create-sample/${reportId}/${id}`
+
+  const handleCopySample = async (id) => {
+    const { data: s } = await supabase.from('samples').select('*').eq('id', id).single();
+    const { data: existing } = await supabase.from('samples').select('position').eq('report_id', s.report_id).order('position', { ascending: false }).limit(1);
+    const nextPos = (existing?.[0]?.position || 0) + 1;
+    const { id: _, position, ...copy } = s;
+    await supabase.from('samples').insert([{ ...copy, position: nextPos }]);
+    fetchSamples(s.report_id);
   }
 
-  const handleCopySample = async (sampleId) => {
-    const { data: sampleToCopy, error: fetchError } = await supabase
-      .from('samples')
-      .select('*')
-      .eq('id', sampleId)
-      .single();
+  const handleDeleteSample = async (id) => {
+    await supabase.from('samples').delete().eq('id', id);
+    setSamples(samples.filter(s => s.id !== id));
+  }
 
-    if (fetchError || !sampleToCopy) {
-      console.error('Nepavyko gauti sample:', fetchError?.message);
-      alert('Nepavyko gauti sample kopijai');
-      return;
+  const handleFileUpload = async (e) => {
+    const files = Array.from(e.target.files);
+    setUploading(true);
+    for (let i = 0; i < files.length && i < 3; i++) {
+      const file = files[i];
+      await supabase.storage.from('report-files').upload(`${reportId}/file${i + 1}.pdf`, file, {
+        cacheControl: '3600', upsert: true, contentType: 'application/pdf'
+      });
     }
+    setUploading(false);
+    alert('Failai įkelti');
+  }
 
-    const { data: existingSamples } = await supabase
-      .from('samples')
-      .select('position')
-      .eq('report_id', sampleToCopy.report_id)
-      .order('position', { ascending: false })
-      .limit(1);
+  const handleOpenEditModal = () => {
+    setEditInfo({
+      client_ref: report?.client_ref || '', container_number: report?.container_number || '',
+      rochecks_ref: report?.rochecks_ref || '', variety: report?.variety || '',
+      origin: report?.origin || '', location: report?.location || '', total_pallets: report?.total_pallets || '',
+      type: report?.type || 'Conventional', supplier: report?.supplier || '', surveyor: report?.surveyor || ''
+    });
+    setShowEditModal(true);
+  }
 
-    const nextPosition = (existingSamples?.[0]?.position || 0) + 1;
-
-    const { id, position, ...newSample } = sampleToCopy;
-
-    const { data, error } = await supabase
-      .from('samples')
-      .insert([{ ...newSample, position: nextPosition }])
-      .select();
-
-    if (error) {
-      console.error('Klaida kopijuojant:', error.message);
-      alert('Nepavyko kopijuoti');
-      return;
-    }
-
-    const { data: updatedSamples, error: fetchError2 } = await supabase
-      .from('samples')
-      .select('*')
-      .eq('report_id', sampleToCopy.report_id)
-      .order('position', { ascending: true });
-
-    if (fetchError2) {
-      console.error('Nepavyko atnaujinti sąrašo');
-      alert('Nepavyko atnaujinti sąrašo');
-      return;
-    }
-
-    setSamples(updatedSamples);
-    alert('Kopija sėkmingai sukurta!');
-  };
-
-  const handleDeleteSample = async (sampleId) => {
-    const { error } = await supabase.from('samples').delete().eq('id', sampleId)
-    if (error) {
-      console.error('Klaida trinant:', error.message)
-      alert('Nepavyko ištrinti')
-    } else {
-      setSamples(samples.filter(s => s.id !== sampleId))
-      alert('Ištrinta sėkmingai!')
-    }
+  const handleSaveEditedInfo = async () => {
+    await supabase.from('reports').update(editInfo).eq('id', report.id);
+    setReport(prev => ({ ...prev, ...editInfo }));
+    setShowEditModal(false);
+    alert('Informacija atnaujinta');
   }
 
   return (
-    <div style={{ padding: '2rem', width: '100%', height: '100%', boxSizing: 'border-box' }}>
-      <h2>Edit Report</h2>
+    <div className="w-full px-4 py-8 text-sm">
+      <h2 className="text-xl font-semibold mb-4">Edit Report</h2>
 
-      <div style={{ display: 'flex', gap: '2rem', marginBottom: '1rem' }}>
-        <div style={{ flex: 1 }}>
-          <label>BRAND</label>
-          <input type="text" name="brand" value={form.brand} onChange={handleFormChange} style={styles.input} />
-        </div>
-        <div style={{ flex: 1 }}>
-          <label>TEMPERATURE</label>
-          <input type="text" name="temperature" value={form.temperature} onChange={handleFormChange} style={styles.input} />
-        </div>
-        <div style={{ flex: 1 }}>
-          <label>CATEGORY</label>
-          <select name="category" value={form.category} onChange={handleFormChange} style={styles.input}>
-            <option>Pasirinkti</option>
-            <option>Class I</option>
-            <option>CLASS II</option>
-            <option>INDUSTRY CLASS</option>
-            <option>CLASS I & CLASS II</option>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div><label>Brand</label><input name="brand" value={form.brand} onChange={handleFormChange} className="input" /></div>
+        <div><label>Temperature</label><input name="temperature" value={form.temperature} onChange={handleFormChange} className="input" /></div>
+        <div><label>Category</label>
+          <select name="category" value={form.category} onChange={handleFormChange} className="input">
+            <option>Class I</option><option>CLASS II</option><option>INDUSTRY CLASS</option><option>CLASS I & CLASS II</option>
           </select>
         </div>
       </div>
 
-      <div style={styles.divider} />
-
-      <div style={{ display: 'flex', gap: '1rem', margin: '1rem 0' }}>
-        <div style={{ flex: 1 }}>
-          <label>QUALITY SCORE</label>
-          <select name="qualityScore" value={form.qualityScore} onChange={handleFormChange} style={styles.input}>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <div><label>Quality Score</label>
+          <select name="qualityScore" value={form.qualityScore} onChange={handleFormChange} className="input">
             <option value="">Pasirinkti</option>
-            <option>7 - Good</option>
-            <option>6 - Fair</option>
-            <option>5 - Reasonable</option>
-            <option>4 - Moderate</option>
-            <option>3 - Less than moderate</option>
-            <option>2 - Poor</option>
-            <option>1 - Total loss</option>
+            <option>7 - Good</option><option>6 - Fair</option><option>5 - Reasonable</option>
+            <option>4 - Moderate</option><option>3 - Less than moderate</option><option>2 - Poor</option><option>1 - Total loss</option>
           </select>
         </div>
-        <div style={{ flex: 1 }}>
-          <label>STORAGE SCORE</label>
-          <select name="storageScore" value={form.storageScore} onChange={handleFormChange} style={styles.input}>
+        <div><label>Storage Score</label>
+          <select name="storageScore" value={form.storageScore} onChange={handleFormChange} className="input">
             <option value="">Pasirinkti</option>
-            <option>7 - Good</option>
-            <option>6 - Normal</option>
-            <option>5 - Reduced</option>
-            <option>4 - Moderate</option>
-            <option>3 - Limited</option>
-            <option>2 - Poor</option>
-            <option>1 - No storage potential</option>
+            <option>7 - Good</option><option>6 - Normal</option><option>5 - Reduced</option>
+            <option>4 - Moderate</option><option>3 - Limited</option><option>2 - Poor</option><option>1 - No storage potential</option>
           </select>
         </div>
       </div>
 
-      <div>
-        <label>CONCLUSION</label>
-        <textarea name="conclusion" value={form.conclusion} onChange={handleFormChange} style={styles.textarea} />
+      <div className="mb-6">
+        <label>Conclusion</label>
+        <textarea name="conclusion" value={form.conclusion} onChange={handleFormChange} className="input h-24" />
       </div>
 
-      <div style={styles.divider} />
-
-      <h3>SAMPLES</h3>
-      <button onClick={handleAddSample} style={{ marginBottom: '1rem', ...styles.buttonSecondary }}>ADD SAMPLE</button>
-
-      {samples.length > 0 ? (
-        <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '3rem' }}>
-          <thead>
-            <tr>
-              {['#', 'Pallet number', 'Quality Score', 'Storage Score', 'Action'].map(h => (
-                <th key={h} style={styles.th}>{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {[...samples]
-              .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
-              .map((s, i) => (
+      <div className="mb-6">
+        <h3 className="font-semibold mb-2">Samples</h3>
+        <button onClick={handleAddSample} className="btn btn-blue mb-4">Add Sample</button>
+        {samples.length > 0 ? (
+          <table className="table-auto w-full text-xs">
+            <thead><tr><th>#</th><th>Pallet</th><th>Quality</th><th>Storage</th><th>Action</th></tr></thead>
+            <tbody>
+              {samples.map((s, i) => (
                 <tr key={s.id}>
-                  <td style={styles.td}>{i + 1}</td>
-                  <td style={styles.td}>{s.pallet_number}</td>
-                  <td style={styles.td}>{s.quality_score}</td>
-                  <td style={styles.td}>{s.storage_score}</td>
-                  <td style={styles.td}>
-                    <button onClick={() => handleEditSample(s.id)} style={styles.buttonSecondary}>EDIT</button>
-                    <button onClick={() => handleCopySample(s.id)} style={styles.buttonSecondary}>COPY</button>
-                    <button onClick={() => handleDeleteSample(s.id)} style={styles.buttonSecondary}>DELETE</button>
+                  <td>{i + 1}</td><td>{s.pallet_number}</td><td>{s.quality_score}</td><td>{s.storage_score}</td>
+                  <td>
+                    <button onClick={() => handleEditSample(s.id)} className="btn btn-blue">Edit</button>
+                    <button onClick={() => handleCopySample(s.id)} className="btn btn-gray">Copy</button>
+                    <button onClick={() => handleDeleteSample(s.id)} className="btn btn-red">Delete</button>
                   </td>
                 </tr>
               ))}
-          </tbody>
-        </table>
-      ) : (
-        <p>Nėra pridėtų sample.</p>
-      )}
-
-      <div style={{ display: 'flex', gap: '1rem' }}>
-        <button onClick={handleSave} style={styles.buttonPrimary}>SAVE</button>
-        <button onClick={handleOpenEditModal} style={styles.buttonSecondary}>EDIT INFO</button>
+            </tbody>
+          </table>
+        ) : <p>No samples.</p>}
       </div>
-      <div style={{ marginBottom: '1rem' }}>
-  <label><strong>Upload PDF files (max 3):</strong></label><br />
-  <input
-    type="file"
-    accept="application/pdf"
-    multiple
-    onChange={handleFileUpload}
-    disabled={uploading}
-  />
-</div>
+
+      <div className="flex gap-4 mb-4">
+        <button onClick={handleSave} className="btn btn-green">Save</button>
+        <button onClick={handleOpenEditModal} className="btn btn-blue">Edit Info</button>
+      </div>
+
+      <div className="mb-4">
+        <label className="font-semibold">Upload PDF files (max 3):</label>
+        <input type="file" accept="application/pdf" multiple onChange={handleFileUpload} disabled={uploading} />
+      </div>
 
       {showEditModal && (
-        <div style={{
-          position: 'fixed',
-          top: 0, left: 0, right: 0, bottom: 0,
-          backgroundColor: 'rgba(0,0,0,0.5)',
-          display: 'flex', justifyContent: 'center', alignItems: 'center',
-          zIndex: 9999
-        }}>
-          <div style={{
-            background: 'white',
-            padding: '2rem',
-            borderRadius: '8px',
-            width: '500px',
-            maxHeight: '90vh',
-            overflowY: 'auto'
-          }}>
-            <h3>Edit Report Info</h3>
-
-            {[
-              ['client_ref', 'Client Ref'],
-              ['container_number', 'Container Number'],
-              ['rochecks_ref', 'ROCHECKS Ref'],
-              ['variety', 'Variety'],
-              ['origin', 'Origin'],
-              ['location', 'Location'],
-              ['total_pallets', 'Total Pallets']
-            ].map(([name, label]) => (
-              <div key={name} style={{ marginBottom: '1rem' }}>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-lg w-full max-w-md">
+            <h3 className="text-lg font-semibold mb-4">Edit Report Info</h3>
+            {Object.entries({
+              client_ref: 'Client Ref', container_number: 'Container Number', rochecks_ref: 'ROCHECKS Ref',
+              variety: 'Variety', origin: 'Origin', location: 'Location', total_pallets: 'Total Pallets'
+            }).map(([k, label]) => (
+              <div key={k} className="mb-4">
                 <label>{label}</label>
-                <input
-                  type="text"
-                  name={name}
-                  value={editInfo[name]}
-                  onChange={handleEditInfoChange}
-                  style={styles.input}
-                />
+                <input name={k} value={editInfo[k]} onChange={handleEditInfoChange} className="input" />
               </div>
             ))}
-
-            <div style={{ marginBottom: '1rem' }}>
+            <div className="mb-4">
               <label>Type</label>
-              <select
-                name="type"
-                value={editInfo.type}
-                onChange={handleEditInfoChange}
-                style={styles.input}
-              >
-                <option value="Conventional">Conventional</option>
-                <option value="Organic">Organic</option>
+              <select name="type" value={editInfo.type} onChange={handleEditInfoChange} className="input">
+                <option value="Conventional">Conventional</option><option value="Organic">Organic</option>
               </select>
             </div>
-            <div style={{ marginBottom: '1rem' }}>
-  <label>Supplier</label>
-  <input
-    type="text"
-    name="supplier"
-    value={editInfo.supplier}
-    onChange={handleEditInfoChange}
-    style={styles.input}
-  />
-</div>
-<div style={{ marginBottom: '1rem' }}>
-  <label>Surveyor</label>
-  <select
-  name="surveyor"
-  value={editInfo.surveyor}
-  onChange={handleEditInfoChange}
-  style={styles.input}
->
-  <option value="">-- Pasirinkti surveyor --</option>
-  {userProfile?.role === 'admin'
-    ? users.map((user) => (
-        <option key={user.name} value={user.name}>{user.name}</option>
-      ))
-    : userProfile
-    ? (
-        <option value={userProfile.name}>{userProfile.name}</option>
-      )
-    : null}
-</select>
-</div>
-
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
-              <button onClick={() => setShowEditModal(false)} style={styles.buttonSecondary}>Cancel</button>
-              <button onClick={handleSaveEditedInfo} style={styles.buttonPrimary}>Save</button>
+            <div className="mb-4">
+              <label>Supplier</label>
+              <input name="supplier" value={editInfo.supplier} onChange={handleEditInfoChange} className="input" />
+            </div>
+            <div className="mb-4">
+              <label>Surveyor</label>
+              <select name="surveyor" value={editInfo.surveyor} onChange={handleEditInfoChange} className="input">
+                <option value="">-- Pasirinkti surveyor --</option>
+                {userProfile?.role === 'admin' ? users.map(u => <option key={u.name}>{u.name}</option>) : <option>{userProfile?.name}</option>}
+              </select>
+            </div>
+            <div className="flex justify-end gap-2">
+              <button onClick={() => setShowEditModal(false)} className="btn btn-gray">Cancel</button>
+              <button onClick={handleSaveEditedInfo} className="btn btn-green">Save</button>
             </div>
           </div>
         </div>
       )}
     </div>
-  );
-}
-
-const styles = {
-  input: {
-    width: '100%',
-    padding: '0.5rem',
-    borderRadius: '6px',
-    border: '1px solid #ccc'
-  },
-  textarea: {
-    width: '100%',
-    height: '100px',
-    padding: '0.5rem',
-    borderRadius: '6px',
-    border: '1px solid #ccc',
-    resize: 'vertical'
-  },
-  divider: {
-    height: '5px',
-    background: '#ccc',
-    margin: '2rem 0'
-  },
-  th: {
-    textAlign: 'left',
-    padding: '0.5rem',
-    background: '#f5f5f5'
-  },
-  td: {
-    padding: '0.5rem'
-  },
-  buttonPrimary: {
-    padding: '0.75rem 1.5rem',
-    background: '#4caf50',
-    color: 'white',
-    border: 'none',
-    borderRadius: '6px',
-    cursor: 'pointer'
-  },
-  buttonSecondary: {
-    padding: '0.75rem 1.5rem',
-    background: '#1976d2',
-    color: 'white',
-    border: 'none',
-    borderRadius: '6px',
-    cursor: 'pointer'
-  }
+  )
 }
 
 export default EditReport;

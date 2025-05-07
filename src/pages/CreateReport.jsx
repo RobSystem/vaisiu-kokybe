@@ -98,7 +98,7 @@ fetchUserProfile();
 
   return (
     <div className="flex justify-center p-8">
-      <div className="w-full max-w-4xl text-xs">
+      <div className="w-full max-w-7xl px-4 text-sm">
         <h2 className="text-2xl font-semibold text-center mb-8">Create Report</h2>
         <form
           onSubmit={handleSubmit}

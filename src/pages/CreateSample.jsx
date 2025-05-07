@@ -171,18 +171,7 @@ const [diameterExtra, setDiameterExtra] = useState([]);
     <div className="pl-4 border-l-4 border-blue-300 mt-4 space-y-4">
 
       {/* Line 1 */}
-      <div className="grid grid-cols-2 gap-4">
-        {['packing_type', 'size'].map(field => (
-          <div key={field}>
-            <label className="block text-gray-700 mb-1 capitalize">{field.replace(/_/g, ' ')}</label>
-            <input name={field} value={form[field]} onChange={handleChange} className="p-2 border rounded w-full" />
-          </div>
-        ))}
-      </div>
-
-      {/* Line 2: box_weight */}
       <div className="flex flex-wrap items-end gap-4">
-  {/* Pagrindiniai du laukai */}
   <div className="flex-1">
     <label className="block text-gray-700 mb-1">Box Weight Min</label>
     <input
@@ -201,43 +190,43 @@ const [diameterExtra, setDiameterExtra] = useState([]);
       className="p-2 border rounded w-full"
     />
   </div>
+</div>
 
-  {/* Mygtukas „Add Extra“ */}
+{/* +Extra ir Delete */}
+<div className="mt-2 flex items-center gap-2">
   <button
     onClick={() => setBoxWeightExtra(Array(10).fill(''))}
     className="bg-blue-500 hover:bg-blue-600 text-white text-xs px-2 py-1 rounded"
+    type="button"
   >
     + Extra
   </button>
+
+  {boxWeightExtra.length > 0 && (
+    <button
+      onClick={() => setBoxWeightExtra([])}
+      className="bg-red-500 hover:bg-red-600 text-white text-xs px-2 py-1 rounded"
+      type="button"
+    >
+      Delete Extra
+    </button>
+  )}
 </div>
 
-{/* Rodomi papildomi laukeliai */}
+{/* Rodomi papildomi laukai */}
 {boxWeightExtra.length > 0 && (
   <div className="flex gap-2 flex-wrap mt-2">
     {boxWeightExtra.map((val, i) => (
-      <div key={i} className="relative">
-        <input
-          value={val}
-          onChange={e => {
-            const updated = [...boxWeightExtra];
-            updated[i] = e.target.value;
-            setBoxWeightExtra(updated);
-          }}
-          className="p-1 border rounded w-16"
-        />
-        {/* Delete mygtukas prie inputo */}
-        <button
-          onClick={() => {
-            const updated = [...boxWeightExtra];
-            updated.splice(i, 1);
-            setBoxWeightExtra(updated);
-          }}
-          className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center"
-          type="button"
-        >
-          ✕
-        </button>
-      </div>
+      <input
+        key={i}
+        value={val}
+        onChange={e => {
+          const updated = [...boxWeightExtra];
+          updated[i] = e.target.value;
+          setBoxWeightExtra(updated);
+        }}
+        className="p-1 border rounded w-16"
+      />
     ))}
   </div>
 )}

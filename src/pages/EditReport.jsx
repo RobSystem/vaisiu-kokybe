@@ -114,7 +114,7 @@ function EditReport() {
 
   return (
     <div className="w-full px-4 py-6 text-xs">
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex items-center gap-4 mb-4">
         <h2 className="text-base font-semibold text-gray-700">
           {report
             ? `Container: ${report.container_number || '—'} | Variety: ${report.variety || '—'} | Origin: ${report.origin || '—'} | Total Pallets: ${report.total_pallets || '—'}`
@@ -127,6 +127,7 @@ function EditReport() {
           Edit Info
         </button>
       </div>
+  
       <div className="grid md:grid-cols-3 gap-4 mb-6">
         <input name="brand" placeholder="Brand" value={form.brand} onChange={handleFormChange} className="p-2 border rounded w-full" />
         <input name="temperature" placeholder="Temperature" value={form.temperature} onChange={handleFormChange} className="p-2 border rounded w-full" />

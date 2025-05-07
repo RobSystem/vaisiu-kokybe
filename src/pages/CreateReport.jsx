@@ -95,7 +95,7 @@ fetchUserProfile();
     if (error) {
       setMessage('Klaida kuriant ataskaitą.');
     } else {
-      navigate(`/edit-report/${data.id}`); // PERKELIAME naudotoją
+      navigate(`/edit/${data.id}`); // PERKELIAME naudotoją
     }
 
     setLoading(false);

@@ -188,7 +188,7 @@ const [diameterExtra, setDiameterExtra] = useState([]);
             <input name={field} value={form[field]} onChange={handleChange} className="p-2 border rounded w-full" />
           </div>
         ))}
-        <button onClick={() => setBoxWeightExtra(Array(10).fill(''))} className="bg-blue-500 text-white px-3 py-2 rounded col-span-2">Add extra box weight</button>
+        <button onClick={() => setBoxWeightExtra(Array(10).fill(''))} className="bg-blue-500 text-white text-xs px-2 py-1 rounded self-start">Add extra box weight</button>
         {boxWeightExtra.length > 0 && (
           <div className="col-span-2 flex gap-2 flex-wrap">
             {boxWeightExtra.map((val, i) => (
@@ -210,7 +210,7 @@ const [diameterExtra, setDiameterExtra] = useState([]);
             <input name={field} value={form[field]} onChange={handleChange} className="p-2 border rounded w-full" />
           </div>
         ))}
-        <button onClick={() => setFruitWeightExtra(Array(10).fill(''))} className="bg-blue-500 text-white px-3 py-2 rounded col-span-2">Add extra fruit weight</button>
+        <button onClick={() => setFruitWeightExtra(Array(10).fill(''))} className="bg-blue-500 text-white text-xs px-2 py-1 rounded self-start">Add extra fruit weight</button>
         {fruitWeightExtra.length > 0 && (
           <div className="col-span-2 flex gap-2 flex-wrap">
             {fruitWeightExtra.map((val, i) => (
@@ -232,7 +232,7 @@ const [diameterExtra, setDiameterExtra] = useState([]);
             <input name={field} value={form[field]} onChange={handleChange} className="p-2 border rounded w-full" />
           </div>
         ))}
-        <button onClick={() => setPressuresExtra(Array(10).fill(''))} className="bg-blue-500 text-white px-3 py-2 rounded col-span-2">Add extra pressures</button>
+        <button onClick={() => setPressuresExtra(Array(10).fill(''))} className="bg-blue-500 text-white text-xs px-2 py-1 rounded self-start">Add extra pressures</button>
         {pressuresExtra.length > 0 && (
           <div className="col-span-2 flex gap-2 flex-wrap">
             {pressuresExtra.map((val, i) => (
@@ -254,7 +254,7 @@ const [diameterExtra, setDiameterExtra] = useState([]);
             <input name={field} value={form[field]} onChange={handleChange} className="p-2 border rounded w-full" />
           </div>
         ))}
-        <button onClick={() => setBrixExtra(Array(10).fill(''))} className="bg-blue-500 text-white px-3 py-2 rounded col-span-2">Add extra brix</button>
+        <button onClick={() => setBrixExtra(Array(10).fill(''))} className="bg-blue-500 text-white text-xs px-2 py-1 rounded self-start">Add extra brix</button>
         {brixExtra.length > 0 && (
           <div className="col-span-2 flex gap-2 flex-wrap">
             {brixExtra.map((val, i) => (
@@ -276,7 +276,7 @@ const [diameterExtra, setDiameterExtra] = useState([]);
             <input name={field} value={form[field]} onChange={handleChange} className="p-2 border rounded w-full" />
           </div>
         ))}
-        <button onClick={() => setDiameterExtra(Array(10).fill(''))} className="bg-blue-500 text-white px-3 py-2 rounded col-span-2">Add extra diameters</button>
+        <button onClick={() => setDiameterExtra(Array(10).fill(''))} className="bg-blue-500 text-white text-xs px-2 py-1 rounded self-start">Add extra diameters</button>
         {diameterExtra.length > 0 && (
           <div className="col-span-2 flex gap-2 flex-wrap">
             {diameterExtra.map((val, i) => (

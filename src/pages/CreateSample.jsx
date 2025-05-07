@@ -192,7 +192,7 @@ const [diameterExtra, setDiameterExtra] = useState([]);
   </div>
 </div>
 
-{/* +Extra mygtukas po laukais kairėje */}
+{/* + Extra mygtukas */}
 <div className="mt-2">
   <button
     onClick={() => setBoxWeightExtra(Array(10).fill(''))}
@@ -203,20 +203,10 @@ const [diameterExtra, setDiameterExtra] = useState([]);
   </button>
 </div>
 
-{/* Papildomi laukai su Delete dešinėje */}
+{/* Papildomi laukai su Delete mygtuku šalia jų */}
 {boxWeightExtra.length > 0 && (
-  <div className="mt-2">
-    <div className="flex justify-between items-center mb-1">
-      <span className="text-sm text-gray-600">Extra Box Weights</span>
-      <button
-        onClick={() => setBoxWeightExtra([])}
-        className="bg-red-500 hover:bg-red-600 text-white text-xs px-2 py-1 rounded"
-        type="button"
-      >
-        Delete Extra
-      </button>
-    </div>
-    <div className="flex gap-2 flex-wrap">
+  <div className="mt-2 flex flex-wrap items-start gap-2">
+    <div className="flex flex-wrap gap-2">
       {boxWeightExtra.map((val, i) => (
         <input
           key={i}
@@ -230,6 +220,15 @@ const [diameterExtra, setDiameterExtra] = useState([]);
         />
       ))}
     </div>
+
+    {/* Delete Extra – šalia lauku */}
+    <button
+      onClick={() => setBoxWeightExtra([])}
+      className="bg-red-500 hover:bg-red-600 text-white text-xs px-2 py-1 rounded self-start"
+      type="button"
+    >
+      Delete Extra
+    </button>
   </div>
 )}
 

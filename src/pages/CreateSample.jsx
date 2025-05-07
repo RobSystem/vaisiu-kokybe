@@ -437,7 +437,7 @@ const [diameterExtra, setDiameterExtra] = useState([]);
     className="bg-blue-500 hover:bg-blue-600 text-white text-xs px-2 py-1 rounded"
     type="button"
   >
-    + Extra
+    Add extra
   </button>
 </div>
 
@@ -462,7 +462,7 @@ const [diameterExtra, setDiameterExtra] = useState([]);
       className="bg-red-500 hover:bg-red-600 text-white text-xs px-2 py-1 rounded self-start"
       type="button"
     >
-      Delete Extra
+      Delete 
     </button>
   </div>
 )}

@@ -124,7 +124,7 @@ function AllReports({ setSelectedReport }) {
   );
 
   return (
-    <div className="p-6 w-full max-w-7xl px-4 text-xs">
+    <div className="p-6 w-full px-8 text-[10px]">
       <h2 className="text-xl font-bold mb-4">All Reports</h2>
 
       <input

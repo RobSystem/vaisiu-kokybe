@@ -260,6 +260,102 @@ function EditReport() {
     </div>
   ))}
 </div>
+✅ Papildymas:
+Tai naudoja pdfFiles array — jau egzistuojantis tavo useState, todėl nieko papildomai kurti nereikia.
+
+setPdfFiles atnaujina konkretų įrašą pdfFiles[i]
+
+Paspaudus „Upload“ – įkeliamas tik tas vienas failas
+
+Ar nori, kad po įkėlimo būtų rodomas ir įkeltų failų sąrašas (su galimybe atidaryti ar ištrinti)?
+
+
+
+
+
+
+Pasakėte:
+Taip padarome, kad butu rodomas failas, ir butu galima ji istrinti. 
+
+
+„ChatGPT“ pasakė:
+Puiku! Padarysime, kad:
+
+Po kiekvieno įkėlimo būtų matomas failo pavadinimas.
+
+Šalia jo – mygtukas „Delete“, kuris ištrina failą iš supabase.storage.
+
+✅ Ką tau reikia padaryti:
+🔁 Pakeisk seną Upload PDF files bloką šiuo pilnu kodu:
+jsx
+Kopijuoti
+Redaguoti
+<div className="mb-6">
+  <label className="font-semibold block mb-2">Upload Temp. recorders:</label>
+  {[0, 1, 2].map(i => (
+    <div key={i} className="flex items-center gap-2 mb-2">
+      <input
+        type="file"
+        accept="application/pdf"
+        onChange={(e) => setPdfFiles(prev => {
+          const updated = [...prev];
+          updated[i] = e.target.files[0];
+          return updated;
+        })}
+        className="border p-1 rounded w-full"
+      />
+      <button
+        onClick={async () => {
+          if (!pdfFiles[i]) return alert('Pasirinkite failą!');
+          setUploading(true);
+          try {
+            await supabase.storage.from('report-files').upload(
+              `${reportId}/file${i + 1}.pdf`,
+              pdfFiles[i],
+              { cacheControl: '3600', upsert: true, contentType: 'application/pdf' }
+            );
+            alert(`Failas ${i + 1} įkeltas!`);
+          } catch (err) {
+            console.error(err);
+            alert('Įkėlimo klaida');
+          } finally {
+            setUploading(false);
+          }
+        }}
+        className="bg-blue-500 hover:bg-blue-600 text-white text-xs px-3 py-1 rounded"
+      >
+        Upload
+      </button>
+
+      <button
+        onClick={async () => {
+          setUploading(true);
+          try {
+            await supabase.storage.from('report-files').remove([`${reportId}/file${i + 1}.pdf`]);
+            alert(`Failas ${i + 1} ištrintas`);
+            setPdfFiles(prev => {
+              const updated = [...prev];
+              updated[i] = null;
+              return updated;
+            });
+          } catch (err) {
+            console.error(err);
+            alert('Trinimo klaida');
+          } finally {
+            setUploading(false);
+          }
+        }}
+        className="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1 rounded"
+      >
+        Delete
+      </button>
+
+      {pdfFiles[i] && (
+        <span className="text-xs text-gray-600 truncate max-w-[150px]">{pdfFiles[i].name}</span>
+      )}
+    </div>
+  ))}
+</div>
 
       {showEditModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">

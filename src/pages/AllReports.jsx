@@ -40,7 +40,7 @@ function AllReports({ setSelectedReport }) {
       }
   
       const reportUrl = `https://app.rochecks.nl/viewreport/${report.id}`;
-      const subject = `Report: ${report.container_number} | Ref: ${report.client_ref}`;
+      const subject = `Container number: ${report.container_number} | Ref: ${report.client_ref} | Variety: ${report.variety}`;
       const message = `Quality Score: ${report.qualityScore || '—'}\nStorage Score: ${report.storageScore || '—'}\n\nConclusion:\n${report.conclusion || '—'}\n\nView full report: ${reportUrl}`;
   
       const response = await emailjs.send(

@@ -37,6 +37,11 @@ const [diameterExtra, setDiameterExtra] = useState([]);
         setForm(data);
         setCreatedAt(data.created_at);
         setFruitWeightsExtra(data.fruit_weights_extra || []);
+        setBoxWeightExtra(data.box_weight_extra || []);
+        setFruitWeightExtra(data.fruit_weight_extra || []);
+        setPressuresExtra(data.pressures_extra || []);
+        setBrixExtra(data.brix_extra || []);
+        setDiameterExtra(data.diameter_extra || []);
         setExternalColoration(data.external_coloration || []);
         setInternalColoration(data.internal_coloration || []);
         setConsistency(data.consistency || { hard: '', sensitive: '', soft: '' });
@@ -125,15 +130,7 @@ const [diameterExtra, setDiameterExtra] = useState([]);
     onClick={() => setShowGeneralInfo(!showGeneralInfo)}
     className="flex items-center justify-between cursor-pointer bg-gray-100 px-4 py-2 rounded"
   >
-    <div className="flex justify-end mt-2">
-  <button
-    onClick={handleSave}
-    className="bg-green-500 hover:bg-green-600 text-white text-xs px-3 py-1 rounded"
-    type="button"
-  >
-    Save
-  </button>
-</div>
+   
     <h3 className="font-semibold">General Information</h3>
     <span className="text-lg">{showGeneralInfo ? '−' : '+'}</span>
   </div>
@@ -149,7 +146,8 @@ const [diameterExtra, setDiameterExtra] = useState([]);
         'packing_code',
         'variety',
         'brand'
-      ].map(field => (
+      ]
+      .map(field => (
         <div key={field}>
           <label className="block text-gray-700 mb-1 capitalize">
             {field.replace(/_/g, ' ')}
@@ -162,7 +160,15 @@ const [diameterExtra, setDiameterExtra] = useState([]);
           />
         </div>
       ))}
-    </div>
+    </div><div className="flex justify-end mt-4">
+  <button
+    onClick={handleSave}
+    className="bg-green-500 hover:bg-green-600 text-white text-sm px-4 py-2 rounded"
+    type="button"
+  >
+    Save
+  </button>
+</div>
   </div>
 )}
 </div>

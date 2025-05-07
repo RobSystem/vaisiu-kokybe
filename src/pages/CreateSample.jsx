@@ -22,6 +22,12 @@ function CreateSample() {
   const [internalColoration, setInternalColoration] = useState([]);
   const [consistency, setConsistency] = useState({ hard: '', sensitive: '', soft: '' });
   const [showGeneralInfo, setShowGeneralInfo] = useState(false);
+  const [showExtraInfo, setShowExtraInfo] = useState(false);
+const [boxWeightExtra, setBoxWeightExtra] = useState([]);
+const [fruitWeightExtra, setFruitWeightExtra] = useState([]);
+const [pressuresExtra, setPressuresExtra] = useState([]);
+const [brixExtra, setBrixExtra] = useState([]);
+const [diameterExtra, setDiameterExtra] = useState([]);
 
   useEffect(() => {
     const fetchSample = async () => {
@@ -76,6 +82,10 @@ function CreateSample() {
     const updatePayload = {
       ...cleanedForm,
       fruit_weights_extra: fruitWeightsExtra.length > 0 ? fruitWeightsExtra : null,
+      box_weight_extra: boxWeightExtra.length > 0 ? boxWeightExtra : null,
+      pressures_extra: pressuresExtra.length > 0 ? pressuresExtra : null,
+      brix_extra: brixExtra.length > 0 ? brixExtra : null,
+      diameter_extra: diameterExtra.length > 0 ? diameterExtra : null,
       external_coloration: externalColoration.length > 0 ? externalColoration : null,
       internal_coloration: internalColoration.length > 0 ? internalColoration : null,
       consistency: consistency
@@ -148,8 +158,20 @@ function CreateSample() {
 )}
 </div>
 
-      <h3 className="font-semibold mb-2">Extra Information</h3>
-      <div className="grid md:grid-cols-2 gap-4 mb-4">
+<div className="mb-4">
+  <div
+    onClick={() => setShowExtraInfo(!showExtraInfo)}
+    className="flex items-center justify-between cursor-pointer bg-gray-100 px-4 py-2 rounded"
+  >
+    <h3 className="font-semibold">Extra Information</h3>
+    <span className="text-lg">{showExtraInfo ? '−' : '+'}</span>
+  </div>
+
+  {showExtraInfo && (
+    <div className="pl-4 border-l-4 border-blue-300 mt-4 space-y-4">
+
+      {/* Line 1 */}
+      <div className="grid grid-cols-2 gap-4">
         {['packing_type', 'size'].map(field => (
           <div key={field}>
             <label className="block text-gray-700 mb-1 capitalize">{field.replace(/_/g, ' ')}</label>
@@ -158,34 +180,119 @@ function CreateSample() {
         ))}
       </div>
 
-      <div className="grid md:grid-cols-2 gap-4 mb-4">
-        {['box_weight_min', 'box_weight_max', 'fruit_weight_min', 'fruit_weight_max'].map(field => (
+      {/* Line 2: box_weight */}
+      <div className="grid grid-cols-2 gap-4 items-end">
+        {['box_weight_min', 'box_weight_max'].map(field => (
           <div key={field}>
             <label className="block text-gray-700 mb-1 capitalize">{field.replace(/_/g, ' ')}</label>
             <input name={field} value={form[field]} onChange={handleChange} className="p-2 border rounded w-full" />
           </div>
         ))}
-        <button onClick={handleAddWeight} className="bg-blue-500 text-white px-3 py-2 rounded">Add Weight</button>
+        <button onClick={() => setBoxWeightExtra(Array(10).fill(''))} className="bg-blue-500 text-white px-3 py-2 rounded col-span-2">Add extra box weight</button>
+        {boxWeightExtra.length > 0 && (
+          <div className="col-span-2 flex gap-2 flex-wrap">
+            {boxWeightExtra.map((val, i) => (
+              <input key={i} value={val} onChange={e => {
+                const updated = [...boxWeightExtra];
+                updated[i] = e.target.value;
+                setBoxWeightExtra(updated);
+              }} className="p-1 border w-16 rounded" />
+            ))}
+          </div>
+        )}
       </div>
-      {fruitWeightsExtra.length > 0 && (
-        <div className="flex gap-2 mb-4 flex-wrap">
-          {fruitWeightsExtra.map((val, i) => (
-            <div key={i} className="flex items-center gap-1">
-              <input value={val} onChange={(e) => handleWeightChange(i, e.target.value)} className="p-1 border w-16 rounded" />
-              <button onClick={() => handleRemoveWeight(i)} className="text-red-500">✕</button>
-            </div>
-          ))}
-        </div>
-      )}
 
-      <div className="grid md:grid-cols-3 gap-4 mb-4">
-        {['pressures_min', 'pressures_max', 'brix_min', 'brix_max', 'fruit_diameter_min', 'fruit_diameter_max'].map(field => (
+      {/* Line 3: fruit weight */}
+      <div className="grid grid-cols-2 gap-4 items-end">
+        {['fruit_weight_min', 'fruit_weight_max'].map(field => (
           <div key={field}>
             <label className="block text-gray-700 mb-1 capitalize">{field.replace(/_/g, ' ')}</label>
             <input name={field} value={form[field]} onChange={handleChange} className="p-2 border rounded w-full" />
           </div>
         ))}
+        <button onClick={() => setFruitWeightExtra(Array(10).fill(''))} className="bg-blue-500 text-white px-3 py-2 rounded col-span-2">Add extra fruit weight</button>
+        {fruitWeightExtra.length > 0 && (
+          <div className="col-span-2 flex gap-2 flex-wrap">
+            {fruitWeightExtra.map((val, i) => (
+              <input key={i} value={val} onChange={e => {
+                const updated = [...fruitWeightExtra];
+                updated[i] = e.target.value;
+                setFruitWeightExtra(updated);
+              }} className="p-1 border w-16 rounded" />
+            ))}
+          </div>
+        )}
       </div>
+
+      {/* Line 4: pressures */}
+      <div className="grid grid-cols-2 gap-4 items-end">
+        {['pressures_min', 'pressures_max'].map(field => (
+          <div key={field}>
+            <label className="block text-gray-700 mb-1 capitalize">{field.replace(/_/g, ' ')}</label>
+            <input name={field} value={form[field]} onChange={handleChange} className="p-2 border rounded w-full" />
+          </div>
+        ))}
+        <button onClick={() => setPressuresExtra(Array(10).fill(''))} className="bg-blue-500 text-white px-3 py-2 rounded col-span-2">Add extra pressures</button>
+        {pressuresExtra.length > 0 && (
+          <div className="col-span-2 flex gap-2 flex-wrap">
+            {pressuresExtra.map((val, i) => (
+              <input key={i} value={val} onChange={e => {
+                const updated = [...pressuresExtra];
+                updated[i] = e.target.value;
+                setPressuresExtra(updated);
+              }} className="p-1 border w-16 rounded" />
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Line 5: brix */}
+      <div className="grid grid-cols-2 gap-4 items-end">
+        {['brix_min', 'brix_max'].map(field => (
+          <div key={field}>
+            <label className="block text-gray-700 mb-1 capitalize">{field.replace(/_/g, ' ')}</label>
+            <input name={field} value={form[field]} onChange={handleChange} className="p-2 border rounded w-full" />
+          </div>
+        ))}
+        <button onClick={() => setBrixExtra(Array(10).fill(''))} className="bg-blue-500 text-white px-3 py-2 rounded col-span-2">Add extra brix</button>
+        {brixExtra.length > 0 && (
+          <div className="col-span-2 flex gap-2 flex-wrap">
+            {brixExtra.map((val, i) => (
+              <input key={i} value={val} onChange={e => {
+                const updated = [...brixExtra];
+                updated[i] = e.target.value;
+                setBrixExtra(updated);
+              }} className="p-1 border w-16 rounded" />
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Line 6: diameter */}
+      <div className="grid grid-cols-2 gap-4 items-end">
+        {['fruit_diameter_min', 'fruit_diameter_max'].map(field => (
+          <div key={field}>
+            <label className="block text-gray-700 mb-1 capitalize">{field.replace(/_/g, ' ')}</label>
+            <input name={field} value={form[field]} onChange={handleChange} className="p-2 border rounded w-full" />
+          </div>
+        ))}
+        <button onClick={() => setDiameterExtra(Array(10).fill(''))} className="bg-blue-500 text-white px-3 py-2 rounded col-span-2">Add extra diameters</button>
+        {diameterExtra.length > 0 && (
+          <div className="col-span-2 flex gap-2 flex-wrap">
+            {diameterExtra.map((val, i) => (
+              <input key={i} value={val} onChange={e => {
+                const updated = [...diameterExtra];
+                updated[i] = e.target.value;
+                setDiameterExtra(updated);
+              }} className="p-1 border w-16 rounded" />
+            ))}
+          </div>
+        )}
+      </div>
+
+    </div>
+  )}
+</div>
 
       <h3 className="font-semibold mb-2">Coloration</h3>
       <div className="mb-2">

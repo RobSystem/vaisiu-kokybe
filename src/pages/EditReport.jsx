@@ -198,7 +198,7 @@ function EditReport() {
           <table className="table-auto w-full text-xs border">
             <thead className="bg-gray-100">
               <tr>
-                <th className="border px-2 py-1">#</th><th className="border px-2 py-1">Pallet</th><th className="border px-2 py-1">Quality</th><th className="border px-2 py-1">Storage</th><th className="border px-2 py-1">Action</th>
+                <th className="border px-2 py-1">#</th><th className="border px-2 py-1">Pallet number</th><th className="border px-2 py-1">Quality score</th><th className="border px-2 py-1">Storage score</th><th className="border px-2 py-1">Action</th>
               </tr>
             </thead>
             <tbody>
@@ -221,10 +221,45 @@ function EditReport() {
       
       </div>
 
-      <div className="mb-4">
-        <label className="font-semibold">Upload PDF files (max 3):</label>
-        <input type="file" accept="application/pdf" multiple onChange={handleFileUpload} disabled={uploading} className="block mt-1" />
-      </div>
+      <div className="mb-6">
+  <label className="font-semibold block mb-2">Upload PDF files (max 3):</label>
+  {[0, 1, 2].map(i => (
+    <div key={i} className="flex items-center gap-2 mb-2">
+      <input
+        type="file"
+        accept="application/pdf"
+        onChange={(e) => setPdfFiles(prev => {
+          const updated = [...prev];
+          updated[i] = e.target.files[0];
+          return updated;
+        })}
+        className="border p-1 rounded w-full"
+      />
+      <button
+        onClick={async () => {
+          if (!pdfFiles[i]) return alert('Pasirinkite failą!');
+          setUploading(true);
+          try {
+            await supabase.storage.from('report-files').upload(
+              `${reportId}/file${i + 1}.pdf`,
+              pdfFiles[i],
+              { cacheControl: '3600', upsert: true, contentType: 'application/pdf' }
+            );
+            alert(`Failas ${i + 1} įkeltas!`);
+          } catch (err) {
+            console.error(err);
+            alert('Įkėlimo klaida');
+          } finally {
+            setUploading(false);
+          }
+        }}
+        className="bg-blue-500 hover:bg-blue-600 text-white text-xs px-3 py-1 rounded"
+      >
+        Upload
+      </button>
+    </div>
+  ))}
+</div>
 
       {showEditModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">

@@ -129,27 +129,53 @@ function EditReport() {
       </div>
   
       <div className="grid md:grid-cols-3 gap-4 mb-6">
-        <input name="brand" placeholder="Brand" value={form.brand} onChange={handleFormChange} className="p-2 border rounded w-full" />
-        <input name="temperature" placeholder="Temperature" value={form.temperature} onChange={handleFormChange} className="p-2 border rounded w-full" />
-        <select name="category" value={form.category} onChange={handleFormChange} className="p-2 border rounded w-full">
-          <option>Class I</option><option>CLASS II</option><option>INDUSTRY CLASS</option><option>CLASS I & CLASS II</option>
-        </select>
-      </div>
+  <div>
+    <label className="block text-gray-700 mb-1">Brand</label>
+    <input name="brand" value={form.brand} onChange={handleFormChange} className="p-2 border rounded w-full" />
+  </div>
+  <div>
+    <label className="block text-gray-700 mb-1">Temperature</label>
+    <input name="temperature" value={form.temperature} onChange={handleFormChange} className="p-2 border rounded w-full" />
+  </div>
+  <div>
+    <label className="block text-gray-700 mb-1">Category</label>
+    <select name="category" value={form.category} onChange={handleFormChange} className="p-2 border rounded w-full">
+      <option value="">Choose category...</option>
+      <option>Class I</option>
+      <option>CLASS II</option>
+      <option>INDUSTRY CLASS</option>
+      <option>CLASS I & CLASS II</option>
+    </select>
+  </div>
+</div>
+<div className="grid md:grid-cols-2 gap-4 mb-6">
+  <div>
+    <label className="block text-gray-700 mb-1">Quality Score</label>
+    <select name="qualityScore" value={form.qualityScore} onChange={handleFormChange} className="p-2 border rounded w-full">
+      <option value="">Choose quality score...</option>
+      <option>7 - Good</option><option>6 - Fair</option><option>5 - Reasonable</option>
+      <option>4 - Moderate</option><option>3 - Less than moderate</option><option>2 - Poor</option><option>1 - Total loss</option>
+    </select>
+  </div>
+  <div>
+    <label className="block text-gray-700 mb-1">Storage Score</label>
+    <select name="storageScore" value={form.storageScore} onChange={handleFormChange} className="p-2 border rounded w-full">
+      <option value="">Choose storage score...</option>
+      <option>7 - Good</option><option>6 - Normal</option><option>5 - Reduced</option>
+      <option>4 - Moderate</option><option>3 - Limited</option><option>2 - Poor</option><option>1 - No storage potential</option>
+    </select>
+  </div>
+</div>
 
-      <div className="grid md:grid-cols-2 gap-4 mb-6">
-        <select name="qualityScore" value={form.qualityScore} onChange={handleFormChange} className="p-2 border rounded w-full">
-          <option value="">Quality Score</option>
-          <option>7 - Good</option><option>6 - Fair</option><option>5 - Reasonable</option>
-          <option>4 - Moderate</option><option>3 - Less than moderate</option><option>2 - Poor</option><option>1 - Total loss</option>
-        </select>
-        <select name="storageScore" value={form.storageScore} onChange={handleFormChange} className="p-2 border rounded w-full">
-          <option value="">Storage Score</option>
-          <option>7 - Good</option><option>6 - Normal</option><option>5 - Reduced</option>
-          <option>4 - Moderate</option><option>3 - Limited</option><option>2 - Poor</option><option>1 - No storage potential</option>
-        </select>
-      </div>
-
-      <textarea name="conclusion" value={form.conclusion} onChange={handleFormChange} placeholder="Conclusion" className="w-full p-2 border rounded h-24 mb-6" />
+<div className="mb-6">
+  <label className="block text-gray-700 mb-1">Conclusion</label>
+  <textarea
+    name="conclusion"
+    value={form.conclusion}
+    onChange={handleFormChange}
+    className="w-full p-2 border rounded h-24"
+  />
+</div>
 
       <div className="mb-6">
         <h3 className="font-semibold mb-2">Samples</h3>

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../supabaseClient'
+import { useNavigate } from 'react-router-dom'
 
 const initialForm = {
   date: '',
@@ -23,7 +24,8 @@ function CreateReport() {
   const [message, setMessage] = useState('')
   const [clients, setClients] = useState([])
   const [users, setUsers] = useState([])
-  const [userProfile, setUserProfile] = useState(null);
+  const [userProfile, setUserProfile] = useState(null)
+  const navigate = useNavigate();
 
  useEffect(() => {
   const fetchClients = async () => {
@@ -74,27 +76,31 @@ fetchUserProfile();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
-    // Paprasta validacija
+
     for (const [key, value] of Object.entries(formData)) {
       if (!value) {
         setMessage(`Laukas "${key}" yra privalomas.`);
         return;
       }
     }
-  
+
     setLoading(true);
-    const { error } = await supabase.from('reports').insert([formData]);
-  
+
+    const { data, error } = await supabase
+      .from('reports')
+      .insert([formData])
+      .select() // Gauti sukurtą įrašą
+      .single();
+
     if (error) {
       setMessage('Klaida kuriant ataskaitą.');
     } else {
-      setMessage('Ataskaita sėkmingai sukurta ✅');
-      setFormData(initialForm);
+      navigate(`/edit-report/${data.id}`); // PERKELIAME naudotoją
     }
-  
+
     setLoading(false);
   };
+  
 
   return (
     <div className="flex justify-center p-8">

@@ -232,23 +232,7 @@ const [diameterExtra, setDiameterExtra] = useState([]);
   </div>
 )}
 
-{/* Rodomi papildomi laukai */}
-{boxWeightExtra.length > 0 && (
-  <div className="flex gap-2 flex-wrap mt-2">
-    {boxWeightExtra.map((val, i) => (
-      <input
-        key={i}
-        value={val}
-        onChange={e => {
-          const updated = [...boxWeightExtra];
-          updated[i] = e.target.value;
-          setBoxWeightExtra(updated);
-        }}
-        className="p-1 border rounded w-16"
-      />
-    ))}
-  </div>
-)}
+
 
       {/* Line 3: fruit weight */}
       <div className="grid grid-cols-2 gap-4 items-end">

@@ -160,7 +160,7 @@ const [diameterExtra, setDiameterExtra] = useState([]);
           />
         </div>
       ))}
-    </div><div className="flex justify-end mt-4">
+    </div> className="flex justify-end mt-4"
   <button
     onClick={handleSave}
     className="bg-green-500 hover:bg-green-600 text-white text-sm px-4 py-2 rounded"
@@ -169,7 +169,7 @@ const [diameterExtra, setDiameterExtra] = useState([]);
     Save
   </button>
 </div>
-  </div>
+
 )}
 </div>
 

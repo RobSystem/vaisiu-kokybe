@@ -223,18 +223,18 @@ function CreateSample() {
 
       <h3 className="font-semibold mb-2">Scoring</h3>
       <div className="grid md:grid-cols-2 gap-4 mb-6">
-        {['quality_score', 'storage_score'].map(field => (
-          <div key={field}>
-            <label className="block text-gray-700 mb-1 capitalize">{field.replace(/_/g, ' ')}</label>
-            <select name={field} value={form[field]} onChange={handleChange} className="p-2 border rounded w-full">
-              <option value="">Pasirinkti</option>
-              {field === 'quality_score'
-                ? ['7 - Good','6 - Fair','5 - Reasonable','4 - Moderate','3 - Less than moderate','2 - Poor','1 - Total Loss']
-                : ['7 - Good','6 - Normal','5 - Reduced','4 - Moderate','3 - Limited','2 - Poor','1 - No storage potential']
-              .map(opt => <option key={opt}>{opt}</option>)}
-            </select>
-          </div>
-        ))}
+      {['quality_score', 'storage_score'].map(field => (
+  <div key={field}>
+    <label className="block text-gray-700 mb-1 capitalize">{field.replace(/_/g, ' ')}</label>
+    <select name={field} value={form[field]} onChange={handleChange} className="p-2 border rounded w-full">
+      <option value="">Pasirinkti</option>
+      {field === 'quality_score'
+        ? ['7 - Good','6 - Fair','5 - Reasonable','4 - Moderate','3 - Less than moderate','2 - Poor','1 - Total Loss']
+        : ['7 - Good','6 - Normal','5 - Reduced','4 - Moderate','3 - Limited','2 - Poor','1 - No storage potential']
+      .map(opt => <option key={opt}>{opt}</option>)}
+    </select>
+  </div>
+))}
       </div>
 
       <div className="flex gap-4">

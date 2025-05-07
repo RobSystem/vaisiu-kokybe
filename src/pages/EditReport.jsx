@@ -178,8 +178,22 @@ function EditReport() {
 </div>
 
       <div className="mb-6">
-        <h3 className="font-semibold mb-2">Samples</h3>
-        <button onClick={handleAddSample} className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded mb-2">Add Sample</button>
+      <h3 className="font-semibold mb-2">Samples</h3>
+<div className="flex gap-4 mb-4">
+<button
+    onClick={handleSave}
+    className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
+  >
+    Save
+  </button>
+  <button
+    onClick={handleAddSample}
+    className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+  >
+    Add Sample
+  </button>
+  
+</div>
         {samples.length > 0 ? (
           <table className="table-auto w-full text-xs border">
             <thead className="bg-gray-100">
@@ -204,7 +218,7 @@ function EditReport() {
       </div>
 
       <div className="flex gap-4 mb-4">
-        <button onClick={handleSave} className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">Save</button>
+      
       </div>
 
       <div className="mb-4">

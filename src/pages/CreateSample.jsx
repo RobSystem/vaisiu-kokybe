@@ -120,25 +120,32 @@ function CreateSample() {
   </div>
 
   {showGeneralInfo && (
-    <div className="pl-4 border-l-4 border-blue-300 mt-4">
-      <div className="grid md:grid-cols-2 gap-4 mb-4">
-        {['pallet_number', 'ggn_number', 'ggn_exp_date', 'grower_code'].map(field => (
-          <div key={field}>
-            <label className="block text-gray-700 mb-1 capitalize">{field.replace(/_/g, ' ')}</label>
-            <input name={field} value={form[field]} onChange={handleChange} className="p-2 border rounded w-full" />
-          </div>
-        ))}
-      </div>
-      <div className="grid md:grid-cols-3 gap-4">
-        {['packing_code', 'variety', 'brand'].map(field => (
-          <div key={field}>
-            <label className="block text-gray-700 mb-1 capitalize">{field.replace(/_/g, ' ')}</label>
-            <input name={field} value={form[field]} onChange={handleChange} className="p-2 border rounded w-full" />
-          </div>
-        ))}
-      </div>
+  <div className="pl-4 border-l-4 border-blue-300 mt-4">
+    <div className="space-y-4">
+      {[
+        'pallet_number',
+        'ggn_number',
+        'ggn_exp_date',
+        'grower_code',
+        'packing_code',
+        'variety',
+        'brand'
+      ].map(field => (
+        <div key={field}>
+          <label className="block text-gray-700 mb-1 capitalize">
+            {field.replace(/_/g, ' ')}
+          </label>
+          <input
+            name={field}
+            value={form[field]}
+            onChange={handleChange}
+            className="p-2 border rounded w-full"
+          />
+        </div>
+      ))}
     </div>
-  )}
+  </div>
+)}
 </div>
 
       <h3 className="font-semibold mb-2">Extra Information</h3>

@@ -1,20 +1,16 @@
-// Tailwind-based version of EditReport.jsx
+// Redesign of EditReport.jsx to match AllReports style
 import { useState, useEffect } from 'react'
 import { supabase } from '../supabaseClient'
 import { useParams } from 'react-router-dom'
 
 function EditReport() {
   const [form, setForm] = useState({
-    brand: '',
-    temperature: '',
-    category: 'CLASS I',
-    qualityScore: '',
-    storageScore: '',
-    conclusion: ''
-  })
-  const [report, setReport] = useState(null)
-  const [samples, setSamples] = useState([])
-  const { reportId } = useParams()
+    brand: '', temperature: '', category: 'CLASS I',
+    qualityScore: '', storageScore: '', conclusion: ''
+  });
+  const [report, setReport] = useState(null);
+  const [samples, setSamples] = useState([]);
+  const { reportId } = useParams();
   const [showEditModal, setShowEditModal] = useState(false);
   const [pdfFiles, setPdfFiles] = useState([]);
   const [uploading, setUploading] = useState(false);
@@ -28,18 +24,18 @@ function EditReport() {
 
   useEffect(() => {
     const fetchReport = async () => {
-      const { data, error } = await supabase.from('reports').select('*').eq('id', reportId).single();
+      const { data } = await supabase.from('reports').select('*').eq('id', reportId).single();
       if (data) {
-        setReport(data)
+        setReport(data);
         setForm({
           brand: data.brand || '', temperature: data.temperature || '', category: data.category || 'CLASS I',
           qualityScore: data.qualityScore || '', storageScore: data.storageScore || '', conclusion: data.conclusion || ''
         });
-        fetchSamples(data.id)
+        fetchSamples(data.id);
       }
     }
     if (reportId) fetchReport();
-  }, [reportId])
+  }, [reportId]);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -54,23 +50,18 @@ function EditReport() {
       if (data) setUserProfile(data);
     }
     fetchUserProfile();
-  }, [])
+  }, []);
 
   const fetchSamples = async (reportId) => {
-    const { data } = await supabase.from('samples').select('*').eq('report_id', reportId).order('position', { ascending: true });
+    const { data } = await supabase.from('samples').select('*').eq('report_id', reportId).order('position');
     if (data) setSamples(data);
   }
 
-  const handleFormChange = e => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))
-  const handleEditInfoChange = e => setEditInfo(prev => ({ ...prev, [e.target.name]: e.target.value }))
-  const handleAddSample = () => window.location.href = `/create-sample/${report.id}`
+  const handleFormChange = e => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  const handleEditInfoChange = e => setEditInfo(prev => ({ ...prev, [e.target.name]: e.target.value }));
 
-  const handleSave = async () => {
-    const { error } = await supabase.from('reports').update({ ...form, samples }).eq('id', report.id)
-    if (!error) alert('Sėkmingai įsaugota!')
-  }
-
-  const handleEditSample = id => window.location.href = `/create-sample/${reportId}/${id}`
+  const handleAddSample = () => window.location.href = `/create-sample/${report.id}`;
+  const handleEditSample = id => window.location.href = `/create-sample/${reportId}/${id}`;
 
   const handleCopySample = async (id) => {
     const { data: s } = await supabase.from('samples').select('*').eq('id', id).single();
@@ -99,6 +90,11 @@ function EditReport() {
     alert('Failai įkelti');
   }
 
+  const handleSave = async () => {
+    const { error } = await supabase.from('reports').update({ ...form, samples }).eq('id', report.id);
+    if (!error) alert('Sėkmingai įsaugota!');
+  }
+
   const handleOpenEditModal = () => {
     setEditInfo({
       client_ref: report?.client_ref || '', container_number: report?.container_number || '',
@@ -117,71 +113,66 @@ function EditReport() {
   }
 
   return (
-    <div className="w-full px-4 py-8 text-sm">
-      <h2 className="text-xl font-semibold mb-4">Edit Report</h2>
+    <div className="w-full px-4 py-6 text-xs">
+      <h2 className="text-lg font-semibold mb-4">Edit Report</h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <div><label>Brand</label><input name="brand" value={form.brand} onChange={handleFormChange} className="input" /></div>
-        <div><label>Temperature</label><input name="temperature" value={form.temperature} onChange={handleFormChange} className="input" /></div>
-        <div><label>Category</label>
-          <select name="category" value={form.category} onChange={handleFormChange} className="input">
-            <option>Class I</option><option>CLASS II</option><option>INDUSTRY CLASS</option><option>CLASS I & CLASS II</option>
-          </select>
-        </div>
+      <div className="grid md:grid-cols-3 gap-4 mb-6">
+        <input name="brand" placeholder="Brand" value={form.brand} onChange={handleFormChange} className="p-2 border rounded w-full" />
+        <input name="temperature" placeholder="Temperature" value={form.temperature} onChange={handleFormChange} className="p-2 border rounded w-full" />
+        <select name="category" value={form.category} onChange={handleFormChange} className="p-2 border rounded w-full">
+          <option>Class I</option><option>CLASS II</option><option>INDUSTRY CLASS</option><option>CLASS I & CLASS II</option>
+        </select>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-        <div><label>Quality Score</label>
-          <select name="qualityScore" value={form.qualityScore} onChange={handleFormChange} className="input">
-            <option value="">Pasirinkti</option>
-            <option>7 - Good</option><option>6 - Fair</option><option>5 - Reasonable</option>
-            <option>4 - Moderate</option><option>3 - Less than moderate</option><option>2 - Poor</option><option>1 - Total loss</option>
-          </select>
-        </div>
-        <div><label>Storage Score</label>
-          <select name="storageScore" value={form.storageScore} onChange={handleFormChange} className="input">
-            <option value="">Pasirinkti</option>
-            <option>7 - Good</option><option>6 - Normal</option><option>5 - Reduced</option>
-            <option>4 - Moderate</option><option>3 - Limited</option><option>2 - Poor</option><option>1 - No storage potential</option>
-          </select>
-        </div>
+      <div className="grid md:grid-cols-2 gap-4 mb-6">
+        <select name="qualityScore" value={form.qualityScore} onChange={handleFormChange} className="p-2 border rounded w-full">
+          <option value="">Quality Score</option>
+          <option>7 - Good</option><option>6 - Fair</option><option>5 - Reasonable</option>
+          <option>4 - Moderate</option><option>3 - Less than moderate</option><option>2 - Poor</option><option>1 - Total loss</option>
+        </select>
+        <select name="storageScore" value={form.storageScore} onChange={handleFormChange} className="p-2 border rounded w-full">
+          <option value="">Storage Score</option>
+          <option>7 - Good</option><option>6 - Normal</option><option>5 - Reduced</option>
+          <option>4 - Moderate</option><option>3 - Limited</option><option>2 - Poor</option><option>1 - No storage potential</option>
+        </select>
       </div>
 
-      <div className="mb-6">
-        <label>Conclusion</label>
-        <textarea name="conclusion" value={form.conclusion} onChange={handleFormChange} className="input h-24" />
-      </div>
+      <textarea name="conclusion" value={form.conclusion} onChange={handleFormChange} placeholder="Conclusion" className="w-full p-2 border rounded h-24 mb-6" />
 
       <div className="mb-6">
         <h3 className="font-semibold mb-2">Samples</h3>
-        <button onClick={handleAddSample} className="btn btn-blue mb-4">Add Sample</button>
+        <button onClick={handleAddSample} className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded mb-2">Add Sample</button>
         {samples.length > 0 ? (
-          <table className="table-auto w-full text-xs">
-            <thead><tr><th>#</th><th>Pallet</th><th>Quality</th><th>Storage</th><th>Action</th></tr></thead>
+          <table className="table-auto w-full text-xs border">
+            <thead className="bg-gray-100">
+              <tr>
+                <th className="border px-2 py-1">#</th><th className="border px-2 py-1">Pallet</th><th className="border px-2 py-1">Quality</th><th className="border px-2 py-1">Storage</th><th className="border px-2 py-1">Action</th>
+              </tr>
+            </thead>
             <tbody>
               {samples.map((s, i) => (
-                <tr key={s.id}>
-                  <td>{i + 1}</td><td>{s.pallet_number}</td><td>{s.quality_score}</td><td>{s.storage_score}</td>
-                  <td>
-                    <button onClick={() => handleEditSample(s.id)} className="btn btn-blue">Edit</button>
-                    <button onClick={() => handleCopySample(s.id)} className="btn btn-gray">Copy</button>
-                    <button onClick={() => handleDeleteSample(s.id)} className="btn btn-red">Delete</button>
+                <tr key={s.id} className="text-center">
+                  <td className="border px-2 py-1">{i + 1}</td><td className="border px-2 py-1">{s.pallet_number}</td><td className="border px-2 py-1">{s.quality_score}</td><td className="border px-2 py-1">{s.storage_score}</td>
+                  <td className="border px-2 py-1 flex justify-center gap-2">
+                    <button onClick={() => handleEditSample(s.id)} className="bg-blue-500 text-white px-2 py-1 rounded">Edit</button>
+                    <button onClick={() => handleCopySample(s.id)} className="bg-gray-400 text-white px-2 py-1 rounded">Copy</button>
+                    <button onClick={() => handleDeleteSample(s.id)} className="bg-red-500 text-white px-2 py-1 rounded">Delete</button>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
-        ) : <p>No samples.</p>}
+        ) : <p className="italic">No samples.</p>}
       </div>
 
       <div className="flex gap-4 mb-4">
-        <button onClick={handleSave} className="btn btn-green">Save</button>
-        <button onClick={handleOpenEditModal} className="btn btn-blue">Edit Info</button>
+        <button onClick={handleSave} className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">Save</button>
+        <button onClick={handleOpenEditModal} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Edit Info</button>
       </div>
 
       <div className="mb-4">
         <label className="font-semibold">Upload PDF files (max 3):</label>
-        <input type="file" accept="application/pdf" multiple onChange={handleFileUpload} disabled={uploading} />
+        <input type="file" accept="application/pdf" multiple onChange={handleFileUpload} disabled={uploading} className="block mt-1" />
       </div>
 
       {showEditModal && (
@@ -194,35 +185,36 @@ function EditReport() {
             }).map(([k, label]) => (
               <div key={k} className="mb-4">
                 <label>{label}</label>
-                <input name={k} value={editInfo[k]} onChange={handleEditInfoChange} className="input" />
+                <input name={k} value={editInfo[k]} onChange={handleEditInfoChange} className="w-full p-2 border rounded" />
               </div>
             ))}
             <div className="mb-4">
               <label>Type</label>
-              <select name="type" value={editInfo.type} onChange={handleEditInfoChange} className="input">
-                <option value="Conventional">Conventional</option><option value="Organic">Organic</option>
+              <select name="type" value={editInfo.type} onChange={handleEditInfoChange} className="w-full p-2 border rounded">
+                <option value="Conventional">Conventional</option>
+                <option value="Organic">Organic</option>
               </select>
             </div>
             <div className="mb-4">
               <label>Supplier</label>
-              <input name="supplier" value={editInfo.supplier} onChange={handleEditInfoChange} className="input" />
+              <input name="supplier" value={editInfo.supplier} onChange={handleEditInfoChange} className="w-full p-2 border rounded" />
             </div>
             <div className="mb-4">
               <label>Surveyor</label>
-              <select name="surveyor" value={editInfo.surveyor} onChange={handleEditInfoChange} className="input">
+              <select name="surveyor" value={editInfo.surveyor} onChange={handleEditInfoChange} className="w-full p-2 border rounded">
                 <option value="">-- Pasirinkti surveyor --</option>
                 {userProfile?.role === 'admin' ? users.map(u => <option key={u.name}>{u.name}</option>) : <option>{userProfile?.name}</option>}
               </select>
             </div>
             <div className="flex justify-end gap-2">
-              <button onClick={() => setShowEditModal(false)} className="btn btn-gray">Cancel</button>
-              <button onClick={handleSaveEditedInfo} className="btn btn-green">Save</button>
+              <button onClick={() => setShowEditModal(false)} className="bg-gray-400 text-white px-4 py-2 rounded">Cancel</button>
+              <button onClick={handleSaveEditedInfo} className="bg-green-500 text-white px-4 py-2 rounded">Save</button>
             </div>
           </div>
         </div>
       )}
     </div>
-  )
+  );
 }
 
 export default EditReport;

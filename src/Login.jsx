@@ -22,18 +22,18 @@ function Login({ onLogin }) {
 
   return (
     <div style={{ maxWidth: 400, margin: '0 auto', padding: '2rem' }}>
-      <h2>Prisijungimas</h2>
+      <h2>Login</h2>
       <form onSubmit={handleLogin}>
         <input
           type="email"
-          placeholder="El. paštas"
+          placeholder="Email:"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
         /><br /><br />
         <input
           type="password"
-          placeholder="Slaptažodis"
+          placeholder="Password:"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required

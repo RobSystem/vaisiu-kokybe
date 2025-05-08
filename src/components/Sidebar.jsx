@@ -16,7 +16,7 @@ function Sidebar({ navigate, onLogout }) {
     };
     getUserInfo();
   }, []);
-  console.log('Vartotojo rolė:', role);
+
   const navItemsMain = [
     { label: 'Dashboard', path: '/' },
     { label: 'Create Report', path: '/create' },
@@ -26,24 +26,26 @@ function Sidebar({ navigate, onLogout }) {
   ];
 
   return (
-    <div style={styles.sidebar}>
+    <div className="w-56 h-screen bg-gray-100 border-r flex flex-col justify-between p-4">
       <div>
-        <h2 style={styles.logo}>{userName}</h2>
-        <nav style={styles.nav}>
-          {navItemsMain.map(item => (
+        <h2 className="text-center text-lg font-semibold mb-6">{userName}</h2>
+        <nav className="flex flex-col gap-2">
+          {navItemsMain.map((item) => (
             <div
               key={item.path}
               onClick={() => navigate(item.path)}
-              style={styles.navItem}
+              className="px-3 py-2 rounded hover:bg-gray-200 cursor-pointer font-medium transition"
             >
               {item.label}
             </div>
           ))}
         </nav>
       </div>
-
-      <div style={styles.bottomSection}>
-        <div onClick={onLogout} style={styles.navItem}>
+      <div className="flex flex-col gap-2 mt-4">
+        <div
+          onClick={onLogout}
+          className="px-3 py-2 rounded hover:bg-red-100 text-red-600 cursor-pointer font-medium transition"
+        >
           Log Out
         </div>
       </div>
@@ -51,41 +53,4 @@ function Sidebar({ navigate, onLogout }) {
   );
 }
 
-
-const styles = {
-  sidebar: {
-    width: '220px',
-    height: '100vh',
-    background: '#f5f5f5',
-    borderRight: '1px solid #ddd',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-    padding: '1.5rem 1rem'
-  },
-  logo: {
-    marginBottom: '2rem',
-    textAlign: 'center'
-  },
-  nav: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '1rem'
-  },
-  navItem: {
-    padding: '0.75rem 1rem',
-    borderRadius: '8px',
-    cursor: 'pointer',
-    fontWeight: 500,
-    transition: 'background 0.2s ease'
-  },
-  bottomSection: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '1rem',
-    marginBottom: '2rem',
-    marginTop: 'auto'
-  }
-}
-
-export default Sidebar
+export default Sidebar;

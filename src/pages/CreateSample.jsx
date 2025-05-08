@@ -224,7 +224,26 @@ const updatePayload = {
   {showExtraInfo && (
   <div className="pl-4 border-l-4 border-blue-300 mt-4 space-y-4">
     {/* visos tavo formos eilutės čia */}
-    
+    <div className="flex flex-wrap items-end gap-4">
+  <div className="flex-1">
+    <label className="block text-gray-700 mb-1">Packing Type</label>
+    <input
+      name="packing_type"
+      value={form.packing_type}
+      onChange={handleChange}
+      className="p-2 border rounded w-full"
+    />
+  </div>
+  <div className="flex-1">
+    <label className="block text-gray-700 mb-1">Size</label>
+    <input
+      name="size"
+      value={form.size}
+      onChange={handleChange}
+      className="p-2 border rounded w-full"
+    />
+  </div>
+</div>
     {/* nauja vieta mygtukui – apačioje */}
     
       {/* Line 1 */}

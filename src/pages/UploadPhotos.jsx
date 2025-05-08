@@ -95,50 +95,73 @@ function UploadPhotos() {
   }
 
   return (
-    <div style={wrapper}>
-      <h2>Upload Photos</h2>
+    <div className="w-full max-w-4xl mx-auto px-4 py-6 text-sm">
+      <h2 className="text-lg font-semibold mb-4">Upload Photos</h2>
 
-      <input type="file" multiple onChange={handleFileChange} />
+      <input
+        type="file"
+        multiple
+        onChange={handleFileChange}
+        className="mb-4"
+      />
 
       {files.length > 0 && (
-        <ul style={fileList}>
+        <ul className="mb-4 text-gray-700 space-y-2">
           {files.map((file, index) => (
-            <li key={index} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              {file.name}
-              <button style={deleteButtonSmall} onClick={() => removeSelectedFile(index)}>❌</button>
+            <li key={index} className="flex items-center justify-between bg-gray-100 p-2 rounded">
+              <span>{file.name}</span>
+              <button
+                onClick={() => removeSelectedFile(index)}
+                className="bg-red-500 text-white text-xs px-2 py-1 rounded"
+              >
+                ❌
+              </button>
             </li>
           ))}
         </ul>
       )}
 
       {uploadProgress > 0 && (
-        <div style={progressContainer}>
-          <div style={{ ...progressBar, width: `${uploadProgress}%` }} />
+        <div className="w-full bg-gray-200 rounded h-2 mb-4">
+          <div
+            className="bg-green-500 h-2 rounded"
+            style={{ width: `${uploadProgress}%` }}
+          />
         </div>
       )}
 
-      <div style={{ marginTop: '1rem', display: 'flex', gap: '1rem' }}>
-        <button onClick={handleUpload} style={button}>UPLOAD PHOTOS</button>
-        <button onClick={() => navigate(-1)} style={buttonSecondary}>SAVE AND BACK</button>
+      <div className="flex gap-4 mb-6">
+        <button
+          onClick={handleUpload}
+          className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
+        >
+          Upload Photos
+        </button>
+        <button
+          onClick={() => navigate(-1)}
+          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+        >
+          Save and Back
+        </button>
       </div>
 
-      <hr style={{ margin: '2rem 0' }} />
-      <h3>Uploaded Photos</h3>
+      <h3 className="font-semibold mb-2">Uploaded Photos</h3>
+      {photos.length === 0 && (
+        <p className="text-gray-500">Nuotraukų kol kas nėra.</p>
+      )}
 
-      {photos.length === 0 && <p style={{ color: '#777' }}>Nuotraukų kol kas nėra.</p>}
-
-      <div style={gallery}>
+      <div className="flex flex-wrap gap-4 mt-4">
         {photos.map(photo => (
-          <div key={photo.id} style={{ position: 'relative' }}>
+          <div key={photo.id} className="relative">
             <img
               src={photo.url}
               alt="photo"
-              style={photoStyle}
+              className="w-40 h-40 object-cover rounded border border-gray-300 cursor-pointer"
               onClick={() => setPreviewUrl(photo.url)}
             />
             <button
               onClick={() => handleDelete(photo.id, photo.url)}
-              style={deleteButton}
+              className="absolute top-1 right-1 bg-black bg-opacity-60 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center"
               title="Ištrinti"
             >
               ❌
@@ -148,119 +171,15 @@ function UploadPhotos() {
       </div>
 
       {previewUrl && (
-        <div style={modalOverlay} onClick={() => setPreviewUrl(null)}>
-          <img src={previewUrl} alt="preview" style={modalImage} />
+        <div
+          className="fixed inset-0 bg-black bg-opacity-80 flex justify-center items-center z-50"
+          onClick={() => setPreviewUrl(null)}
+        >
+          <img src={previewUrl} alt="preview" className="max-w-[90%] max-h-[90%] rounded" />
         </div>
       )}
     </div>
   )
-}
-
-// STILIAI
-
-const wrapper = {
-  padding: '2rem',
-  maxWidth: '800px',
-  margin: '0 auto',
-  boxSizing: 'border-box'
-}
-
-const button = {
-  padding: '0.75rem 1.5rem',
-  background: '#4caf50',
-  color: 'white',
-  border: 'none',
-  borderRadius: '6px',
-  cursor: 'pointer'
-}
-
-const buttonSecondary = {
-  ...button,
-  background: '#1976d2'
-}
-
-const gallery = {
-  display: 'flex',
-  flexWrap: 'wrap',
-  gap: '1rem',
-  marginTop: '1rem'
-}
-
-const photoStyle = {
-  width: '150px',
-  height: '150px',
-  objectFit: 'cover',
-  borderRadius: '8px',
-  border: '1px solid #ccc',
-  cursor: 'pointer'
-}
-
-const deleteButton = {
-  position: 'absolute',
-  top: '5px',
-  right: '5px',
-  background: 'rgba(0,0,0,0.6)',
-  color: 'white',
-  border: 'none',
-  borderRadius: '50%',
-  width: '24px',
-  height: '24px',
-  cursor: 'pointer',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  fontSize: '14px',
-  padding: 0
-}
-
-const deleteButtonSmall = {
-  ...deleteButton,
-  position: 'static',
-  width: '20px',
-  height: '20px',
-  fontSize: '12px',
-  background: '#d32f2f'
-}
-
-const fileList = {
-  marginTop: '0.5rem',
-  paddingLeft: '1rem',
-  fontSize: '14px',
-  color: '#333'
-}
-
-const modalOverlay = {
-  position: 'fixed',
-  top: 0,
-  left: 0,
-  right: 0,
-  bottom: 0,
-  backgroundColor: 'rgba(0, 0, 0, 0.8)',
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  zIndex: 999
-}
-
-const modalImage = {
-  maxWidth: '90%',
-  maxHeight: '90%',
-  borderRadius: '8px'
-}
-
-const progressContainer = {
-  width: '100%',
-  background: '#eee',
-  borderRadius: '4px',
-  height: '8px',
-  overflow: 'hidden',
-  marginTop: '0.5rem'
-}
-
-const progressBar = {
-  height: '100%',
-  background: '#4caf50',
-  transition: 'width 0.3s ease'
 }
 
 export default UploadPhotos

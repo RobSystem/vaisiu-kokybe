@@ -149,7 +149,7 @@ function ViewReport() {
             </div>
           </div>
 
-          <div className="flex gap-6 mt-4 justify-end">
+          <div className="flex gap-6 mt-4 pr-[80px]">
             <p className={"font-bold " + getColor(sample.quality_score, 'quality')}>Quality Score: {sample.quality_score}</p>
             <p className={"font-bold " + getColor(sample.storage_score, 'storage')}>Storage Score: {sample.storage_score}</p>
           </div>

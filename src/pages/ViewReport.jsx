@@ -179,20 +179,28 @@ function ViewReport() {
       ))}
 
       
-<div className="bg-gray-100 rounded-md p-4 mt-4">
-  <div className="mb-2 flex flex-wrap gap-6">
-    <p className={"font-bold " + getColor(sample.quality_score, 'quality')}>
-      Quality Score: {sample.quality_score}
-    </p>
-    <p className={"font-bold " + getColor(sample.storage_score, 'storage')}>
-      Storage Score: {sample.storage_score}
-    </p>
+{(report.qualityScore || report.storageScore || report.conclusion) && (
+  <div className="mt-6 p-4 bg-gray-100 border rounded space-y-2">
+    <div className="flex flex-wrap gap-6 text-lg">
+      {report.qualityScore && (
+        <p className={"font-bold " + getColor(report.qualityScore, 'quality')}>
+          Quality Score: {report.qualityScore}
+        </p>
+      )}
+      {report.storageScore && (
+        <p className={"font-bold " + getColor(report.storageScore, 'storage')}>
+          Storage Score: {report.storageScore}
+        </p>
+      )}
+    </div>
+    {report.conclusion && (
+      <div>
+        <p className="font-semibold">Conclusion:</p>
+        <p className="whitespace-pre-line">{report.conclusion}</p>
+      </div>
+    )}
   </div>
-  <div>
-    <p className="font-semibold">Conclusion:</p>
-    <p>{sample.conclusion}</p>
-  </div>
-</div>
+)}
 
       <div className="mt-8">
         <button

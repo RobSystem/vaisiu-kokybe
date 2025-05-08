@@ -289,7 +289,7 @@ const updatePayload = {
 
 <div className="mt-2">
   <button
-    onClick={() => setFruitWeightExtra(Array(10).fill(''))}
+    onClick={() => setFruitWeightsExtra(Array(10).fill(''))}
     className="bg-blue-500 hover:bg-blue-600 text-white text-xs px-2 py-1 rounded"
     type="button"
   >
@@ -297,24 +297,24 @@ const updatePayload = {
   </button>
 </div>
 
-{Array.isArray(fruitWeightExtra) && fruitWeightExtra.length > 0 && (
+{Array.isArray(fruitWeightsExtra) && fruitWeightsExtra.length > 0 && (
   <div className="mt-2 flex flex-wrap items-start gap-2">
     <div className="flex flex-wrap gap-2">
-      {fruitWeightExtra.map((val, i) => (
+      {fruitWeightsExtra.map((val, i) => (
         <input
           key={i}
           value={val}
           onChange={e => {
-            const updated = [...fruitWeightExtra];
+            const updated = [...fruitWeightsExtra];
             updated[i] = e.target.value;
-            setFruitWeightExtra(updated);
+            setFruitWeightsExtra(updated);
           }}
           className="p-1 border rounded w-16"
         />
       ))}
     </div>
     <button
-      onClick={() => setFruitWeightExtra([])}
+      onClick={() => setFruitWeightsExtra([])}
       className="bg-red-500 hover:bg-red-600 text-white text-xs px-2 py-1 rounded self-start"
       type="button"
     >

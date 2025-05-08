@@ -84,17 +84,23 @@ useEffect(() => {
     const cleanedForm = Object.fromEntries(
       Object.entries(form).map(([key, value]) => [key, value === '' || value === 'Pasirinkti' ? null : value])
     );
-    const updatePayload = {
-      ...cleanedForm,
-      fruit_weights_extra: fruitWeightsExtra.length > 0 ? fruitWeightsExtra : null,
-      box_weight_extra: boxWeightExtra.length > 0 ? boxWeightExtra : null,
-      pressures_extra: pressuresExtra.length > 0 ? pressuresExtra : null,
-      brix_extra: brixExtra.length > 0 ? brixExtra : null,
-      diameter_extra: diameterExtra.length > 0 ? diameterExtra : null,
-      external_coloration: externalColoration.length > 0 ? externalColoration : null,
-      internal_coloration: internalColoration.length > 0 ? internalColoration : null,
-      consistency: consistency
-    };
+    const fruitTrimmed = trimArray(fruitWeightsExtra);
+const boxTrimmed = trimArray(boxWeightExtra);
+const pressuresTrimmed = trimArray(pressuresExtra);
+const brixTrimmed = trimArray(brixExtra);
+const diameterTrimmed = trimArray(diameterExtra);
+
+const updatePayload = {
+  ...cleanedForm,
+  fruit_weights_extra: fruitTrimmed.length > 0 ? fruitTrimmed : null,
+  box_weight_extra: boxTrimmed.length > 0 ? boxTrimmed : null,
+  pressures_extra: pressuresTrimmed.length > 0 ? pressuresTrimmed : null,
+  brix_extra: brixTrimmed.length > 0 ? brixTrimmed : null,
+  diameter_extra: diameterTrimmed.length > 0 ? diameterTrimmed : null,
+  external_coloration: externalColoration.length > 0 ? externalColoration : null,
+  internal_coloration: internalColoration.length > 0 ? internalColoration : null,
+  consistency: consistency
+};
 
     let error;
     if (sampleId) {

@@ -1,18 +1,43 @@
-export function AdminPanel({ onAddUserClick, onManageClientsClick, onViewReportsClick }) {
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { supabase } from '../supabaseClient';
+
+function AdminPanel() {
+  const navigate = useNavigate();
+  const [role, setRole] = useState(null);
+
+  useEffect(() => {
+    const checkRole = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      const user = session?.user;
+      if (user?.user_metadata?.role !== 'admin') {
+        navigate('/'); // arba '/unauthorized'
+      } else {
+        setRole('admin');
+      }
+    };
+    checkRole();
+  }, [navigate]);
+
+  if (role !== 'admin') return null; // rodo tuščią kol tikrinama
+
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-6">Admin Panel</h1>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        <button onClick={onAddUserClick} className="bg-blue-600 hover:bg-blue-700 text-white p-4 rounded shadow text-left">
-          ➕ Add User
-        </button>
-        <button onClick={onManageClientsClick} className="bg-indigo-600 hover:bg-indigo-700 text-white p-4 rounded shadow text-left">
-          👥 Manage Clients
-        </button>
-        <button onClick={onViewReportsClick} className="bg-green-600 hover:bg-green-700 text-white p-4 rounded shadow text-left">
-          📄 View Reports
-        </button>
-      </div>
+    <div style={{ padding: '2rem' }}>
+      <h1 style={{ marginBottom: '2rem' }}>Admin Panel</h1>
+      <button
+        style={{ padding: '0.75rem 1.5rem', fontSize: '16px', cursor: 'pointer' }}
+        onClick={() => navigate('/admin/clients')}
+      >
+        Add Client
+      </button>
+      <button
+        style={{ padding: '0.75rem 1.5rem', fontSize: '16px', cursor: 'pointer', marginLeft: '1rem' }}
+        onClick={() => navigate('/admin/add-user')}
+      >
+        Add User
+      </button>
     </div>
   );
 }
+
+export default AdminPanel;

@@ -43,7 +43,7 @@ function AdminClients() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto p-6">
+    <div className="w-full px-4 mt-10">
       <h2 className="text-xl font-semibold mb-4">Client Management</h2>
       <button
         onClick={() => {

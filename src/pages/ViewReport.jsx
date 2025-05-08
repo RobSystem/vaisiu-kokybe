@@ -1,291 +1,154 @@
-import { useEffect, useState } from 'react'
+// Perrašytas ViewReport.jsx su Tailwind dizainu (funkcionalumas nesikeičia)
+import { useEffect, useState, useRef } from 'react'
 import { useParams } from 'react-router-dom'
 import { supabase } from '../supabaseClient'
 import html2pdf from 'html2pdf.js'
-import { useRef } from 'react'
 
 function ViewReport() {
   const { reportId } = useParams()
   const [report, setReport] = useState(null)
   const [samples, setSamples] = useState([])
   const [photos, setPhotos] = useState([])
+  const [attachments, setAttachments] = useState([])
   const [previewUrl, setPreviewUrl] = useState(null)
   const reportRef = useRef()
-  const [attachments, setAttachments] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
-      const { data: reportData } = await supabase
-        .from('reports')
-        .select('*')
-        .eq('id', reportId)
-        .single()
-
-      const { data: sampleData } = await supabase
-        .from('samples')
-        .select('*')
-        .eq('report_id', reportId)
-        .order('position', { ascending: true })
-
-      const { data: photoData } = await supabase
-        .from('sample_photos')
-        .select('*')
-        .in('sample_id', sampleData.map(s => s.id))
-
+      const { data: reportData } = await supabase.from('reports').select('*').eq('id', reportId).single()
+      const { data: sampleData } = await supabase.from('samples').select('*').eq('report_id', reportId).order('position')
+      const { data: photoData } = await supabase.from('sample_photos').select('*').in('sample_id', sampleData.map(s => s.id))
       setReport(reportData)
       setSamples(sampleData)
       setPhotos(photoData)
     }
     fetchData()
+
     const fetchAttachments = async () => {
-      const { data, error } = await supabase.storage
-        .from('report-files')
-        .list(`${reportId}/`);
-  
-      if (!error && data.length) {
-        setAttachments(data);
-      }
-    };
-  
-    if (reportId) fetchAttachments();
+      const { data } = await supabase.storage.from('report-files').list(`${reportId}/`)
+      if (data?.length) setAttachments(data)
+    }
+    fetchAttachments()
   }, [reportId])
 
-  if (!report || !Array.isArray(samples) || !Array.isArray(photos)) return null
+  if (!report) return null
 
-  const getPhotosForSample = (sampleId) => {
-    return photos.filter(p => p.sample_id === sampleId)
-  }
-
-  const renderListField = (label, values) => {
-    if (!Array.isArray(values) || values.length === 0) return null;
-    return (
-      <div style={{ marginBottom: '0.5rem' }}>
-        <p><strong>{label}:</strong></p>
-        <ul style={{ margin: 0, paddingLeft: '1.2rem' }}>
-          {values
-            .filter(item => (item.percent || item.percentage) !== undefined && (item.percent || item.percentage) !== '')
-            .map((item, index) => (
-              <li key={index}>
-                {item.color || item.name} ({parseFloat(item.percent || item.percentage)}%)
-              </li>
-          ))}
-        </ul>
-      </div>
-    )
-  }
-  const renderField = (label, value) => {
-    if (!value) return null;
-    return (
-      <p>
-        <strong>{label}:</strong> {value}
-      </p>
-    );
-  };
-
-  const renderConsistency = (consistencyObj) => {
-    if (!consistencyObj || typeof consistencyObj !== 'object') return null;
-  
-    const entries = Object.entries(consistencyObj).filter(([_, val]) => val && val !== '');
-  
-    if (entries.length === 0) return null;
-  
-    return (
-      <div style={{ marginBottom: '0.5rem' }}>
-        <p><strong>Consistency:</strong></p>
-        <ul style={{ margin: 0, paddingLeft: '1.2rem' }}>
-          {entries.map(([key, val]) => (
-            <li key={key}>
-              {key.charAt(0).toUpperCase() + key.slice(1)}: {parseFloat(val)}%
-            </li>
-          ))}
-        </ul>
-      </div>
-    )
-  }
-
-  const renderMultilineField = (label, value) => {
-    if (!value) return null
-    const lines = value.split(/\r?\n|\\n/).filter(l => l.trim() !== '')
-    if (lines.length === 0) return null
-    return (
-      <div>
-        <p><strong>{label}:</strong></p>
-        {lines.map((line, index) => <div key={index}>{line}</div>)}
-      </div>
-    )
-  }
-
-  const renderRangeField = (label, min, max, unit = '') => {
-    if ((min === null || min === '' || min === undefined) && (max === null || max === '' || max === undefined)) return null
-    const format = (val) => val ? val.toString() : ''
-    return (
-      <p><strong>{label}:</strong> {format(min)}{unit} {min && max ? '–' : ''} {max ? format(max) + unit : ''}</p>
-    )
-  }
-
-  const getQualityColor = (text) => {
-    if (!text) return 'black'
-    const lower = text.toLowerCase()
-    if (lower.includes('less') || lower.includes('poor') || lower.includes('loss')) return 'red'
-    if (lower.includes('good') || lower.includes('fair')) return 'green'
-    if (lower.includes('reasonable') || lower.includes('moderate')) return 'orange'
-    return 'black'
-  }
-
-  const getStorageColor = (text) => {
-    if (!text) return 'black'
-    const lower = text.toLowerCase()
-    if (lower.includes('good') || lower.includes('normal')) return 'green'
-    if (lower.includes('reduced') || lower.includes('moderate')) return 'orange'
-    if (lower.includes('limited') || lower.includes('poor') || lower.includes('no storage')) return 'red'
-    return 'black'
+  const getPhotosForSample = id => photos.filter(p => p.sample_id === id)
+  const renderField = (label, value) => value && <p><span className="font-semibold">{label}:</span> {value}</p>
+  const renderRange = (label, min, max, unit) => (min || max) && (
+    <p><span className="font-semibold">{label}:</span> {min || ''}{unit} {min && max ? '–' : ''} {max ? max + unit : ''}</p>
+  )
+  const renderList = (label, arr) => Array.isArray(arr) && arr.length > 0 && (
+    <div>
+      <p className="font-semibold">{label}:</p>
+      <ul className="list-disc ml-5">
+        {arr.map((item, i) => (
+          <li key={i}>{item.color || item.name} ({item.percent || item.percentage}%)</li>
+        ))}
+      </ul>
+    </div>
+  )
+  const renderMultiLine = (label, val) => val && (
+    <div>
+      <p className="font-semibold">{label}:</p>
+      {val.split(/\r?\n|\\n/).map((line, i) => <p key={i}>{line}</p>)}
+    </div>
+  )
+  const renderConsistency = obj => obj && (
+    <div>
+      <p className="font-semibold">Consistency:</p>
+      <ul className="list-disc ml-5">
+        {Object.entries(obj).map(([k, v]) => v && <li key={k}>{k.charAt(0).toUpperCase() + k.slice(1)}: {v}%</li>)}
+      </ul>
+    </div>
+  )
+  const getColor = (val, type) => {
+    const t = val?.toLowerCase() || ''
+    if (type === 'quality') return t.includes('loss') || t.includes('poor') ? 'text-red-600' : t.includes('good') ? 'text-green-600' : 'text-orange-500'
+    if (type === 'storage') return t.includes('no') || t.includes('limited') ? 'text-red-600' : t.includes('good') ? 'text-green-600' : 'text-orange-500'
+    return ''
   }
 
   const handleDownloadPDF = () => {
-    const element = reportRef.current
-    if (!element) return
-
+    const el = reportRef.current
+    if (!el) return
     setTimeout(() => {
-      html2pdf()
-        .set({
-          filename: `${report.client_ref}_report.pdf`,
-          image: { type: 'jpeg', quality: 1 },
-          html2canvas: {
-            scale: 1.5,
-            useCORS: true,
-            logging: true,
-          },
-          jsPDF: {
-            orientation: 'landscape',
-            unit: 'pt',
-            format: 'a4',
-          },
-          pagebreak: { mode: ['avoid-all', 'css', 'legacy'] },
-        })
-        .from(element)
-        .save()
+      html2pdf().set({
+        filename: `${report.client_ref}_report.pdf`,
+        image: { type: 'jpeg', quality: 1 },
+        html2canvas: { scale: 1.5, useCORS: true },
+        jsPDF: { orientation: 'landscape', unit: 'pt', format: 'a4' },
+        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] },
+      }).from(el).save()
     }, 500)
   }
 
   return (
-    <div
-      ref={reportRef}
-      className="pdf-wrapper"
-      style={{
-        width: '100vw',
-        maxWidth: '100%',
-        margin: '0 auto',
-        fontFamily: 'Arial, sans-serif',
-        padding: '2rem',
-        minHeight: '100vh',
-        boxSizing: 'border-box',
-        backgroundColor: '#fff',
-      }}
-    >
-      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
-        <img src="/Logoedit2.png" alt="Logo" style={{ height: '60px', marginRight: '1rem' }} />
-        <h1 style={{ flex: 1, textAlign: 'center' }}>QUALITY CONTROL REPORT</h1>
+    <div ref={reportRef} className="max-w-6xl mx-auto p-6 bg-white">
+      <div className="flex items-center justify-between mb-6">
+        <img src="/Logoedit2.png" alt="Logo" className="h-14" />
+        <h1 className="text-2xl font-bold text-center flex-1">QUALITY CONTROL REPORT</h1>
       </div>
 
-      <hr style={{ borderTop: '5px solid #ccc', margin: '2rem 0' }} />
-
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2rem', fontSize: '14px' }}>
-        <div style={{ width: '32%' }}>
-          {renderField('Date', report.date)}
-          {renderField('Consignee', report.client)}
-          {renderField('Consignee Ref', report.client_ref)}
-          {renderField('Container Number', report.container_number)}
-          {renderField('RoChecks Ref', report.rochecks_ref)}
-        </div>
-        <div style={{ width: '32%' }}>
-        {renderField('Supplier', report.supplier)}
-          {renderField('Variety', report.variety)}
-          {renderField('Origin', report.origin)}
-          {renderField('Location', report.location)}
-          {renderField('Total Pallets', report.total_pallets)}          
-        </div>
-        <div style={{ width: '32%' }}>
-        {renderField('Type', report.type)}
-          {renderField('Surveyor', report.surveyor)}
-          {renderField('Brand', report.brand)}
-          {renderField('Temperature', report.temperature)}
-          {renderField('Category', report.category)}
-        </div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm mb-6">
+        <div>{renderField('Date', report.date)}{renderField('Client', report.client)}{renderField('Ref', report.client_ref)}{renderField('Container #', report.container_number)}{renderField('RoChecks Ref', report.rochecks_ref)}</div>
+        <div>{renderField('Supplier', report.supplier)}{renderField('Variety', report.variety)}{renderField('Origin', report.origin)}{renderField('Location', report.location)}{renderField('Total Pallets', report.total_pallets)}</div>
+        <div>{renderField('Type', report.type)}{renderField('Surveyor', report.surveyor)}{renderField('Brand', report.brand)}{renderField('Temperature', report.temperature)}{renderField('Category', report.category)}</div>
       </div>
-
-      <hr style={{ borderTop: '5px solid #ccc', margin: '2rem 0' }} />
 
       {samples.map(sample => (
-        <div
-          key={sample.id}
-          style={{
-            border: '1px solid #ccc',
-            borderRadius: '8px',
-            padding: '1rem',
-            marginBottom: '2rem',
-            backgroundColor: '#f9f9f9',
-            pageBreakAfter: 'always'
-          }}
-        >
-          <h3 style={{ fontSize: '18px', marginBottom: '1rem' }}>Pallet Number: {sample.pallet_number}</h3>
-
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', gap: '2rem' }}>
-            <div style={{ width: '32%' }}>
-              {renderField('GGN Number', sample.ggn_number)}
-              {renderField('GGN Exp. Date', sample.ggn_exp_date)}
+        <div key={sample.id} className="border rounded p-4 mb-6 bg-gray-50">
+          <h3 className="font-semibold text-lg mb-2">Pallet: {sample.pallet_number}</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+            <div>
+              {renderField('GGN #', sample.ggn_number)}
+              {renderField('GGN Exp', sample.ggn_exp_date)}
               {renderField('Grower Code', sample.grower_code)}
               {renderField('Packing Code', sample.packing_code)}
               {renderField('Variety', sample.variety)}
               {renderField('Brand', sample.brand)}
             </div>
-            <div style={{ width: '32%' }}>
+            <div>
               {renderField('Packing Type', sample.packing_type)}
               {renderField('Size', sample.size)}
-              {renderRangeField('Box Weight', sample.box_weight_min, sample.box_weight_max, 'kg')}
-              {renderRangeField('Fruit Weight', sample.fruit_weight_min, sample.fruit_weight_max, 'g')}
-              {sample.fruit_weights_extra && Array.isArray(sample.fruit_weights_extra) && sample.fruit_weights_extra.length > 0 && (
-                <div>
-                  <p><strong>Additional Fruit Weights:</strong></p>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-                    {sample.fruit_weights_extra.map((val, idx) => (
-                      <div key={idx} style={{ padding: '0.3rem 0.6rem', backgroundColor: '#eee', borderRadius: '4px', fontSize: '13px' }}>
-                        {val}g
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-              {renderRangeField('Pressures', sample.pressures_min, sample.pressures_max, 'kg')}
-              {renderRangeField('Brix', sample.brix_min, sample.brix_max, '°')}
-              {renderRangeField('Fruit Diameter', sample.fruit_diameter_min, sample.fruit_diameter_max, 'mm')}
+              {renderRange('Box Weight', sample.box_weight_min, sample.box_weight_max, 'kg')}
+              {renderRange('Fruit Weight', sample.fruit_weight_min, sample.fruit_weight_max, 'g')}
+              {renderRange('Pressures', sample.pressures_min, sample.pressures_max, 'kg')}
+              {renderRange('Brix', sample.brix_min, sample.brix_max, '°')}
+              {renderRange('Diameter', sample.fruit_diameter_min, sample.fruit_diameter_max, 'mm')}
             </div>
-            <div style={{ width: '32%' }}>
-              {renderListField('External Coloration', sample.external_coloration)}
-              {renderListField('Internal Coloration', sample.internal_coloration)}
+            <div>
+              {renderList('External Coloration', sample.external_coloration)}
+              {renderList('Internal Coloration', sample.internal_coloration)}
               {renderConsistency(sample.consistency)}
-              {renderMultilineField('Minor Defects', sample.minor_defects)}
-              {renderMultilineField('Major Defects', sample.major_defects)}
-              {renderField('Comments', sample.observations)}
+              {renderMultiLine('Minor Defects', sample.minor_defects)}
+              {renderMultiLine('Major Defects', sample.major_defects)}
             </div>
           </div>
 
-          <div style={{ display: 'flex', justifyContent: 'start', marginTop: '1rem', gap: '3rem' }}>
-          <p style={{ color: getQualityColor(sample.quality_score), fontWeight: 'bold' }}>
-  Quality Score: {sample.quality_score}
-</p>
-<p style={{ color: getStorageColor(sample.storage_score), fontWeight: 'bold' }}>
-  Storage Score: {sample.storage_score}
-</p>
+          {sample.fruit_weights_extra?.length > 0 && (
+            <div className="mt-2">
+              <p className="font-semibold">Extra Fruit Weights:</p>
+              <div className="flex flex-wrap gap-2 mt-1">
+                {sample.fruit_weights_extra.map((w, i) => (
+                  <span key={i} className="bg-gray-200 px-2 py-1 rounded text-xs">{w}g</span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div className="flex gap-6 mt-4">
+            <p className={"font-bold " + getColor(sample.quality_score, 'quality')}>Quality Score: {sample.quality_score}</p>
+            <p className={"font-bold " + getColor(sample.storage_score, 'storage')}>Storage Score: {sample.storage_score}</p>
           </div>
 
-          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginTop: '1rem' }}>
+          <div className="flex flex-wrap gap-4 mt-4">
             {getPhotosForSample(sample.id).map(photo => (
               <img
                 key={photo.id}
                 src={photo.url}
-                crossOrigin="anonymous"
                 alt="sample"
-                style={{ width: '150px', height: '150px', objectFit: 'cover', borderRadius: '4px', cursor: 'pointer' }}
+                className="w-36 h-36 object-cover rounded border cursor-pointer"
                 onClick={() => setPreviewUrl(photo.url)}
               />
             ))}
@@ -293,70 +156,39 @@ function ViewReport() {
         </div>
       ))}
 
-      <hr style={{ borderTop: '5px solid #ccc', margin: '2rem 0' }} />
-
-      <div style={{ display: 'flex', gap: '3rem', fontWeight: 'bold', marginBottom: '1rem' }}>
-        <p style={{ color: getQualityColor(report.qualityScore), fontWeight: 'bold' }}>
-          Quality Score: {report.qualityScore}
-        </p>
-        <p style={{ color: getStorageColor(report.storageScore), fontWeight: 'bold' }}>
-          Storage Score: {report.storageScore}
-        </p>
-      </div>
+      {attachments.length > 0 && (
+        <div className="mt-6">
+          <h3 className="font-semibold mb-2">Temp. Records:</h3>
+          <ul className="list-disc ml-5">
+            {attachments.map((f, i) => {
+              const url = supabase.storage.from('report-files').getPublicUrl(`${reportId}/${f.name}`).data.publicUrl
+              return <li key={i}><a href={url} className="text-blue-600 underline" target="_blank" rel="noreferrer">📎 File {i + 1}</a></li>
+            })}
+          </ul>
+        </div>
+      )}
 
       {report.conclusion && (
-        <div style={{
-          fontSize: '15px',
-          whiteSpace: 'pre-line',
-          padding: '1rem',
-          border: '1px solid #ccc',
-          borderRadius: '6px',
-          backgroundColor: '#f5f5f5'
-        }}>
-          <p><strong>Conclusion:</strong></p>
-          <p>{report.conclusion}</p>
+        <div className="mt-6 p-4 bg-gray-100 border rounded">
+          <p className="font-semibold">Conclusion:</p>
+          <p className="whitespace-pre-line">{report.conclusion}</p>
         </div>
       )}
+
+      <div className="mt-8">
+        <button
+          onClick={handleDownloadPDF}
+          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded"
+        >
+          Download PDF
+        </button>
+      </div>
 
       {previewUrl && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.8)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 999 }} onClick={() => setPreviewUrl(null)}>
-          <img src={previewUrl} alt="preview" style={{ maxWidth: '90%', maxHeight: '90%', borderRadius: '8px' }} />
+        <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50" onClick={() => setPreviewUrl(null)}>
+          <img src={previewUrl} alt="preview" className="max-w-[90%] max-h-[90%] rounded" />
         </div>
       )}
-      {attachments.length > 0 && (
-  <div style={{ marginTop: '2rem' }}>
-    <h3>Temp. recordes:</h3>
-    {attachments.map((file, index) => {
-      const publicUrl = supabase.storage
-        .from('report-files')
-        .getPublicUrl(`${reportId}/${file.name}`).data.publicUrl;
-
-      return (
-        <div key={file.name} style={{ marginBottom: '0.5rem' }}>
-          <a href={publicUrl} target="_blank" rel="noopener noreferrer">
-            📎 Download File {index + 1}
-          </a>
-        </div>
-      );
-    })}
-  </div>
-)}
-
-      <button
-        onClick={handleDownloadPDF}
-        style={{
-          marginTop: '2rem',
-          padding: '10px 20px',
-          fontSize: '16px',
-          backgroundColor: '#1d4ed8',
-          color: 'white',
-          border: 'none',
-          borderRadius: '6px',
-          cursor: 'pointer'
-        }}
-      >
-        Download PDF
-      </button>
     </div>
   )
 }

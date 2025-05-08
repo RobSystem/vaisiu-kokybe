@@ -168,17 +168,15 @@ function ViewReport() {
         </div>
       ))}
 
-      {attachments.length > 0 && (
-        <div className="mt-6">
-          <h3 className="font-semibold mb-2">Temp. Records:</h3>
-          <ul className="list-disc ml-5">
-            {attachments.map((f, i) => {
-              const url = supabase.storage.from('report-files').getPublicUrl(`${reportId}/${f.name}`).data.publicUrl
-              return <li key={i}><a href={url} className="text-blue-600 underline" target="_blank" rel="noreferrer">📎 File {i + 1}</a></li>
-            })}
-          </ul>
-        </div>
-      )}
+      
+      <div className="flex gap-6 mt-6 text-lg">
+  <p className={"font-bold " + getColor(reports.qualityScore, 'quality')}>
+    Quality Score: {report.quality_score}
+  </p>
+  <p className={"font-bold " + getColor(reports.storageScore, 'storage')}>
+    Storage Score: {report.storage_score}
+  </p>
+</div>
 
       {report.conclusion && (
         <div className="mt-6 p-4 bg-gray-100 border rounded">
@@ -195,7 +193,17 @@ function ViewReport() {
           Download PDF
         </button>
       </div>
-
+      {attachments.length > 0 && (
+        <div className="mt-6">
+          <h3 className="font-semibold mb-2">Temp. Records:</h3>
+          <ul className="list-disc ml-5">
+            {attachments.map((f, i) => {
+              const url = supabase.storage.from('report-files').getPublicUrl(`${reportId}/${f.name}`).data.publicUrl
+              return <li key={i}><a href={url} className="text-blue-600 underline" target="_blank" rel="noreferrer">📎 File {i + 1}</a></li>
+            })}
+          </ul>
+        </div>
+      )}
       {previewUrl && (
         <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50" onClick={() => setPreviewUrl(null)}>
           <img src={previewUrl} alt="preview" className="max-w-[90%] max-h-[90%] rounded" />

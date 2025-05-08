@@ -572,7 +572,7 @@ const updatePayload = {
     onClick={() => addColoration('external')}
     className="bg-blue-500 text-white px-3 py-1 rounded"
   >
-    Add External
+    Add External Coloration
   </button>
 </div>
 
@@ -611,7 +611,7 @@ const updatePayload = {
     onClick={() => addColoration('internal')}
     className="bg-blue-500 text-white px-3 py-1 rounded"
   >
-    Add Internal
+    Add Internal Coloration
   </button>
 </div>
 
@@ -628,14 +628,26 @@ const updatePayload = {
       </div>
 
       <h3 className="font-semibold mb-2">Defects</h3>
-      <div className="grid md:grid-cols-2 gap-4 mb-6">
-        {['major_defects', 'minor_defects'].map(field => (
-          <div key={field}>
-            <label className="block text-gray-700 mb-1 capitalize">{field.replace(/_/g, ' ')}</label>
-            <textarea name={field} value={form[field]} onChange={handleChange} className="p-2 border rounded w-full h-24" />
-          </div>
-        ))}
-      </div>
+<div className="space-y-4 mb-6">
+  <div>
+    <label className="block text-gray-700 mb-1">Major Defects</label>
+    <textarea
+      name="major_defects"
+      value={form.major_defects}
+      onChange={handleChange}
+      className="p-2 border rounded w-full h-24"
+    />
+  </div>
+  <div>
+    <label className="block text-gray-700 mb-1">Minor Defects</label>
+    <textarea
+      name="minor_defects"
+      value={form.minor_defects}
+      onChange={handleChange}
+      className="p-2 border rounded w-full h-24"
+    />
+  </div>
+</div>
 
       <h3 className="font-semibold mb-2">Scoring</h3>
       <div className="grid md:grid-cols-2 gap-4 mb-6">

@@ -191,16 +191,19 @@ const updatePayload = {
   </div>
 
   {showExtraInfo && (
-    <div className="pl-4 border-l-4 border-blue-300 mt-4 space-y-4">
-<div className="flex justify-end">
-  <button
-    onClick={handleSave}
-    className="bg-green-500 hover:bg-green-600 text-white text-xs px-3 py-1 rounded"
-    type="button"
-  >
-    Save
-  </button>
-</div>
+  <div className="pl-4 border-l-4 border-blue-300 mt-4 space-y-4">
+    {/* visos tavo formos eilutės čia */}
+    
+    {/* nauja vieta mygtukui – apačioje */}
+    <div className="flex justify-end pt-4">
+      <button
+        onClick={handleSave}
+        className="bg-green-500 hover:bg-green-600 text-white text-sm px-4 py-2 rounded"
+        type="button"
+      >
+        Save
+      </button>
+    </div>
       {/* Line 1 */}
       <div className="flex flex-wrap items-end gap-4">
   <div className="flex-1">

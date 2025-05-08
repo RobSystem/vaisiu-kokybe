@@ -16,9 +16,10 @@ function UploadPhotos() {
 
   const fetchPhotos = async () => {
     const { data, error } = await supabase
-      .from('sample_photos')
-      .select('*')
-      .eq('sample_id', sampleId)
+  .from('sample_photos')
+  .select('*')
+  .eq('sample_id', sampleId)
+  .order('created_at', { ascending: true })
 
     if (error) {
       console.error('❌ Klaida gaunant nuotraukas iš DB:', error.message)

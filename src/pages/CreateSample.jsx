@@ -195,15 +195,7 @@ const updatePayload = {
     {/* visos tavo formos eilutės čia */}
     
     {/* nauja vieta mygtukui – apačioje */}
-    <div className="flex justify-end pt-4">
-      <button
-        onClick={handleSave}
-        className="bg-green-500 hover:bg-green-600 text-white text-sm px-4 py-2 rounded"
-        type="button"
-      >
-        Save
-      </button>
-    </div>
+    
       {/* Line 1 */}
       <div className="flex flex-wrap items-end gap-4">
   <div className="flex-1">
@@ -499,8 +491,17 @@ const updatePayload = {
       Delete 
     </button>
   </div>
+  
 )}
-    </div>
+    <div className="flex justify-end pt-6">
+  <button
+    onClick={handleSave}
+    className="bg-green-500 hover:bg-green-600 text-white text-sm px-6 py-2 rounded"
+    type="button"
+  >
+    Save
+  </button>
+</div></div>
   )}
 </div>
 

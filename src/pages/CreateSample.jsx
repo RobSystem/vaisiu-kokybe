@@ -79,7 +79,8 @@ useEffect(() => {
     list.splice(index, 1);
     type === 'external' ? setExternalColoration(list) : setInternalColoration(list);
   };
-
+  const trimArray = (arr) =>
+    Array.isArray(arr) ? arr.map(v => typeof v === 'string' ? v.trim() : v).filter(v => v !== '') : [];
   const handleSave = async () => {
     const cleanedForm = Object.fromEntries(
       Object.entries(form).map(([key, value]) => [key, value === '' || value === 'Pasirinkti' ? null : value])

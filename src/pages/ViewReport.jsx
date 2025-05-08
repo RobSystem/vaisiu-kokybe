@@ -62,6 +62,16 @@ function ViewReport() {
       </ul>
     </div>
   )
+  const renderInlineList = (label, arr, unit = '') => (
+    <div>
+      <p className="font-semibold">{label}:</p>
+      <div className="flex flex-wrap gap-2 mt-1">
+        {arr.map((val, i) => (
+          <span key={i} className="bg-gray-200 px-2 py-1 rounded text-xs">{val}{unit}</span>
+        ))}
+      </div>
+    </div>
+  )
   const getColor = (val, type) => {
     const t = val?.toLowerCase() || ''
     if (type === 'quality') return t.includes('loss') || t.includes('poor') ? 'text-red-600' : t.includes('good') ? 'text-green-600' : 'text-orange-500'
@@ -112,10 +122,15 @@ function ViewReport() {
               {renderField('Packing Type', sample.packing_type)}
               {renderField('Size', sample.size)}
               {renderRange('Box Weight', sample.box_weight_min, sample.box_weight_max, 'kg')}
+              {sample.box_weight_extra?.length > 0 && renderInlineList('Extra Box Weights', sample.box_weight_extra, 'kg')}
               {renderRange('Fruit Weight', sample.fruit_weight_min, sample.fruit_weight_max, 'g')}
+              {sample.fruit_weights_extra?.length > 0 && renderInlineList('Extra Fruit Weights', sample.fruit_weights_extra, 'g')}
               {renderRange('Pressures', sample.pressures_min, sample.pressures_max, 'kg')}
+              {sample.pressures_extra?.length > 0 && renderInlineList('Extra Pressures', sample.pressures_extra, 'kg')}
               {renderRange('Brix', sample.brix_min, sample.brix_max, '°')}
+              {sample.brix_extra?.length > 0 && renderInlineList('Extra Brix', sample.brix_extra, '°')}
               {renderRange('Diameter', sample.fruit_diameter_min, sample.fruit_diameter_max, 'mm')}
+              {sample.diameter_extra?.length > 0 && renderInlineList('Extra Diameters', sample.diameter_extra, 'mm')}
             </div>
             <div>
               {renderList('External Coloration', sample.external_coloration)}
@@ -125,17 +140,6 @@ function ViewReport() {
               {renderMultiLine('Major Defects', sample.major_defects)}
             </div>
           </div>
-
-          {sample.fruit_weights_extra?.length > 0 && (
-            <div className="mt-2">
-              <p className="font-semibold">Extra Fruit Weights:</p>
-              <div className="flex flex-wrap gap-2 mt-1">
-                {sample.fruit_weights_extra.map((w, i) => (
-                  <span key={i} className="bg-gray-200 px-2 py-1 rounded text-xs">{w}g</span>
-                ))}
-              </div>
-            </div>
-          )}
 
           <div className="flex gap-6 mt-4">
             <p className={"font-bold " + getColor(sample.quality_score, 'quality')}>Quality Score: {sample.quality_score}</p>

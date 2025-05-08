@@ -536,38 +536,84 @@ const updatePayload = {
   )}
 </div>
 
-      <h3 className="font-semibold mb-2">Coloration</h3>
-      <div className="mb-2">
-        <button onClick={() => addColoration('external')} className="bg-blue-500 text-white px-3 py-1 rounded mb-2">Add External</button>
-        {externalColoration.map((item, i) => (
-          <div key={i} className="flex gap-2 mb-2">
-            <select value={item.color} onChange={(e) => updateColoration('external', i, 'color', e.target.value)} className="border p-2 rounded">
-              <option>Pasirinkti</option>
-              {['Green','Light Green','Yellow','Turning','Orange','Brown','White','Beige','Green Tinges','Red','Purple'].map(opt => <option key={opt}>{opt}</option>)}
-            </select>
-            <select value={item.percent} onChange={(e) => updateColoration('external', i, 'percent', e.target.value)} className="border p-2 rounded">
-              {[...Array(21)].map((_, i) => <option key={i}>{i * 5}%</option>)}
-            </select>
-            <button onClick={() => removeColoration('external', i)} className="text-red-500">Delete</button>
-          </div>
+<h3 className="font-semibold mb-2">Coloration</h3>
+<div className="mb-2">
+  {externalColoration.map((item, i) => (
+    <div key={i} className="flex gap-2 mb-2">
+      <select
+        value={item.color}
+        onChange={(e) => updateColoration('external', i, 'color', e.target.value)}
+        className="border p-2 rounded"
+      >
+        <option>Pasirinkti</option>
+        {['Green', 'Light Green', 'Yellow', 'Turning', 'Orange', 'Brown', 'White', 'Beige', 'Green Tinges', 'Red', 'Purple'].map(opt => (
+          <option key={opt}>{opt}</option>
         ))}
-      </div>
+      </select>
+      <select
+        value={item.percent}
+        onChange={(e) => updateColoration('external', i, 'percent', e.target.value)}
+        className="border p-2 rounded"
+      >
+        {[...Array(21)].map((_, i) => (
+          <option key={i}>{i * 5}%</option>
+        ))}
+      </select>
+      <button
+        onClick={() => removeColoration('external', i)}
+        className="text-red-500"
+      >
+        Delete
+      </button>
+    </div>
+  ))}
 
-      <div className="mb-2">
-        <button onClick={() => addColoration('internal')} className="bg-blue-500 text-white px-3 py-1 rounded mb-2">Add Internal</button>
-        {internalColoration.map((item, i) => (
-          <div key={i} className="flex gap-2 mb-2">
-            <select value={item.color} onChange={(e) => updateColoration('internal', i, 'color', e.target.value)} className="border p-2 rounded">
-              <option>Pasirinkti</option>
-              {['Green','Light Green','Yellow','Orange','Light Yellow','White','Red','Purple','Grey'].map(opt => <option key={opt}>{opt}</option>)}
-            </select>
-            <select value={item.percent} onChange={(e) => updateColoration('internal', i, 'percent', e.target.value)} className="border p-2 rounded">
-              {[...Array(21)].map((_, i) => <option key={i}>{i * 5}%</option>)}
-            </select>
-            <button onClick={() => removeColoration('internal', i)} className="text-red-500">Delete</button>
-          </div>
+  <button
+    onClick={() => addColoration('external')}
+    className="bg-blue-500 text-white px-3 py-1 rounded"
+  >
+    Add External
+  </button>
+</div>
+
+<div className="mb-2">
+  {internalColoration.map((item, i) => (
+    <div key={i} className="flex gap-2 mb-2">
+      <select
+        value={item.color}
+        onChange={(e) => updateColoration('internal', i, 'color', e.target.value)}
+        className="border p-2 rounded"
+      >
+        <option>Pasirinkti</option>
+        {['Green', 'Light Green', 'Yellow', 'Orange', 'Light Yellow', 'White', 'Red', 'Purple', 'Grey'].map(opt => (
+          <option key={opt}>{opt}</option>
         ))}
-      </div>
+      </select>
+      <select
+        value={item.percent}
+        onChange={(e) => updateColoration('internal', i, 'percent', e.target.value)}
+        className="border p-2 rounded"
+      >
+        {[...Array(21)].map((_, i) => (
+          <option key={i}>{i * 5}%</option>
+        ))}
+      </select>
+      <button
+        onClick={() => removeColoration('internal', i)}
+        className="text-red-500"
+      >
+        Delete
+      </button>
+    </div>
+  ))}
+
+  <button
+    onClick={() => addColoration('internal')}
+    className="bg-blue-500 text-white px-3 py-1 rounded"
+  >
+    Add Internal
+  </button>
+</div>
 
       <h3 className="font-semibold mb-2">Consistency</h3>
       <div className="grid md:grid-cols-3 gap-4 mb-6">

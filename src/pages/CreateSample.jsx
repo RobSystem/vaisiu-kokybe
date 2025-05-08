@@ -127,6 +127,37 @@ const updatePayload = {
       navigate(`/edit/${reportId}`);
     }
   };
+  const saveWithoutRedirect = async () => {
+    const cleanedForm = Object.fromEntries(
+      Object.entries(form).map(([key, value]) => [key, value === '' || value === 'Pasirinkti' ? null : value])
+    );
+  
+    const fruitTrimmed = trimArray(fruitWeightsExtra);
+    const boxTrimmed = trimArray(boxWeightExtra);
+    const pressuresTrimmed = trimArray(pressuresExtra);
+    const brixTrimmed = trimArray(brixExtra);
+    const diameterTrimmed = trimArray(diameterExtra);
+  
+    const updatePayload = {
+      ...cleanedForm,
+      fruit_weights_extra: fruitTrimmed.length > 0 ? fruitTrimmed : null,
+      box_weight_extra: boxTrimmed.length > 0 ? boxTrimmed : null,
+      pressures_extra: pressuresTrimmed.length > 0 ? pressuresTrimmed : null,
+      brix_extra: brixTrimmed.length > 0 ? brixTrimmed : null,
+      diameter_extra: diameterTrimmed.length > 0 ? diameterTrimmed : null,
+      external_coloration: externalColoration.length > 0 ? externalColoration : null,
+      internal_coloration: internalColoration.length > 0 ? internalColoration : null,
+      consistency: consistency
+    };
+  
+    let error;
+    if (sampleId) {
+      ({ error } = await supabase.from('samples').update(updatePayload).eq('id', sampleId));
+    }
+  
+    if (error) alert('Nepavyko išsaugoti');
+    else alert('Išsaugota sėkmingai!');
+  };
 
   return (
     <div className="w-full px-4 py-6 text-sm">
@@ -170,7 +201,7 @@ const updatePayload = {
     </div>
     <div className="flex justify-end mt-4">
   <button
-    onClick={handleSave}
+    onClick={saveWithoutRedirect}
     className="bg-green-500 hover:bg-green-600 text-white text-sm px-4 py-2 rounded"
     type="button"
   >
@@ -495,7 +526,7 @@ const updatePayload = {
 )}
     <div className="flex justify-end pt-6">
   <button
-    onClick={handleSave}
+    onClick={saveWithoutRedirect}
     className="bg-green-500 hover:bg-green-600 text-white text-sm px-6 py-2 rounded"
     type="button"
   >

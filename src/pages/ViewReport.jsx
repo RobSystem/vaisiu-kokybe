@@ -82,10 +82,19 @@ function ViewReport() {
   )
   const getColor = (val, type) => {
     const t = val?.toLowerCase() || ''
-    if (type === 'quality') return t.includes('loss') || t.includes('poor') ? 'text-red-600' : t.includes('good') ? 'text-green-600' : 'text-orange-500'
-    if (type === 'storage') return t.includes('no') || t.includes('limited') ? 'text-red-600' : t.includes('good') ? 'text-green-600' : 'text-orange-500'
+    if (type === 'quality') {
+      if (t.includes('loss') || t.includes('poor') || t.includes('less')) return 'text-red-600'
+      if (t.includes('good')) return 'text-green-600'
+      return 'text-orange-500'
+    }
+    if (type === 'storage') {
+      if (t.includes('no') || t.includes('limited')) return 'text-red-600'
+      if (t.includes('good')) return 'text-green-600'
+      return 'text-orange-500'
+    }
     return ''
   }
+  
 
   const handleDownloadPDF = () => {
     const el = reportRef.current

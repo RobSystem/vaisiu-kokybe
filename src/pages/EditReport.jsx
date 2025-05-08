@@ -37,27 +37,27 @@ function EditReport() {
     if (reportId) fetchReport();
   }, [reportId]);
   useEffect(() => {
-    const fetchPdfFiles = async () => {
-      const files = [];
-      for (let i = 1; i <= 3; i++) {
-        const { data, error } = await supabase.storage.from('report-files').list(`${reportId}`, {
-          limit: 10,
-          offset: 0,
-          search: `file${i}.pdf`
-        });
-        if (data && data.length) {
-          const { data: urlData } = await supabase.storage.from('report-files').getPublicUrl(`${reportId}/file${i}.pdf`);
-          files[i - 1] = { name: `file${i}.pdf`, url: urlData.publicUrl };
-        } else {
-          files[i - 1] = null;
-        }
+  const fetchPdfFiles = async () => {
+    const files = [];
+    for (let i = 1; i <= 3; i++) {
+      const { data, error } = await supabase.storage.from('report-files').list(`${reportId}`, {
+        limit: 10,
+        offset: 0,
+        search: `file${i}.pdf`
+      });
+      if (data && data.length) {
+        const { data: urlData } = await supabase.storage.from('report-files').getPublicUrl(`${reportId}/file${i}.pdf`);
+        files[i - 1] = { name: `file${i}.pdf`, url: urlData.publicUrl };
+      } else {
+        files[i - 1] = null;
       }
-      setPdfFiles(files);
-    };
-  
-    if (reportId) fetchPdfFiles();
-  }, [reportId]);
-  
+    }
+    setPdfFiles(files);
+  };
+
+  if (reportId) fetchPdfFiles();
+}, [reportId]);
+
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -246,68 +246,75 @@ function EditReport() {
       <div className="mb-6">
   <label className="font-semibold block mb-2">Upload Temp.recorders:</label>
   {[0, 1, 2].map(i => (
-    <div key={i} className="flex items-center gap-2 mb-2">
-      <input
-        type="file"
-        accept="application/pdf"
-        onChange={(e) => setPdfFiles(prev => {
+  <div key={i} className="flex items-center gap-2 mb-2">
+    <input
+      type="file"
+      accept="application/pdf"
+      onChange={(e) => {
+        const file = e.target.files[0];
+        setPdfFiles(prev => {
           const updated = [...prev];
-          updated[i] = e.target.files[0];
+          updated[i] = file;
           return updated;
-        })}
-        className="border p-1 rounded w-full"
-      />
-      <button
-        onClick={async () => {
-          if (!pdfFiles[i]) return alert('Pasirinkite failą!');
-          setUploading(true);
-          try {
-            await supabase.storage.from('report-files').upload(
-              `${reportId}/file${i + 1}.pdf`,
-              pdfFiles[i],
-              { cacheControl: '3600', upsert: true, contentType: 'application/pdf' }
-            );
-            alert(`Failas ${i + 1} įkeltas!`);
-          } catch (err) {
-            console.error(err);
-            alert('Įkėlimo klaida');
-          } finally {
-            setUploading(false);
-          }
-        }}
-        className="bg-blue-500 hover:bg-blue-600 text-white text-xs px-3 py-1 rounded"
-      >
-        Upload
-      </button>
+        });
+      }}
+      className="border p-1 rounded w-full"
+    />
+    <button
+      onClick={async () => {
+        if (!pdfFiles[i] || pdfFiles[i]?.url) return alert('Pasirinkite failą!');
+        setUploading(true);
+        try {
+          await supabase.storage.from('report-files').upload(
+            `${reportId}/file${i + 1}.pdf`,
+            pdfFiles[i],
+            { cacheControl: '3600', upsert: true, contentType: 'application/pdf' }
+          );
+          alert(`Failas ${i + 1} įkeltas!`);
+          window.location.reload(); // arba iškviesti fetchPdfFiles()
+        } catch (err) {
+          console.error(err);
+          alert('Įkėlimo klaida');
+        } finally {
+          setUploading(false);
+        }
+      }}
+      className="bg-blue-500 hover:bg-blue-600 text-white text-xs px-3 py-1 rounded"
+    >
+      Upload
+    </button>
 
-      <button
-        onClick={async () => {
-          setUploading(true);
-          try {
-            await supabase.storage.from('report-files').remove([`${reportId}/file${i + 1}.pdf`]);
-            alert(`Failas ${i + 1} ištrintas`);
-            setPdfFiles(prev => {
-              const updated = [...prev];
-              updated[i] = null;
-              return updated;
-            });
-          } catch (err) {
-            console.error(err);
-            alert('Trinimo klaida');
-          } finally {
-            setUploading(false);
-          }
-        }}
-        className="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1 rounded"
-      >
-        Delete
-      </button>
+    <button
+      onClick={async () => {
+        setUploading(true);
+        try {
+          await supabase.storage.from('report-files').remove([`${reportId}/file${i + 1}.pdf`]);
+          alert(`Failas ${i + 1} ištrintas`);
+          window.location.reload(); // arba iškviesti fetchPdfFiles()
+        } catch (err) {
+          console.error(err);
+          alert('Trinimo klaida');
+        } finally {
+          setUploading(false);
+        }
+      }}
+      className="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1 rounded"
+    >
+      Delete
+    </button>
 
-      {pdfFiles[i] && (
-        <span className="text-xs text-gray-600 truncate max-w-[150px]">{pdfFiles[i].name}</span>
-      )}
-    </div>
-  ))}
+    {pdfFiles[i] && pdfFiles[i]?.url && (
+      <a
+        href={pdfFiles[i].url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-blue-600 underline text-xs"
+      >
+        Peržiūrėti PDF
+      </a>
+    )}
+  </div>
+))}
 </div>
 
       {showEditModal && (

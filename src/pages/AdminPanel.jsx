@@ -19,23 +19,25 @@ function AdminPanel() {
     checkRole();
   }, [navigate]);
 
-  if (role !== 'admin') return null; // rodo tuščią kol tikrinama
+  if (role !== 'admin') return null;
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <h1 style={{ marginBottom: '2rem' }}>Admin Panel</h1>
-      <button
-        style={{ padding: '0.75rem 1.5rem', fontSize: '16px', cursor: 'pointer' }}
-        onClick={() => navigate('/admin/clients')}
-      >
-        Add Client
-      </button>
-      <button
-        style={{ padding: '0.75rem 1.5rem', fontSize: '16px', cursor: 'pointer', marginLeft: '1rem' }}
-        onClick={() => navigate('/admin/add-user')}
-      >
-        Add User
-      </button>
+    <div className="p-8">
+      <h1 className="text-2xl font-semibold mb-8">Admin Panel</h1>
+      <div className="flex gap-4">
+        <button
+          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded"
+          onClick={() => navigate('/admin/clients')}
+        >
+          Add Client
+        </button>
+        <button
+          className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded"
+          onClick={() => navigate('/admin/add-user')}
+        >
+          Add User
+        </button>
+      </div>
     </div>
   );
 }

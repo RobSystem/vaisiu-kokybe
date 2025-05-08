@@ -147,16 +147,12 @@ function ViewReport() {
               {renderMultiLine('Minor Defects', sample.minor_defects)}
               {renderMultiLine('Major Defects', sample.major_defects)}
             </div>
-            <div className="mt-2 flex gap-6 text-sm justify-end">
-  <p className={"font-bold " + getColor(sample.quality_score, 'quality')}>
-    Quality Score: {sample.quality_score}
-  </p>
-  <p className={"font-bold " + getColor(sample.storage_score, 'storage')}>
-    Storage Score: {sample.storage_score}
-  </p>
-</div>
-</div>
-          
+          </div>
+
+          <div className="flex gap-6 mt-4 justify-end">
+            <p className={"font-bold " + getColor(sample.quality_score, 'quality')}>Quality Score: {sample.quality_score}</p>
+            <p className={"font-bold " + getColor(sample.storage_score, 'storage')}>Storage Score: {sample.storage_score}</p>
+          </div>
 
           <div className="flex flex-wrap gap-4 mt-4">
             {getPhotosForSample(sample.id).map(photo => (

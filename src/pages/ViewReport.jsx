@@ -42,8 +42,7 @@ function ViewReport() {
     <div>
       <p className="font-semibold">{label}:</p>
       <ul className="list-disc ml-5">
-        {arr.map((item, i) => (
-          <li key={i}>{item.color || item.name} ({item.percent || item.percentage}%)</li>
+        {arr.map((item, i) => (<li key={i}>{item.color || item.name} ({item.percent || item.percentage})%</li>
         ))}
       </ul>
     </div>

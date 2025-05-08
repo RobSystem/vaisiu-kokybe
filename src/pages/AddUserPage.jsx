@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import supabaseAdmin from '../supabaseAdminClient';
 import { supabase } from '../supabaseClient';
 
-function AddUserPage() {
+export default function AddUserPage() {
   const [users, setUsers] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({ name: '', email: '', password: '', role: 'user' });
@@ -26,56 +26,34 @@ function AddUserPage() {
 
   const handleSubmit = async () => {
     setLoading(true);
+
     if (editUserId) {
       const { error } = await supabaseAdmin.auth.admin.updateUserById(editUserId, {
         email: formData.email,
         password: formData.password,
         user_metadata: { name: formData.name, role: formData.role },
       });
+
+      setMessage(error ? `Klaida: ${error.message}` : 'Vartotojas atnaujintas!');
+    } else {
+      const { data: newUser, error } = await supabaseAdmin.auth.admin.createUser({
+        email: formData.email,
+        password: formData.password,
+        user_metadata: { name: formData.name, role: formData.role },
+        email_confirm: true
+      });
+
       if (error) {
         setMessage(`Klaida: ${error.message}`);
       } else {
-        setMessage('Vartotojas atnaujintas!');
+        setMessage('Vartotojas sukurtas sėkmingai!');
+        await supabase.from('user_profiles').insert({
+          id: newUser.user.id,
+          name: formData.name,
+          role: formData.role
+        });
       }
-    } else {
-        const { data: newUser, error } = await supabaseAdmin.auth.admin.createUser({
-            email: formData.email,
-            password: formData.password,
-            user_metadata: { name: formData.name, role: formData.role },
-            email_confirm: true
-          });
-          
-          if (error) {
-            setMessage(`Klaida: ${error.message}`);
-          } else {
-            setMessage('Vartotojas sukurtas sekmingai!');
-          
-            // ➕ ĮRAŠOME Į user_profiles lentelę
-            const { error: insertError } = await supabase
-              .from('user_profiles')
-              .insert({
-                id: newUser.user.id, // UUID iš auth
-                name: formData.name,
-                role: formData.role
-              });
-          
-            if (insertError) {
-              console.error('Klaida įrašant į user_profiles:', insertError.message);
-            }
-          }
-  // ➕ ĮRAŠOME Į user_profiles lentelę
-  const { error: insertError } = await supabase
-    .from('user_profiles')
-    .insert({
-      id: newUser.user.id, // UUID iš auth
-      name: formData.name,
-      role: formData.role
-    });
-
-  if (insertError) {
-    console.error('Klaida įrašant į user_profiles:', insertError.message);
-  }
-}
+    }
 
     setFormData({ name: '', email: '', password: '', role: 'user' });
     setEditUserId(null);
@@ -96,155 +74,95 @@ function AddUserPage() {
   };
 
   const handleDelete = async (userId) => {
-    if (window.confirm('Ar tikrai norite istrinti si vartotoja?')) {
-      const { error } = await supabaseAdmin.auth.admin.deleteUser(userId);
-  
-      if (error) {
-        alert('Klaida tryniant vartotoja');
-      } else {
-        // Taip pat trinam iš user_profiles
-        const { error: deleteProfileError } = await supabase
-          .from('user_profiles')
-          .delete()
-          .eq('id', userId);
-  
-        if (deleteProfileError) {
-          console.error('Klaida tryniant iš user_profiles:', deleteProfileError.message);
-        }
-  
-        fetchUsers();
-      }
+    if (window.confirm('Ar tikrai norite ištrinti šį vartotoją?')) {
+      await supabaseAdmin.auth.admin.deleteUser(userId);
+      await supabase.from('user_profiles').delete().eq('id', userId);
+      fetchUsers();
     }
   };
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <h2>User Management</h2>
-      <button onClick={() => setShowModal(true)}>Add User</button>
+    <div className="p-6">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-xl font-semibold">User Management</h2>
+        <button onClick={() => setShowModal(true)} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Add User</button>
+      </div>
+
+      <div className="overflow-x-auto">
+        <table className="min-w-full bg-white border border-gray-200 shadow-sm">
+          <thead className="bg-gray-100 text-gray-700 text-sm">
+            <tr>
+              <th className="px-4 py-3 text-left">Name</th>
+              <th className="px-4 py-3 text-left">Email</th>
+              <th className="px-4 py-3 text-left">Role</th>
+              <th className="px-4 py-3 text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {users.map((user) => (
+              <tr key={user.id} className="border-t text-sm text-gray-800">
+                <td className="px-4 py-2">{user.user_metadata?.name || '—'}</td>
+                <td className="px-4 py-2">{user.email}</td>
+                <td className="px-4 py-2">{user.user_metadata?.role || 'user'}</td>
+                <td className="px-4 py-2 text-center">
+                  <button onClick={() => handleEdit(user)} className="text-blue-600 hover:underline mr-3">Edit</button>
+                  <button onClick={() => handleDelete(user.id)} className="text-red-600 hover:underline">Delete</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {message && <p className="text-sm text-green-600 mt-4">{message}</p>}
 
       {showModal && (
-        <div style={styles.overlay}>
-          <div style={styles.modal}>
-            <h3>{editUserId ? 'Edit User' : 'Add New User'}</h3>
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-80 space-y-3">
+            <h3 className="text-lg font-semibold">{editUserId ? 'Edit User' : 'Add New User'}</h3>
             <input
-              type="text"
-              placeholder="Name"
               name="name"
+              placeholder="Name"
               value={formData.name}
               onChange={handleChange}
-              style={styles.input}
+              className="w-full px-3 py-2 border rounded"
             />
             <input
+              name="email"
               type="email"
               placeholder="Email"
-              name="email"
               value={formData.email}
               onChange={handleChange}
-              style={styles.input}
+              className="w-full px-3 py-2 border rounded"
             />
             <input
+              name="password"
               type="password"
               placeholder="Password"
-              name="password"
               value={formData.password}
               onChange={handleChange}
-              style={styles.input}
+              className="w-full px-3 py-2 border rounded"
             />
-            <select name="role" value={formData.role} onChange={handleChange} style={styles.input}>
+            <select
+              name="role"
+              value={formData.role}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border rounded"
+            >
               <option value="user">User</option>
               <option value="admin">Admin</option>
             </select>
-            <div style={{ marginTop: '1rem' }}>
-              <button onClick={handleSubmit} style={styles.button} disabled={loading}>
+            <div className="flex justify-end gap-2 pt-2">
+              <button onClick={handleSubmit} disabled={loading} className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
                 {loading ? 'Saving...' : 'Save'}
               </button>
-              <button onClick={() => { setShowModal(false); setEditUserId(null); }} style={styles.cancelButton}>Cancel</button>
+              <button onClick={() => { setShowModal(false); setEditUserId(null); }} className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400">
+                Cancel
+              </button>
             </div>
           </div>
         </div>
       )}
-
-      <table style={styles.table}>
-        <thead>
-          <tr>
-            <th style={styles.th}>Name</th>
-            <th style={styles.th}>Email</th>
-            <th style={styles.th}>Role</th>
-            <th style={styles.th}>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.map((user) => (
-            <tr key={user.id}>
-              <td style={styles.td}>{user.user_metadata?.name || '—'}</td>
-              <td style={styles.td}>{user.email}</td>
-              <td style={styles.td}>{user.user_metadata?.role || 'user'}</td>
-              <td style={styles.td}>
-                <button onClick={() => handleEdit(user)} style={{ marginRight: '0.5rem' }}>Edit</button>
-                <button onClick={() => handleDelete(user.id)} style={{ backgroundColor: '#e53935', color: 'white' }}>Delete</button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      {message && <p style={{ marginTop: '1rem' }}>{message}</p>}
     </div>
   );
 }
-
-const styles = {
-  overlay: {
-    position: 'fixed',
-    top: 0, left: 0, right: 0, bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    display: 'flex', justifyContent: 'center', alignItems: 'center',
-    zIndex: 1000
-  },
-  modal: {
-    background: 'white',
-    padding: '2rem',
-    borderRadius: '8px',
-    width: '300px',
-    display: 'flex',
-    flexDirection: 'column'
-  },
-  input: {
-    marginBottom: '1rem',
-    padding: '0.5rem',
-    fontSize: '14px'
-  },
-  button: {
-    padding: '0.5rem 1rem',
-    marginRight: '1rem',
-    backgroundColor: '#4caf50',
-    color: 'white',
-    border: 'none',
-    borderRadius: '4px'
-  },
-  cancelButton: {
-    padding: '0.5rem 1rem',
-    backgroundColor: '#ccc',
-    border: 'none',
-    borderRadius: '4px'
-  },
-  table: {
-    marginTop: '2rem',
-    width: '100%',
-    borderCollapse: 'collapse',
-    tableLayout: 'fixed',
-  },
-  th: {
-    borderBottom: '1px solid #ccc',
-    padding: '0.75rem',
-    textAlign: 'center',
-    fontWeight: 'bold',
-  },
-  td: {
-    padding: '0.75rem',
-    borderBottom: '1px solid #eee',
-    textAlign: 'center',
-  }
-};
-
-export default AddUserPage;

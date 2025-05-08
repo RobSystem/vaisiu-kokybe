@@ -654,7 +654,7 @@ const updatePayload = {
       name="major_defects"
       value={form.major_defects}
       onChange={handleChange}
-      className="p-2 border rounded w-full h-24"
+      className="p-2 border rounded w-full h-40"
     />
   </div>
   <div>
@@ -663,7 +663,7 @@ const updatePayload = {
       name="minor_defects"
       value={form.minor_defects}
       onChange={handleChange}
-      className="p-2 border rounded w-full h-24"
+      className="p-2 border rounded w-full h-40"
     />
   </div>
 </div>

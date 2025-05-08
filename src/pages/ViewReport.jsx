@@ -59,10 +59,17 @@ function ViewReport() {
     <div>
       <p className="font-semibold">Consistency:</p>
       <ul className="list-disc ml-5">
-        {Object.entries(obj).map(([k, v]) => v && <li key={k}>{k.charAt(0).toUpperCase() + k.slice(1)}: {v}%</li>)}
+        {Object.entries(obj).map(([k, v]) =>
+          v && (
+            <li key={k}>
+              {k.charAt(0).toUpperCase() + k.slice(1)}:{' '}
+              {v.toString().replace('%', '')}%
+            </li>
+          )
+        )}
       </ul>
     </div>
-  )
+    )
   const renderInlineList = (label, arr, unit = '') => (
     <div>
       <p className="font-semibold">{label}:</p>

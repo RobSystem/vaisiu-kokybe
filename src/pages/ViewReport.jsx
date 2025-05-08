@@ -84,7 +84,7 @@ function ViewReport() {
   }
 
   return (
-    <div ref={reportRef} className="max-w-6xl mx-auto p-6 bg-white">
+    <div ref={reportRef} className="w-full px-6 py-6 bg-white">
       <div className="flex items-center justify-between mb-6">
         <img src="/Logoedit2.png" alt="Logo" className="h-14" />
         <h1 className="text-2xl font-bold text-center flex-1">QUALITY CONTROL REPORT</h1>

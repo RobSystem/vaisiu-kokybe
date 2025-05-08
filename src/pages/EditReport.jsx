@@ -36,6 +36,28 @@ function EditReport() {
     }
     if (reportId) fetchReport();
   }, [reportId]);
+  useEffect(() => {
+    const fetchPdfFiles = async () => {
+      const files = [];
+      for (let i = 1; i <= 3; i++) {
+        const { data, error } = await supabase.storage.from('report-files').list(`${reportId}`, {
+          limit: 10,
+          offset: 0,
+          search: `file${i}.pdf`
+        });
+        if (data && data.length) {
+          const { data: urlData } = await supabase.storage.from('report-files').getPublicUrl(`${reportId}/file${i}.pdf`);
+          files[i - 1] = { name: `file${i}.pdf`, url: urlData.publicUrl };
+        } else {
+          files[i - 1] = null;
+        }
+      }
+      setPdfFiles(files);
+    };
+  
+    if (reportId) fetchPdfFiles();
+  }, [reportId]);
+  
 
   useEffect(() => {
     const fetchUsers = async () => {

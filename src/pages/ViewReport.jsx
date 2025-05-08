@@ -147,7 +147,7 @@ function ViewReport() {
               {renderMultiLine('Minor Defects', sample.minor_defects)}
               {renderMultiLine('Major Defects', sample.major_defects)}
             </div>
-            <div className="mt-2 flex gap-6">
+            <div className="mt-2 flex gap-6 justify-end text-sm pr-4">
     <p className={"font-bold " + getColor(sample.quality_score, 'quality')}>
       Quality Score: {sample.quality_score}
     </p>

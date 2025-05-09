@@ -169,7 +169,7 @@ const updatePayload = {
     className="flex items-center justify-between cursor-pointer bg-gray-100 px-4 py-2 rounded"
   >
    
-    <h3 className="font-semibold">General Information</h3>
+    <h3 className="font-semibold">Pallet Information</h3>
     <span className="text-lg">{showGeneralInfo ? '−' : '+'}</span>
   </div>
 
@@ -217,7 +217,7 @@ const updatePayload = {
     onClick={() => setShowExtraInfo(!showExtraInfo)}
     className="flex items-center justify-between cursor-pointer bg-gray-100 px-4 py-2 rounded"
   >
-    <h3 className="font-semibold">Extra Information</h3>
+    <h3 className="font-semibold">Measurements</h3>
     <span className="text-lg">{showExtraInfo ? '−' : '+'}</span>
   </div>
 

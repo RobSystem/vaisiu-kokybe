@@ -19,7 +19,7 @@ function EditReport() {
   const [editInfo, setEditInfo] = useState({
     client_ref: '', container_number: '', rochecks_ref: '', variety: '',
     origin: '', location: '', total_pallets: '', type: 'Conventional',
-    supplier: '', surveyor: ''
+    supplier: '', surveyor: '', date: ''
   });
 
   useEffect(() => {
@@ -128,7 +128,7 @@ function EditReport() {
       client_ref: report?.client_ref || '', container_number: report?.container_number || '',
       rochecks_ref: report?.rochecks_ref || '', variety: report?.variety || '',
       origin: report?.origin || '', location: report?.location || '', total_pallets: report?.total_pallets || '',
-      type: report?.type || 'Conventional', supplier: report?.supplier || '', surveyor: report?.surveyor || ''
+      type: report?.type || 'Conventional', supplier: report?.supplier || '', surveyor: report?.surveyor || '',  date: report?.date || ''
     });
     setShowEditModal(true);
   }
@@ -354,6 +354,16 @@ function EditReport() {
                 {userProfile?.role === 'admin' ? users.map(u => <option key={u.name}>{u.name}</option>) : <option>{userProfile?.name}</option>}
               </select>
             </div>
+            <div className="mb-4">
+  <label>Date</label>
+  <input
+    type="date"
+    name="date"
+    value={editInfo.date}
+    onChange={handleEditInfoChange}
+    className="w-full p-2 border rounded"
+  />
+</div>
             <div className="flex justify-end gap-2">
               <button onClick={() => setShowEditModal(false)} className="bg-gray-400 text-white px-4 py-2 rounded">Cancel</button>
               <button onClick={handleSaveEditedInfo} className="bg-green-500 text-white px-4 py-2 rounded">Save</button>

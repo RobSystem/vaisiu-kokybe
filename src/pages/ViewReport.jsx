@@ -176,8 +176,8 @@ function ViewReport() {
               (() => {
                 const photosForSample = getPhotosForSample(sample.id);
                 const groups = [];
-                for (let i = 0; i < photosForSample.length; i += 12) {
-                  groups.push(photosForSample.slice(i, i + 12));
+                for (let i = 0; i < photosForSample.length; i += 24) {
+                  groups.push(photosForSample.slice(i, i + 24));
                 }
                 return groups.map((group, index) => (
                   <div key={index} className="flex flex-wrap gap-4 mt-4 break-before-page">

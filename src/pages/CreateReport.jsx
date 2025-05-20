@@ -103,13 +103,14 @@ fetchUserProfile();
   
 
   return (
-    <div className="flex justify-center p-8">
-      <div className="w-full max-w-7xl px-4 text-xs">
-        <h2 className="text-2xl font-semibold text-center mb-8">Create Report</h2>
-        <form
-          onSubmit={handleSubmit}
-          className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6"
-        >
+  <div className="flex justify-center px-4 py-8">
+    <div className="w-full max-w-4xl text-sm bg-white p-6 rounded-lg shadow">
+      <h2 className="text-2xl font-semibold text-center mb-8">Create Report</h2>
+
+      <form
+        onSubmit={handleSubmit}
+        className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6"
+      >
           {/* DATE */}
           <div>
             <label className="block mb-1 font-medium">DATE</label>
@@ -279,21 +280,24 @@ fetchUserProfile();
           </div>
   
           {/* BUTTON */}
-          <div className="col-span-1 md:col-span-2 text-center">
+          <div className="col-span-1 md:col-span-2">
           <button
-  type="submit"
-  disabled={loading}
-  className={`w-full py-3 rounded-md text-white font-semibold transition duration-200
-    ${loading ? 'bg-gray-400 cursor-not-allowed animate-pulse' : 'bg-green-600 hover:bg-green-700'}`}
->
-  {loading ? 'Kuriama...' : 'Create Report'}
-</button>
-            {message && <p className="mt-4 text-sm text-gray-600">{message}</p>}
-          </div>
-        </form>
-      </div>
+            type="submit"
+            disabled={loading}
+            className={`w-full md:w-auto px-6 py-3 rounded-md text-white font-semibold transition duration-200
+              ${loading ? 'bg-gray-400 cursor-not-allowed animate-pulse' : 'bg-green-600 hover:bg-green-700'}`}
+          >
+            {loading ? 'Kuriama...' : 'Create Report'}
+          </button>
+
+          {message && (
+            <p className="mt-4 text-sm text-gray-600">{message}</p>
+          )}
+        </div>
+      </form>
     </div>
-  )
+  </div>
+)
 }
 
 export default CreateReport

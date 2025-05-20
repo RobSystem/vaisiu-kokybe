@@ -44,7 +44,7 @@ function AllReports({ setSelectedReport }) {
       const message = `Quality Score: ${report.qualityScore || '—'}\nStorage Score: ${report.storageScore || '—'}\n\nConclusion:\n${report.conclusion || '—'}\n\nView full report: ${reportUrl}`;
 
       const response = await emailjs.send(
-        'service_t7xay1d',
+        'service_v9qenwn',
         'template_cr4luhy',
         {
           to_email: clientData.email,

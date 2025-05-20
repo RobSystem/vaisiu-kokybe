@@ -17,7 +17,11 @@ function ViewReport() {
     const fetchData = async () => {
       const { data: reportData } = await supabase.from('reports').select('*').eq('id', reportId).single()
       const { data: sampleData } = await supabase.from('samples').select('*').eq('report_id', reportId).order('position')
-      const { data: photoData } = await supabase.from('sample_photos').select('*').in('sample_id', sampleData.map(s => s.id))
+      const { data: photoData } = await supabase
+  .from('sample_photos')
+  .select('*')
+  .in('sample_id', sampleData.map(s => s.id))
+  .order('created_at', { ascending: true })
       setReport(reportData)
       setSamples(sampleData)
       setPhotos(photoData)

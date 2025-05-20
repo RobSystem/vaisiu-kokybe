@@ -170,17 +170,19 @@ function ViewReport() {
           </div>
 
           {/* Photo Block */}
-          <div className="border rounded p-4 mb-6 bg-white break-before-page break-inside-avoid">
-            <h4 className="font-semibold text-md mb-2">Photos</h4>
-            {
-              (() => {
-                const photosForSample = getPhotosForSample(sample.id);
-                const groups = [];
-                for (let i = 0; i < photosForSample.length; i += 24) {
-                  groups.push(photosForSample.slice(i, i + 24));
-                }
-                return groups.map((group, index) => (
-                  <div key={index} className="flex flex-wrap gap-4 mt-4 break-before-page">
+          {
+            (() => {
+              const photosForSample = getPhotosForSample(sample.id);
+              const groups = [];
+              for (let i = 0; i < photosForSample.length; i += 24) {
+                groups.push(photosForSample.slice(i, i + 24));
+              }
+              return groups.map((group, index) => (
+                <div key={index} className="border rounded p-4 mb-6 bg-white break-before-page">
+                  {index === 0 && (
+                    <h4 className="font-semibold text-md mb-2">Photos</h4>
+                  )}
+                  <div className="flex flex-wrap gap-4 mt-4">
                     {group.map(photo => (
                       <img
                         key={photo.id}
@@ -190,12 +192,13 @@ function ViewReport() {
                       />
                     ))}
                   </div>
-                ));
-              })()
-            }
-          </div>
+                </div>
+              ));
+            })()
+          }
         </div>
       ))}
+
 
       {/* Final Summary */}
       {(report.qualityScore || report.storageScore || report.conclusion) && (

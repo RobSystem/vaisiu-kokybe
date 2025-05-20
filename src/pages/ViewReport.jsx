@@ -173,8 +173,8 @@ function ViewReport() {
   const photosForSample = getPhotosForSample(sample.id);
   const groups = [];
 
-  for (let i = 0; i < photosForSample.length; i += 24) {
-    groups.push(photosForSample.slice(i, i + 24));
+  for (let i = 0; i < photosForSample.length; i += 28) {
+    groups.push(photosForSample.slice(i, i + 28));
   }
 
   return (

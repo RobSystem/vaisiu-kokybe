@@ -33,6 +33,10 @@
     margin: 0 auto !important;
     overflow: hidden !important;
   }
+
+  .pdf-photo-break {
+    break-before: page;
+  }
 }
 
 .card {

@@ -174,8 +174,8 @@ function ViewReport() {
             (() => {
               const photosForSample = getPhotosForSample(sample.id);
               const groups = [];
-              for (let i = 0; i < photosForSample.length; i += 24) {
-                groups.push(photosForSample.slice(i, i + 24));
+              for (let i = 0; i < photosForSample.length; i += 28) {
+                groups.push(photosForSample.slice(i, i + 28));
               }
               return groups.map((group, index) => (
                 <div key={index} className="border rounded p-4 mb-6 bg-white break-before-page">
@@ -183,15 +183,15 @@ function ViewReport() {
                     <h4 className="font-semibold text-md mb-2">Photos</h4>
                   )}
                   <div className="flex flex-wrap gap-4 mt-4">
-                    {group.map(photo => (
-                      <img
-                        key={photo.id}
-                        src={photo.url}
-                        alt="sample"
-                        className="w-36 h-36 object-cover rounded border"
-                      />
-                    ))}
-                  </div>
+  {getPhotosForSample(sample.id).map((photo, index) => (
+    <img
+      key={photo.id}
+      src={photo.url}
+      alt="sample"
+      className={`w-36 h-36 object-cover rounded border ${index % 24 === 0 && index !== 0 ? 'pdf-photo-break' : ''}`}
+    />
+  ))}
+</div>
                 </div>
               ));
             })()

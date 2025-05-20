@@ -177,7 +177,7 @@ function ViewReport() {
     </div>
 
     {/* Photo Block */}
-    <div className="border rounded p-4 mb-6 bg-white break-before-page">
+    <div className="border rounded p-4 mb-6 bg-white break-before-page break-inside-avoid">
       <h4 className="font-semibold text-md mb-2">Photos</h4>
       <div className="flex flex-wrap gap-4 mt-4">
         {getPhotosForSample(sample.id).map(photo => (

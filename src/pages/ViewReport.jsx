@@ -184,11 +184,12 @@ function ViewReport() {
         <div key={index} className={`flex flex-wrap gap-4 mt-4 ${index > 0 ? 'pdf-photo-break' : ''}`}>
           {group.map((photo) => (
             <img
-              key={photo.id}
-              src={photo.url}
-              alt="sample"
-              className="w-36 h-36 object-cover rounded border"
-            />
+  key={photo.id}
+  src={photo.url}
+  alt="sample"
+  onClick={() => setPreviewUrl(photo.url)}
+  className="w-36 h-36 object-cover rounded border cursor-pointer hover:opacity-80 transition"
+/>
           ))}
         </div>
       ))}

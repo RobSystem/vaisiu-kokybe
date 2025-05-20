@@ -169,31 +169,32 @@ function ViewReport() {
             </div>
           </div>
 
-          {/* Photo Block */}
-          {
-            (() => {
-              const photosForSample = getPhotosForSample(sample.id);
-              const groups = [];
-              for (let i = 0; i < photosForSample.length; i += 28) {
-                groups.push(photosForSample.slice(i, i + 28));
-              }
-                return (
+         {(() => {
+  const photosForSample = getPhotosForSample(sample.id);
+  const groups = [];
+
+  for (let i = 0; i < photosForSample.length; i += 24) {
+    groups.push(photosForSample.slice(i, i + 24));
+  }
+
+  return (
     <div className="border rounded p-4 mb-6 bg-white break-before-page">
       <h4 className="font-semibold text-md mb-2">Photos</h4>
-      <div className="flex flex-wrap gap-4 mt-4">
-        {photosForSample.map((photo, index) => (
-          <img
-            key={photo.id}
-            src={photo.url}
-            alt="sample"
-            className={`w-36 h-36 object-cover rounded border ${index % 24 === 0 && index !== 0 ? 'pdf-photo-break' : ''}`}
-          />
-        ))}
-      </div>
+      {groups.map((group, index) => (
+        <div key={index} className={`flex flex-wrap gap-4 mt-4 ${index > 0 ? 'pdf-photo-break' : ''}`}>
+          {group.map((photo) => (
+            <img
+              key={photo.id}
+              src={photo.url}
+              alt="sample"
+              className="w-36 h-36 object-cover rounded border"
+            />
+          ))}
+        </div>
+      ))}
     </div>
   );
-            })()
-          }
+})()}
         </div>
       ))}
 

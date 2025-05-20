@@ -129,68 +129,74 @@ function ViewReport() {
       </div>
 
       {samples.map(sample => (
-        <div key={sample.id} className="border rounded p-4 mb-6 bg-gray-50">
-          <h3 className="font-semibold text-lg mb-2">Pallet: {sample.pallet_number}</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-            <div>
-              {renderField('GGN #', sample.ggn_number)}
-              {renderField('GGN Exp', sample.ggn_exp_date)}
-              {renderField('Grower Code', sample.grower_code)}
-              {renderField('Packing Code', sample.packing_code)}
-              {renderField('Variety', sample.variety)}
-              {renderField('Brand', sample.brand)}
-            </div>
-            <div>
-              {renderField('Packing Type', sample.packing_type)}
-              {renderField('Size', sample.size)}
-             {(sample.box_weight_min || sample.box_weight_max) &&
-  renderInlineList('Box Weight', [`${sample.box_weight_min || ''} – ${sample.box_weight_max || ''}`], 'kg')}
-{sample.box_weight_extra?.length > 0 && renderInlineList('Extra Box Weights', sample.box_weight_extra, 'kg')}
-              {(sample.fruit_weight_min || sample.fruit_weight_max) &&
-  renderInlineList('Fruit Weight', [`${sample.fruit_weight_min || ''} – ${sample.fruit_weight_max || ''}`], 'g')}
-{sample.fruit_weights_extra?.length > 0 && renderInlineList('Extra Fruit Weights', sample.fruit_weights_extra, 'g')}
-             {(sample.pressures_min || sample.pressures_max) &&
-  renderInlineList('Pressures', [`${sample.pressures_min || ''} – ${sample.pressures_max || ''}`], 'kg')}
-{sample.pressures_extra?.length > 0 && renderInlineList('Extra Pressures', sample.pressures_extra, 'kg')}
-              {(sample.brix_min || sample.brix_max) &&
-  renderInlineList('Brix', [`${sample.brix_min || ''} – ${sample.brix_max || ''}`], '°')}
-{sample.brix_extra?.length > 0 && renderInlineList('Extra Brix', sample.brix_extra, '°')}
-
-              {(sample.fruit_diameter_min || sample.fruit_diameter_max) &&
-  renderInlineList('Diameter', [`${sample.fruit_diameter_min || ''} – ${sample.fruit_diameter_max || ''}`], 'mm')}
-{sample.diameter_extra?.length > 0 && renderInlineList('Extra Diameters', sample.diameter_extra, 'mm')}
-            </div>
-            <div>
-              {renderList('External Coloration', sample.external_coloration)}
-              {renderList('Internal Coloration', sample.internal_coloration)}
-              {renderConsistency(sample.consistency)}
-              {renderMultiLine('Minor Defects', sample.minor_defects)}
-              {renderMultiLine('Major Defects', sample.major_defects)}
-            </div>
-          </div>
-
-          <div className="flex gap-6 mt-4 pr-[80px]">
-            <p className={"font-bold " + getColor(sample.quality_score, 'quality')}>Quality Score: {sample.quality_score}</p>
-            <p className={"font-bold " + getColor(sample.storage_score, 'storage')}>Storage Score: {sample.storage_score}</p>
-          </div>
-
-          <div className="flex flex-wrap gap-4 mt-4">
-            {getPhotosForSample(sample.id).map(photo => (
-              <img
-                key={photo.id}
-                src={photo.url}
-                alt="sample"
-                className="w-36 h-36 object-cover rounded border cursor-pointer"
-                onClick={() => setPreviewUrl(photo.url)}
-              />
-            ))}
-          </div>
+  <div key={sample.id}>
+    {/* Sample Info Block */}
+    <div className="border rounded p-4 mb-6 bg-gray-50 break-before-page">
+      <h3 className="font-semibold text-lg mb-2">Pallet: {sample.pallet_number}</h3>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+        <div>
+          {renderField('GGN #', sample.ggn_number)}
+          {renderField('GGN Exp', sample.ggn_exp_date)}
+          {renderField('Grower Code', sample.grower_code)}
+          {renderField('Packing Code', sample.packing_code)}
+          {renderField('Variety', sample.variety)}
+          {renderField('Brand', sample.brand)}
         </div>
-      ))}
+        <div>
+          {renderField('Packing Type', sample.packing_type)}
+          {renderField('Size', sample.size)}
+          {(sample.box_weight_min || sample.box_weight_max) &&
+            renderInlineList('Box Weight', [`${sample.box_weight_min || ''} – ${sample.box_weight_max || ''}`], 'kg')}
+          {sample.box_weight_extra?.length > 0 && renderInlineList('Extra Box Weights', sample.box_weight_extra, 'kg')}
+          {(sample.fruit_weight_min || sample.fruit_weight_max) &&
+            renderInlineList('Fruit Weight', [`${sample.fruit_weight_min || ''} – ${sample.fruit_weight_max || ''}`], 'g')}
+          {sample.fruit_weights_extra?.length > 0 && renderInlineList('Extra Fruit Weights', sample.fruit_weights_extra, 'g')}
+          {(sample.pressures_min || sample.pressures_max) &&
+            renderInlineList('Pressures', [`${sample.pressures_min || ''} – ${sample.pressures_max || ''}`], 'kg')}
+          {sample.pressures_extra?.length > 0 && renderInlineList('Extra Pressures', sample.pressures_extra, 'kg')}
+          {(sample.brix_min || sample.brix_max) &&
+            renderInlineList('Brix', [`${sample.brix_min || ''} – ${sample.brix_max || ''}`], '°')}
+          {sample.brix_extra?.length > 0 && renderInlineList('Extra Brix', sample.brix_extra, '°')}
+          {(sample.fruit_diameter_min || sample.fruit_diameter_max) &&
+            renderInlineList('Diameter', [`${sample.fruit_diameter_min || ''} – ${sample.fruit_diameter_max || ''}`], 'mm')}
+          {sample.diameter_extra?.length > 0 && renderInlineList('Extra Diameters', sample.diameter_extra, 'mm')}
+        </div>
+        <div>
+          {renderList('External Coloration', sample.external_coloration)}
+          {renderList('Internal Coloration', sample.internal_coloration)}
+          {renderConsistency(sample.consistency)}
+          {renderMultiLine('Minor Defects', sample.minor_defects)}
+          {renderMultiLine('Major Defects', sample.major_defects)}
+        </div>
+      </div>
+
+      <div className="flex gap-6 mt-4 pr-[80px]">
+        <p className={"font-bold " + getColor(sample.quality_score, 'quality')}>Quality Score: {sample.quality_score}</p>
+        <p className={"font-bold " + getColor(sample.storage_score, 'storage')}>Storage Score: {sample.storage_score}</p>
+      </div>
+    </div>
+
+    {/* Photo Block */}
+    <div className="border rounded p-4 mb-6 bg-white break-before-page">
+      <h4 className="font-semibold text-md mb-2">Photos</h4>
+      <div className="flex flex-wrap gap-4 mt-4">
+        {getPhotosForSample(sample.id).map(photo => (
+          <img
+            key={photo.id}
+            src={photo.url}
+            alt="sample"
+            className="w-36 h-36 object-cover rounded border"
+          />
+        ))}
+      </div>
+    </div>
+  </div>
+))}
+
 
       
 {(report.qualityScore || report.storageScore || report.conclusion) && (
-  <div className="mt-6 p-4 bg-gray-100 border rounded space-y-2">
+  <div className="mt-6 p-4 bg-gray-100 border rounded space-y-2 break-before-page">
     <div className="flex flex-wrap gap-6 text-lg">
       {report.qualityScore && (
         <p className={"font-bold " + getColor(report.qualityScore, 'quality')}>

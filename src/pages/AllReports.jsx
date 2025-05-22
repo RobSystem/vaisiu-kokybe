@@ -45,7 +45,7 @@ function AllReports({ setSelectedReport }) {
 
       const response = await emailjs.send(
         'service_v9qenwn',
-        'template_cr4luhy',
+        'template_sf4fphk',
         {
           to_email: clientData.email,
           subject,

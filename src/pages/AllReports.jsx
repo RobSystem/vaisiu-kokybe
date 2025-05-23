@@ -42,18 +42,18 @@ function AllReports({ setSelectedReport }) {
     const response = await emailjs.send(
       'service_v9qenwn',              // Your EmailJS service ID
       'template_sf4fphk',         // Your new HTML template ID
-      {
-        to_email: clientData.email,
-        container_number: report.container_number || '—',
-        client_ref: report.client_ref || '—',
-        variety: report.variety || '—',
-        qualityScore: report.qualityScore || '—',
-        storageScore: report.storageScore || '—',
-        conclusion: report.conclusion || '—',
-        id: report.id,
-      },
-      'nBddtmb09-d6gjfcl'             // Your EmailJS public key
-    );
+       {
+    to_email: clientData.email, // ← Šitas yra labai svarbu
+    container_number: report.container_number || '—',
+    client_ref: report.client_ref || '—',
+    variety: report.variety || '—',
+    qualityScore: report.qualityScore || '—',
+    storageScore: report.storageScore || '—',
+    conclusion: report.conclusion || '—',
+    id: report.id,
+  },
+  'nBddtmb09-d6gjfcl'
+);
 
     if (response.status === 200) {
       setSentReports((prev) => [...prev, report.id]);

@@ -53,38 +53,45 @@ function DoneReports() {
   );
 
   const handleSend = async (report) => {
-    try {
-      const { data: clientData, error } = await supabase
-        .from('clients')
-        .select('email')
-        .eq('name', report.client)
-        .single();
+  const confirmed = window.confirm('Are you sure you want to send the report?');
+  if (!confirmed) return;
 
-      if (error || !clientData?.email) {
-        alert('Nepavyko rasti kliento el. pašto.');
-        return;
-      }
+  try {
+    const { data: clientData, error } = await supabase
+      .from('clients')
+      .select('email')
+      .ilike('name', `%${report.client}%`)
+      .single();
 
-      const reportUrl = `https://app.rochecks.nl/viewreport/${report.id}`;
-      const subject = `Report: ${report.container_number} | Ref: ${report.client_ref} | Variety: ${report.variety}`;
-      const message = `Quality Score: ${report.qualityScore || '—'}\nStorage Score: ${report.storageScore || '—'}\n\nConclusion:\n${report.conclusion || '—'}\n\nView full report: ${reportUrl}`;
-
-      await emailjs.send(
-        'service_t7xay1d',
-        'template_cr4luhy',
-        {
-          to_email: clientData.email,
-          subject: subject,
-          message: message,
-        },
-        'nBddtmb09-d6gjfcl'
-      );
-
-      alert('Ataskaita išsiž—sta sėkmingai!');
-    } catch (err) {
-      alert(`Klaida siunčiant ataskaitą: ${err?.message || 'Nežinoma klaida'}`);
+    if (error || !clientData?.email) {
+      alert("Client email not found.");
+      return;
     }
-  };
+
+    const response = await emailjs.send(
+      'service_v9qenwn',            // tavo service ID (tokį naudoji AllReports)
+      'template_sf4fphk',       // naujasis HTML šablono ID
+      {
+        to_email: clientData.email,
+        container_number: report.container_number || '—',
+        client_ref: report.client_ref || '—',
+        variety: report.variety || '—',
+        qualityScore: report.qualityScore || '—',
+        storageScore: report.storageScore || '—',
+        conclusion: report.conclusion || '—',
+        id: report.id,
+      },
+      'nBddtmb09-d6gjfcl'           // tavo EmailJS public key
+    );
+
+    if (response.status === 200) {
+      alert('Report sent successfully!');
+    }
+  } catch (err) {
+    console.error('Sending error:', err);
+    alert(`Error sending report:\n${err?.message || 'Unknown error'}`);
+  }
+};
 
   return (
     <div className="w-full px-4 py-6 text-xs">

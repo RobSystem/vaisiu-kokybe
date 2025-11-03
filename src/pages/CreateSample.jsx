@@ -161,7 +161,49 @@ const updatePayload = {
 
   return (
     <div className="w-full px-4 py-6 text-sm">
-      <h2 className="text-lg font-semibold mb-6">New Sample</h2>
+      <div className="sticky top-0 z-20 bg-white/90 backdrop-blur border-b">
+  <div className="mx-4 md:mx-6 py-3 flex flex-wrap items-center gap-2">
+    <div className="flex-1 min-w-[260px]">
+      <p className="text-xs text-gray-500 uppercase tracking-wide">
+        {sampleId ? 'Edit Sample' : 'Create Sample'}
+      </p>
+      <h2 className="text-lg font-semibold text-gray-800">
+        {`Report #${reportId || '—'}`} {form.pallet_number ? `• Pallet ${form.pallet_number}` : ''}
+      </h2>
+    </div>
+
+    <div className="flex items-center gap-2">
+      {/* Save (neperkrauna puslapio) */}
+      <button
+        type="button"
+        onClick={saveWithoutRedirect}
+        className="px-3 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700"
+      >
+        Save
+      </button>
+
+      {/* Upload Photos – rodoma tik jei turim sampleId (ar form.id) */}
+      {(sampleId || form.id) && (
+        <button
+          type="button"
+          onClick={() => navigate(`/upload-photos/${sampleId || form.id}`)}
+          className="px-3 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
+        >
+          Upload Photos
+        </button>
+      )}
+
+      {/* Grįžti į EditReport */}
+      <button
+        type="button"
+        onClick={() => navigate(`/edit/${reportId}`)}
+        className="px-3 py-2 rounded-lg border text-gray-700 hover:bg-gray-50"
+      >
+        Back to Report
+      </button>
+    </div>
+  </div>
+</div>
 
       <div className="mb-4">
   <div

@@ -330,7 +330,19 @@ const handleSend = async () => {
   </div>
 </div>
 
-<div className="mx-4 md:mx-6 mt-8">
+<div className="mx-4 md:mx-6 mt-6">
+  <div className="rounded-2xl border p-4 md:p-6 shadow-sm">
+    <h3 className="font-semibold text-gray-800 mb-2">Conclusion</h3>
+    <textarea
+      name="conclusion"
+      value={form.conclusion}
+      onChange={handleFormChange}
+      className="w-full p-2 border rounded h-24"
+    />
+  </div>
+</div>
+
+      <div className="mx-4 md:mx-6 mt-8">
   {/* Tabs header */}
   <div className="flex gap-2 border-b">
     {['samples', 'files'].map((t) => (

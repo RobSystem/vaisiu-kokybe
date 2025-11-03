@@ -116,7 +116,7 @@ useEffect(() => {
   }}
 />
       {loading ? (
-        <p>Kraunama...</p>
+        <p>Loading...</p>
       ) : (
         <div className="overflow-x-auto">
           <table className="min-w-full table-auto border-collapse">
@@ -162,7 +162,7 @@ useEffect(() => {
             </tbody>
           </table>
           <p className="italic mt-2">
-  Rodoma {total === 0 ? 0 : start + 1}–{end} iš {total} įrašų
+  Showing {total === 0 ? 0 : start + 1}–{end} of {total} entries
 </p>
 
 <div className="flex items-center gap-2 mt-3 justify-center">
@@ -171,11 +171,11 @@ useEffect(() => {
     onClick={() => setPage(p => Math.max(1, p - 1))}
     disabled={page === 1}
   >
-    Atgal
+    Previuos
   </button>
 
   <span className="text-sm">
-    Puslapis {page} iš {totalPages}
+    Page {page} from {totalPages}
   </span>
 
   <button
@@ -183,7 +183,7 @@ useEffect(() => {
     onClick={() => setPage(p => Math.min(totalPages, p + 1))}
     disabled={page === totalPages}
   >
-    Pirmyn
+    Next
   </button>
 </div>
         </div>

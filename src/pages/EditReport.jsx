@@ -229,21 +229,21 @@ const handleSend = async () => {
         onClick={() => report && window.open(`/viewreport/${report.id}`, '_blank')}
         className="px-3 py-2 rounded-lg border text-gray-700 hover:bg-gray-50"
       >
-        View
+        View report
       </button>
 
       <button
         onClick={handleSend}
         className="px-3 py-2 rounded-lg bg-yellow-500 text-white hover:bg-yellow-600"
       >
-        Send
+        Send report
       </button>
 
       <button
         onClick={handleOpenEditModal}
         className="px-3 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
       >
-        Edit Info
+        Edit report Info
       </button>
     </div>
   </div>

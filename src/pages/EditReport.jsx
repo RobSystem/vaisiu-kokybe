@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../supabaseClient'
 import { useParams } from 'react-router-dom'
+import emailjs from '@emailjs/browser';
 
 function EditReport() {
   const [form, setForm] = useState({
@@ -139,22 +140,78 @@ function EditReport() {
     setShowEditModal(false);
     alert('Informacija atnaujinta');
   }
+const handleSend = async () => {
+  if (!report) return;
+  const confirmed = window.confirm('Are you sure you want to send the report?');
+  if (!confirmed) return;
 
+  try {
+    const { data: clientData, error } = await supabase
+      .from('clients')
+      .select('email')
+      .eq('name', report.client)
+      .single();
+
+    if (error || !clientData?.email) {
+      alert("Client email not found.");
+      return;
+    }
+
+    const response = await emailjs.send(
+      'service_v9qenwn',              // Your EmailJS service ID
+      'template_sf4fphk',             // Your template ID
+      {
+        to_email: clientData.email,
+        container_number: report.container_number || '—',
+        client_ref: report.client_ref || '—',
+        variety: report.variety || '—',
+        qualityScore: report.qualityScore || '—',
+        storageScore: report.storageScore || '—',
+        conclusion: report.conclusion || '—',
+        id: report.id,
+      },
+      'nBddtmb09-d6gjfcl'             // Your public key
+    );
+
+    if (response.status === 200) {
+      alert('Report sent successfully!');
+    }
+  } catch (err) {
+    console.error('Sending error:', err);
+    alert(`Error sending report:\n${err?.message || 'Unknown error'}`);
+  }
+};
   return (
     <div className="w-full px-4 py-6 text-xs">
-      <div className="flex items-center gap-4 mb-4">
-        <h2 className="text-base font-semibold text-gray-700">
-          {report
-            ? `Container: ${report.container_number || '—'} | Variety: ${report.variety || '—'} | Origin: ${report.origin || '—'} | Total Pallets: ${report.total_pallets || '—'}`
-            : 'Loading...'}
-        </h2>
-        <button
-          onClick={handleOpenEditModal}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
-        >
-          Edit Info
-        </button>
-      </div>
+      <div className="flex items-center gap-3 mb-4">
+  <h2 className="text-base font-semibold text-gray-700 flex-1">
+    {report
+      ? `Container: ${report.container_number || '—'} | Variety: ${report.variety || '—'} | Origin: ${report.origin || '—'} | Total Pallets: ${report.total_pallets || '—'}`
+      : 'Loading...'}
+  </h2>
+
+  <button
+    onClick={() => window.open(`/viewreport/${report.id}`, '_blank')}
+    className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded"
+  >
+    View
+  </button>
+
+  <button
+    onClick={handleSend}
+    className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded"
+  >
+    Send
+  </button>
+
+  <button
+    onClick={handleOpenEditModal}
+    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+  >
+    Edit Info
+  </button>
+</div>
+
   
       <div className="grid md:grid-cols-3 gap-4 mb-6">
   <div>

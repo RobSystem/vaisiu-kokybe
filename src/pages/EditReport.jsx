@@ -39,7 +39,7 @@ const fetchPdfFiles = async () => {
       }
       setPdfFiles(files);
     };
-    
+
   useEffect(() => {
     const fetchReport = async () => {
       const { data } = await supabase.from('reports').select('*').eq('id', reportId).single();
@@ -390,7 +390,7 @@ const handleSend = async () => {
         try {
           await supabase.storage.from('report-files').remove([`${reportId}/file${i + 1}.pdf`]);
           toast.success(`File deleted!`);
-          window.location.reload(); // arba iškviesti fetchPdfFiles()
+          fetchPdfFiles(); // arba iškviesti fetchPdfFiles()
         } catch (err) {
           console.error(err);
           toast.error('Delete failed');
@@ -410,7 +410,7 @@ const handleSend = async () => {
         rel="noopener noreferrer"
         className="text-blue-600 underline text-xs"
       >
-        Peržiūrėti PDF
+        <Preview></Preview> PDF
       </a>
     )}
   </div>

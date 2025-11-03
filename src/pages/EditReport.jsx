@@ -154,7 +154,7 @@ const handleSend = async () => {
       .single();
 
     if (error || !clientData?.email) {
-      alert("Client email not found.");
+      toast.error("Client email not found.");
       return;
     }
 
@@ -330,7 +330,7 @@ const handleSend = async () => {
     />
     <button
       onClick={async () => {
-        if (!pdfFiles[i] || pdfFiles[i]?.url) return alert('Pasirinkite failą!');
+        if (!pdfFiles[i] || pdfFiles[i]?.url) toast.error('Please select a file first!');
         setUploading(true);
         try {
           await supabase.storage.from('report-files').upload(
@@ -338,11 +338,11 @@ const handleSend = async () => {
             pdfFiles[i],
             { cacheControl: '3600', upsert: true, contentType: 'application/pdf' }
           );
-          alert(`Failas ${i + 1} įkeltas!`);
+          toast.success(`File uploaded successfully!`);
           window.location.reload(); // arba iškviesti fetchPdfFiles()
         } catch (err) {
           console.error(err);
-          alert('Įkėlimo klaida');
+          toast.error('Upload failed');
         } finally {
           setUploading(false);
         }
@@ -357,11 +357,11 @@ const handleSend = async () => {
         setUploading(true);
         try {
           await supabase.storage.from('report-files').remove([`${reportId}/file${i + 1}.pdf`]);
-          alert(`Failas ${i + 1} ištrintas`);
+          toast.success(`File deleted!`);
           window.location.reload(); // arba iškviesti fetchPdfFiles()
         } catch (err) {
           console.error(err);
-          alert('Trinimo klaida');
+          toast.error('Delete failed');
         } finally {
           setUploading(false);
         }

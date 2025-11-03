@@ -339,7 +339,7 @@ const handleSend = async () => {
             { cacheControl: '3600', upsert: true, contentType: 'application/pdf' }
           );
           toast.success(`File uploaded successfully!`);
-          window.location.reload(); // arba iškviesti fetchPdfFiles()
+          fetchPdfFiles(); // arba iškviesti fetchPdfFiles()
         } catch (err) {
           console.error(err);
           toast.error('Upload failed');

@@ -165,11 +165,14 @@ const updatePayload = {
   <div className="mx-4 md:mx-6 py-3 flex flex-wrap items-center gap-2">
     <div className="flex-1 min-w-[260px]">
       <p className="text-xs text-gray-500 uppercase tracking-wide">
-        {sampleId ? 'Edit Sample' : 'Create Sample'}
-      </p>
-      <h2 className="text-lg font-semibold text-gray-800">
-        {`Report #${reportId || '—'}`} {form.pallet_number ? `• Pallet ${form.pallet_number}` : ''}
-      </h2>
+  {sampleId ? 'Edit Sample' : 'Create Sample'}
+</p>
+
+<h2 className="text-lg font-semibold text-gray-800">
+  {sampleId
+    ? (form.pallet_number ? `Pallet #${form.pallet_number}` : 'Pallet')
+    : 'New Sample'}
+</h2>
     </div>
 
     <div className="flex items-center gap-2">

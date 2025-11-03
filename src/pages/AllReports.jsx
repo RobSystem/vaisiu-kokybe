@@ -1,13 +1,12 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient';
 import { useNavigate } from 'react-router-dom';
-import emailjs from '@emailjs/browser';
+
 
 function AllReports({ setSelectedReport }) {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [sentReports, setSentReports] = useState([]);
   const [userProfile, setUserProfile] = useState(null);
   const [page, setPage] = useState(1);
 const pageSize = 20;
@@ -25,49 +24,7 @@ const pageSize = 20;
     }
   };
 
-  const handleSend = async (report) => {
-  const confirmed = window.confirm('Are you sure you want to send the report?');
-  if (!confirmed) return;
-
-  try {
-    const { data: clientData, error } = await supabase
-      .from('clients')
-      .select('email')
-      .eq('name', report.client)
-      .single();
-
-    if (error || !clientData?.email) {
-      alert("Client email not found.");
-      return;
-    }
-
-    const response = await emailjs.send(
-      'service_v9qenwn',              // Your EmailJS service ID
-      'template_sf4fphk',         // Your new HTML template ID
-       {
-    to_email: clientData.email, // ← Šitas yra labai svarbu
-    container_number: report.container_number || '—',
-    client_ref: report.client_ref || '—',
-    variety: report.variety || '—',
-    qualityScore: report.qualityScore || '—',
-    storageScore: report.storageScore || '—',
-    conclusion: report.conclusion || '—',
-    id: report.id,
-  },
-  'nBddtmb09-d6gjfcl'
-);
-
-    if (response.status === 200) {
-      setSentReports((prev) => [...prev, report.id]);
-      alert('Report sent successfully!');
-    }
-  } catch (err) {
-    console.error('Sending error:', err);
-    alert(`Error sending report:\n${err?.message || 'Unknown error'}`);
-  }
-};
-
-  const handleDelete = async (id) => {
+    const handleDelete = async (id) => {
     if (!window.confirm('Ar tikrai nori ištrinti šią ataskaitą?')) return;
 
     const { error } = await supabase.from('reports').delete().eq('id', id);
@@ -175,44 +132,31 @@ useEffect(() => {
                   <td className="px-3 py-2 border-b">{report.variety}</td>
                   <td className="px-3 py-2 border-b">{report.location}</td>
                   <td className="px-3 py-2 border-b flex flex-wrap gap-1 justify-center">
-                    <button
-                      className="bg-gray-500 hover:bg-gray-600 text-white px-3 py-1 rounded"
-                      onClick={() => window.open(`/viewreport/${report.id}`, '_blank')}
-                    >
-                      View
-                    </button>
-                    <button
-                      className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded"
-                      onClick={() => {
-                        setSelectedReport(report);
-                        navigate(`/edit/${report.id}`);
-                      }}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      className={`text-white px-3 py-1 rounded ${
-                        sentReports.includes(report.id)
-                          ? 'bg-green-500'
-                          : 'bg-indigo-500 hover:bg-indigo-600'
-                      }`}
-                      onClick={() => handleSend(report)}
-                    >
-                      {sentReports.includes(report.id) ? 'Sent' : 'Send'}
-                    </button>
-                    <button
-                      className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded"
-                      onClick={() => handleDone(report.id)}
-                    >
-                      Done
-                    </button>
-                    <button
-                      className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
-                      onClick={() => handleDelete(report.id)}
-                    >
-                      Delete
-                    </button>
-                  </td>
+  <button
+    className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded"
+    onClick={() => {
+      setSelectedReport(report);
+      navigate(`/edit/${report.id}`);
+    }}
+  >
+    Edit
+  </button>
+
+  <button
+    className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded"
+    onClick={() => handleDone(report.id)}
+  >
+    Done
+  </button>
+
+  <button
+    className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
+    onClick={() => handleDelete(report.id)}
+  >
+    Delete
+  </button>
+</td>
+
                 </tr>
               ))}
             </tbody>

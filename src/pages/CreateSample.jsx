@@ -252,17 +252,19 @@ const updatePayload = {
   )}
 </div>
 
-<div className="mb-4">
-  <div
-    onClick={() => setShowExtraInfo(!showExtraInfo)}
-    className="flex items-center justify-between cursor-pointer bg-gray-100 px-4 py-2 rounded"
+<div className="mx-4 md:mx-6 mt-6 rounded-2xl border shadow-sm">
+  {/* gražesnė accordion antraštė */}
+  <button
+    type="button"
+    onClick={() => setShowExtraInfo(v => !v)}
+    className="w-full flex items-center justify-between px-4 py-3"
   >
-    <h3 className="font-semibold">Measurements</h3>
-    <span className="text-lg">{showExtraInfo ? '−' : '+'}</span>
-  </div>
+    <span className="text-sm font-semibold text-gray-800">Measurements</span>
+    <span className="text-gray-500">{showExtraInfo ? '▾' : '▸'}</span>
+  </button>
 
   {showExtraInfo && (
-  <div className="pl-4 border-l-4 border-blue-300 mt-4 space-y-4">
+  <div className="px-4 pb-4 pt-1 space-y-4">
     {/* visos tavo formos eilutės čia */}
     <div className="flex flex-wrap items-end gap-4">
   <div className="flex-1">

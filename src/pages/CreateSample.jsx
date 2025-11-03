@@ -208,53 +208,48 @@ const updatePayload = {
   </div>
 </div>
 
-      <div className="mb-4">
-  <div
-    onClick={() => setShowGeneralInfo(!showGeneralInfo)}
-    className="flex items-center justify-between cursor-pointer bg-gray-100 px-4 py-2 rounded"
-  >
-   
-    <h3 className="font-semibold">Pallet Information</h3>
-    <span className="text-lg">{showGeneralInfo ? '−' : '+'}</span>
-  </div>
-
-  {showGeneralInfo && (
-  <div className="pl-4 border-l-4 border-blue-300 mt-4">
-    <div className="space-y-4">
-      {[
-        'pallet_number',
-        'ggn_number',
-        'ggn_exp_date',
-        'grower_code',
-        'packing_code',
-        'variety',
-        'brand'
-      ]
-      .map(field => (
-        <div key={field}>
-          <label className="block text-gray-700 mb-1 capitalize">
-            {field.replace(/_/g, ' ')}
-          </label>
-          <input
-            name={field}
-            value={form[field]}
-            onChange={handleChange}
-            className="p-2 border rounded w-full"
-          />
-        </div>
-      ))}
-    </div>
-    <div className="flex justify-end mt-4">
+      <div className="mx-4 md:mx-6 mt-6 rounded-2xl border shadow-sm">
+  {/* gražesnė accordion antraštė */}
   <button
-    onClick={saveWithoutRedirect}
-    className="bg-green-500 hover:bg-green-600 text-white text-sm px-4 py-2 rounded"
     type="button"
+    onClick={() => setShowGeneralInfo(v => !v)}
+    className="w-full flex items-center justify-between px-4 py-3"
   >
-    Save
+    <span className="text-sm font-semibold text-gray-800">Pallet Information</span>
+    <span className="text-gray-500">{showGeneralInfo ? '▾' : '▸'}</span>
   </button>
-</div>
-  </div>
-)}
+
+  {/* turinys – paliekam 1:1 */}
+  {showGeneralInfo && (
+    <div className="px-4 pb-4 pt-1">
+      <div className="space-y-4">
+        {[ 'pallet_number','ggn_number','ggn_exp_date','grower_code','packing_code','variety','brand' ]
+          .map(field => (
+            <div key={field}>
+              <label className="block text-gray-700 mb-1 capitalize">
+                {field.replace(/_/g, ' ')}
+              </label>
+              <input
+                name={field}
+                value={form[field]}
+                onChange={handleChange}
+                className="p-2 border rounded w-full"
+              />
+            </div>
+        ))}
+      </div>
+
+      <div className="flex justify-end mt-4">
+        <button
+          onClick={saveWithoutRedirect}
+          className="bg-green-500 hover:bg-green-600 text-white text-sm px-4 py-2 rounded"
+          type="button"
+        >
+          Save
+        </button>
+      </div>
+    </div>
+  )}
 </div>
 
 <div className="mb-4">

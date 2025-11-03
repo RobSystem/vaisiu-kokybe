@@ -9,6 +9,8 @@ function AllReports({ setSelectedReport }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [sentReports, setSentReports] = useState([]);
   const [userProfile, setUserProfile] = useState(null);
+  const [page, setPage] = useState(1);
+const pageSize = 20;
   const navigate = useNavigate();
 
   const handleDone = async (id) => {
@@ -126,7 +128,15 @@ function AllReports({ setSelectedReport }) {
     [r.client, r.container_number, r.location, r.variety, r.client_ref, r.rochecks_ref]
       .some((field) => field?.toLowerCase().includes(searchTerm.toLowerCase()))
   );
+const total = filteredReports.length;
+const totalPages = Math.max(1, Math.ceil(total / pageSize));
+const start = (page - 1) * pageSize;
+const end = Math.min(start + pageSize, total);
+const pageReports = filteredReports.slice(start, end);
 
+useEffect(() => {
+  if (page > totalPages) setPage(totalPages);
+}, [totalPages, page]);
   return (
     <div className="w-full px-4 py-6 text-xs">
       <h2 className="text-lg font-semibold mb-4">All Reports</h2>
@@ -135,7 +145,10 @@ function AllReports({ setSelectedReport }) {
         type="text"
         placeholder="Search..."
         value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
+        onChange={(e) => {
+  setSearchTerm(e.target.value);
+  setPage(1);
+}}
         className="mb-4 p-2 border border-gray-300 rounded w-full max-w-xs"
       />
 
@@ -152,7 +165,7 @@ function AllReports({ setSelectedReport }) {
               </tr>
             </thead>
             <tbody>
-              {filteredReports.map(report => (
+              {pageReports.map(report => (
                 <tr key={report.id} className="text-center">
                   <td className="px-3 py-2 border-b">{report.date}</td>
                   <td className="px-3 py-2 border-b">{report.container_number}</td>
@@ -204,7 +217,31 @@ function AllReports({ setSelectedReport }) {
               ))}
             </tbody>
           </table>
-          <p className="italic mt-2">Showing 1 to {filteredReports.length} of {filteredReports.length} entries</p>
+          <p className="italic mt-2">
+  Showing {total === 0 ? 0 : start + 1}–{end} of {total} entries
+</p>
+
+<div className="flex items-center gap-2 mt-3 justify-center">
+  <button
+    className="px-3 py-1 rounded border disabled:opacity-50"
+    onClick={() => setPage(p => Math.max(1, p - 1))}
+    disabled={page === 1}
+  >
+    Previous
+  </button>
+
+  <span className="text-sm">
+    Page {page} of {totalPages}
+  </span>
+
+  <button
+    className="px-3 py-1 rounded border disabled:opacity-50"
+    onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+    disabled={page === totalPages}
+  >
+    Next
+  </button>
+</div>
         </div>
       )}
     </div>

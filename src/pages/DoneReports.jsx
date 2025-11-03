@@ -8,6 +8,8 @@ function DoneReports() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [userProfile, setUserProfile] = useState(null);
+  const [page, setPage] = useState(1);
+const pageSize = 20;
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -51,7 +53,14 @@ function DoneReports() {
     [report.client, report.container_number, report.location, report.variety, report.client_ref, report.rochecks_ref]
       .some(field => field?.toLowerCase().includes(searchTerm.toLowerCase()))
   );
-
+const total = filteredReports.length;
+const totalPages = Math.max(1, Math.ceil(total / pageSize));
+const start = (page - 1) * pageSize;
+const end = Math.min(start + pageSize, total);
+const pageReports = filteredReports.slice(start, end);
+useEffect(() => {
+  if (page > totalPages) setPage(totalPages);
+}, [totalPages, page]);
   const handleSend = async (report) => {
   const confirmed = window.confirm('Are you sure you want to send the report?');
   if (!confirmed) return;
@@ -97,12 +106,15 @@ function DoneReports() {
     <div className="w-full px-4 py-6 text-xs">
       <h2 className="text-lg font-semibold mb-4">Done Reports</h2>
       <input
-        type="text"
-        placeholder="Search..."
-        className="mb-4 p-2 border border-gray-300 rounded w-full max-w-xs"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-      />
+  type="text"
+  placeholder="Search..."
+  className="mb-4 p-2 border border-gray-300 rounded w-full max-w-xs"
+  value={searchTerm}
+  onChange={(e) => {
+    setSearchTerm(e.target.value);
+    setPage(1);
+  }}
+/>
       {loading ? (
         <p>Kraunama...</p>
       ) : (
@@ -116,7 +128,7 @@ function DoneReports() {
               </tr>
             </thead>
             <tbody>
-              {filteredReports.map(report => (
+              {pageReports.map(report => (
                 <tr key={report.id} className="text-center">
                   <td className="px-3 py-2 border-b">{report.date}</td>
                   <td className="px-3 py-2 border-b">{report.container_number}</td>
@@ -149,7 +161,31 @@ function DoneReports() {
               ))}
             </tbody>
           </table>
-          <p className="italic mt-2">Showing 1 to {filteredReports.length} of {filteredReports.length} entries</p>
+          <p className="italic mt-2">
+  Rodoma {total === 0 ? 0 : start + 1}–{end} iš {total} įrašų
+</p>
+
+<div className="flex items-center gap-2 mt-3 justify-center">
+  <button
+    className="px-3 py-1 rounded border disabled:opacity-50"
+    onClick={() => setPage(p => Math.max(1, p - 1))}
+    disabled={page === 1}
+  >
+    Atgal
+  </button>
+
+  <span className="text-sm">
+    Puslapis {page} iš {totalPages}
+  </span>
+
+  <button
+    className="px-3 py-1 rounded border disabled:opacity-50"
+    onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+    disabled={page === totalPages}
+  >
+    Pirmyn
+  </button>
+</div>
         </div>
       )}
     </div>

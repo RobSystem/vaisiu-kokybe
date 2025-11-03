@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../supabaseClient'
 import { useParams } from 'react-router-dom'
 import emailjs from '@emailjs/browser';
+import toast from 'react-hot-toast';
 
 function EditReport() {
   const [form, setForm] = useState({
@@ -178,7 +179,7 @@ const handleSend = async () => {
   .from('reports')
   .update({ sent: true })
   .eq('id', report.id);
-      alert('Report sent successfully!');
+      toast.success('Report sent successfully!');
     }
   } catch (err) {
     console.error('Sending error:', err);

@@ -13,6 +13,9 @@ import ViewReport from './pages/ViewReport';
 import AdminPanel from './pages/AdminPanel';
 import AdminClients from './pages/AdminClients';
 import AddUserPage from './pages/AddUserPage';
+import { Toaster } from 'react-hot-toast';
+
+
 
 function Login({ onLogin }) {
   const [email, setEmail] = useState('');
@@ -105,25 +108,28 @@ function App() {
   };
 
   return (
-    <Router>
-      <Routes>
-        {/* Viešas kelias prieinamas be prisijungimo */}
-        <Route path="/viewreport/:reportId" element={<ViewReport />} />
+  <Router>
+    <Routes>
+      {/* Viešas kelias prieinamas be prisijungimo */}
+      <Route path="/viewreport/:reportId" element={<ViewReport />} />
 
-        {/* Visi kiti maršrutai tik prisijungus */}
-        <Route
-          path="*"
-          element={
-            loading ? null : !user ? (
-              <Login onLogin={setUser} />
-            ) : (
-              <MainApp user={user} onLogout={handleLogout} />
-            )
-          }
-        />
-      </Routes>
-    </Router>
-  );
+      {/* Visi kiti maršrutai tik prisijungus */}
+      <Route
+        path="*"
+        element={
+          loading ? null : !user ? (
+            <Login onLogin={setUser} />
+          ) : (
+            <MainApp user={user} onLogout={handleLogout} />
+          )
+        }
+      />
+    </Routes>
+
+    {/* 👇 Čia įdėk Toaster, kad veiktų visuose puslapiuose */}
+    <Toaster position="bottom-right" />
+  </Router>
+);
 }
 
 export default App;

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient';
 import { useNavigate } from 'react-router-dom';
-
+import { useCallback } from 'react';
 
 function AllReports({ setSelectedReport }) {
   const [reports, setReports] = useState([]);
@@ -11,6 +11,24 @@ function AllReports({ setSelectedReport }) {
   const [page, setPage] = useState(1);
 const pageSize = 20;
   const navigate = useNavigate();
+  
+  const fetchReports = useCallback(async () => {
+  setLoading(true);
+
+  let query = supabase
+    .from('reports')
+    .select('*')
+    .eq('status', 'active')
+    .order('date', { ascending: false });
+
+  if (userProfile?.role === 'user') {
+    query = query.eq('surveyor', userProfile.name);
+  }
+
+  const { data, error } = await query;
+  if (!error && data) setReports(data);
+  setLoading(false);
+}, [userProfile]);
 
   const handleDone = async (id) => {
     const { data, error } = await supabase
@@ -54,32 +72,47 @@ const pageSize = 20;
   }, []);
 
   useEffect(() => {
-    if (!userProfile) return;
+  if (!userProfile) return;
 
-    const fetchReports = async () => {
-      setLoading(true);
+  // Klausom pokyčių lentelėje "reports"
+  const channel = supabase.channel('reports-realtime');
 
-      let query = supabase
-        .from('reports')
-        .select('*')
-        .eq('status', 'active')
-        .order('date', { ascending: false });
+  channel.on(
+    'postgres_changes',
+    {
+      schema: 'public',
+      table: 'reports',
+      event: '*', // INSERT, UPDATE, DELETE
+    },
+    (payload) => {
+      // Reaguojam tik į tai, kas gali pakeisti AllReports sąrašą ar jo rodymą:
+      // - INSERT su status='active' (atsiras naujas įrašas)
+      // - UPDATE: pasikeitė 'sent' (norim pamatyti "Sent" žymę), ar 'status' (pvz. active -> done -> reikia pašalinti)
+      // - DELETE: pašalinta ataskaita
+      const newRow = payload.new || {};
+      const oldRow = payload.old || {};
 
-      if (userProfile.role === 'user') {
-        query = query.eq('surveyor', userProfile.name);
+      const statusChanged = newRow.status !== oldRow.status;
+      const sentChanged = newRow.sent !== oldRow.sent;
+
+      if (
+        payload.eventType === 'INSERT' ||
+        payload.eventType === 'DELETE' ||
+        statusChanged ||
+        sentChanged
+      ) {
+        fetchReports(); // paprasčiausia ir patikima strategija
       }
+    }
+  );
 
-      const { data, error } = await query;
+  channel.subscribe();
 
-      if (!error && data) {
-        setReports(data);
-      }
-
-      setLoading(false);
-    };
-
-    fetchReports();
-  }, [userProfile]);
+  // Išvalymas išeinant iš puslapio
+  return () => {
+    supabase.removeChannel(channel);
+  };
+}, [userProfile, fetchReports]);
 
   const filteredReports = reports.filter((r) =>
     [r.client, r.container_number, r.location, r.variety, r.client_ref, r.rochecks_ref]

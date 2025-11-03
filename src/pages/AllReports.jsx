@@ -131,14 +131,7 @@ useEffect(() => {
                   <td className="px-3 py-2 border-b">{report.client}</td>
                   <td className="px-3 py-2 border-b">{report.variety}</td>
                   <td className="px-3 py-2 border-b">{report.location}</td>
-                  <td className="px-3 py-2 border-b">
-  {report.sent ? (
-    <span className="text-green-600 font-semibold">✅ Sent</span>
-  ) : (
-    <span className="text-gray-400 italic">Not sent</span>
-  )}
-</td>
-                  <td className="px-3 py-2 border-b flex flex-wrap gap-1 justify-center">
+                                    <td className="px-3 py-2 border-b flex flex-wrap gap-1 justify-center">
   <button
     className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded"
     onClick={() => {
@@ -162,6 +155,13 @@ useEffect(() => {
   >
     Delete
   </button>
+</td>
+<td className="px-3 py-2 border-b">
+  {report.sent ? (
+    <span className="text-green-600 font-semibold">✅ Sent</span>
+  ) : (
+    <span className="text-gray-400 italic">Not sent</span>
+  )}
 </td>
 
                 </tr>

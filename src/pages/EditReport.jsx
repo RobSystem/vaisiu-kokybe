@@ -23,7 +23,23 @@ function EditReport() {
     origin: '', location: '', total_pallets: '', type: 'Conventional',
     supplier: '', surveyor: '', date: ''
   });
-
+const fetchPdfFiles = async () => {
+      const files = [];
+      for (let i = 1; i <= 3; i++) {
+        const { data } = await supabase.storage.from('report-files').list(`${reportId}`, {
+          search: `file${i}.pdf`,
+        });
+  
+        if (data && data.length) {
+          const { data: urlData } = await supabase.storage.from('report-files').getPublicUrl(`${reportId}/file${i}.pdf`);
+          files[i - 1] = { name: `file${i}.pdf`, url: urlData.publicUrl };
+        } else {
+          files[i - 1] = null;
+        }
+      }
+      setPdfFiles(files);
+    };
+    
   useEffect(() => {
     const fetchReport = async () => {
       const { data } = await supabase.from('reports').select('*').eq('id', reportId).single();
@@ -188,37 +204,53 @@ const handleSend = async () => {
 };
   return (
     <div className="w-full px-4 py-6 text-xs">
-      <div className="flex items-center gap-3 mb-4">
-  <h2 className="text-base font-semibold text-gray-700 flex-1">
-    {report
-      ? `Container: ${report.container_number || '—'} | Variety: ${report.variety || '—'} | Origin: ${report.origin || '—'} | Total Pallets: ${report.total_pallets || '—'}`
-      : 'Loading...'}
-  </h2>
+<div className="sticky top-0 z-20 bg-white/90 backdrop-blur border-b">
+  <div className="mx-4 md:mx-6 py-3 flex flex-wrap items-center gap-3">
+    <div className="flex-1 min-w-[260px]">
+      <p className="text-xs text-gray-500 uppercase tracking-wide">Edit Report</p>
+      <h2 className="text-lg font-semibold text-gray-800">
+        {report
+          ? `Container: ${report.container_number || '—'} • ${report.variety || '—'} • ${report.origin || '—'}`
+          : 'Loading...'}
+      </h2>
+    </div>
 
-  <button
-    onClick={() => window.open(`/viewreport/${report.id}`, '_blank')}
-    className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded"
-  >
-    View report
-  </button>
+    {/* Status chip */}
+    <span
+      className={`px-2.5 py-1 rounded-full text-xs font-medium ${
+        report?.sent ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'
+      }`}
+    >
+      {report?.sent ? 'Sent' : 'Not sent'}
+    </span>
 
-  <button
-    onClick={handleSend}
-    className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded"
-  >
-    Send report
-  </button>
+    <div className="flex items-center gap-2">
+      <button
+        onClick={() => report && window.open(`/viewreport/${report.id}`, '_blank')}
+        className="px-3 py-2 rounded-lg border text-gray-700 hover:bg-gray-50"
+      >
+        View
+      </button>
 
-  <button
-    onClick={handleOpenEditModal}
-    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
-  >
-    Edit Info
-  </button>
+      <button
+        onClick={handleSend}
+        className="px-3 py-2 rounded-lg bg-yellow-500 text-white hover:bg-yellow-600"
+      >
+        Send
+      </button>
+
+      <button
+        onClick={handleOpenEditModal}
+        className="px-3 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
+      >
+        Edit Info
+      </button>
+    </div>
+  </div>
 </div>
 
-  
-      <div className="grid md:grid-cols-3 gap-4 mb-6">
+
+        <div className="grid md:grid-cols-3 gap-4 mb-6">
   <div>
     <label className="block text-gray-700 mb-1">Brand</label>
     <input name="brand" value={form.brand} onChange={handleFormChange} className="p-2 border rounded w-full" />

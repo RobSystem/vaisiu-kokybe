@@ -117,12 +117,12 @@ function EditReport() {
       });
     }
     setUploading(false);
-    alert('Failai įkelti');
+    toast.success('Files uploaded successfully!');
   }
 
   const handleSave = async () => {
     const { error } = await supabase.from('reports').update({ ...form, samples }).eq('id', report.id);
-    if (!error) alert('Sėkmingai įsaugota!');
+    if (!error) toast.success('Report saved successfully!');
   }
 
   const handleOpenEditModal = () => {
@@ -139,7 +139,7 @@ function EditReport() {
     await supabase.from('reports').update(editInfo).eq('id', report.id);
     setReport(prev => ({ ...prev, ...editInfo }));
     setShowEditModal(false);
-    alert('Informacija atnaujinta');
+    toast.success('Information updated successfully!');
   }
 const handleSend = async () => {
   if (!report) return;
@@ -183,7 +183,7 @@ const handleSend = async () => {
     }
   } catch (err) {
     console.error('Sending error:', err);
-    alert(`Error sending report:\n${err?.message || 'Unknown error'}`);
+   toast.error(`Error sending report: ${err?.message || 'Unknown error'}`);
   }
 };
   return (

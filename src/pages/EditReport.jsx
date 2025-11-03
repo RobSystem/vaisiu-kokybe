@@ -23,6 +23,7 @@ function EditReport() {
     origin: '', location: '', total_pallets: '', type: 'Conventional',
     supplier: '', surveyor: '', date: ''
   });
+  const [tab, setTab] = useState('samples');
 const fetchPdfFiles = async () => {
       const files = [];
       for (let i = 1; i <= 3; i++) {
@@ -329,134 +330,181 @@ const handleSend = async () => {
   </div>
 </div>
 
-<div className="mx-4 md:mx-6 mt-6">
-  <div className="rounded-2xl border p-4 md:p-6 shadow-sm">
-    <h3 className="font-semibold text-gray-800 mb-2">Conclusion</h3>
-    <textarea
-      name="conclusion"
-      value={form.conclusion}
-      onChange={handleFormChange}
-      className="w-full p-2 border rounded h-24"
-    />
+<div className="mx-4 md:mx-6 mt-8">
+  {/* Tabs header */}
+  <div className="flex gap-2 border-b">
+    {['samples', 'files'].map((t) => (
+      <button
+        key={t}
+        onClick={() => setTab(t)}
+        className={`px-3 py-2 text-sm font-medium border-b-2 -mb-px transition-colors
+          ${
+            tab === t
+              ? 'border-blue-600 text-blue-700'
+              : 'border-transparent text-gray-500 hover:text-gray-700'
+          }`}
+      >
+        {t === 'samples' ? 'Samples' : 'Files'}
+      </button>
+    ))}
   </div>
-</div>
 
-      <div className="mb-6">
-      <h3 className="font-semibold mb-2">Samples</h3>
-<div className="flex gap-4 mb-4">
-<button
-    onClick={handleSave}
-    className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
-  >
-    Save
-  </button>
-  <button
-    onClick={handleAddSample}
-    className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
-  >
-    Add Sample
-  </button>
-  
-</div>
+  {/* Tabs content */}
+  <div className="rounded-2xl border p-4 md:p-6 shadow-sm mt-4">
+    {tab === 'samples' ? (
+      <>
+        {/* ======== SAMPLES TAB ======== */}
+        <div className="flex gap-4 mb-4">
+          <button
+            onClick={handleSave}
+            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
+          >
+            Save
+          </button>
+          <button
+            onClick={handleAddSample}
+            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+          >
+            Add Sample
+          </button>
+        </div>
+
         {samples.length > 0 ? (
-          <table className="table-auto w-full text-xs border">
-            <thead className="bg-gray-100">
+          <table className="w-full text-xs border rounded-lg overflow-hidden">
+            <thead className="bg-gray-50 text-gray-600">
               <tr>
-                <th className="border px-2 py-1">#</th><th className="border px-2 py-1">Pallet number</th><th className="border px-2 py-1">Quality score</th><th className="border px-2 py-1">Storage score</th><th className="border px-2 py-1">Action</th>
+                {['#', 'Pallet number', 'Quality score', 'Storage score', 'Action'].map((h) => (
+                  <th key={h} className="px-2 py-2 text-left">{h}</th>
+                ))}
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y">
               {samples.map((s, i) => (
-                <tr key={s.id} className="text-center">
-                  <td className="border px-2 py-1">{i + 1}</td><td className="border px-2 py-1">{s.pallet_number}</td><td className="border px-2 py-1">{s.quality_score}</td><td className="border px-2 py-1">{s.storage_score}</td>
-                  <td className="border px-2 py-1 flex justify-center gap-2">
-                    <button onClick={() => handleEditSample(s.id)} className="bg-blue-500 text-white px-2 py-1 rounded">Edit</button>
-                    <button onClick={() => handleCopySample(s.id)} className="bg-gray-400 text-white px-2 py-1 rounded">Copy</button>
-                    <button onClick={() => handleDeleteSample(s.id)} className="bg-red-500 text-white px-2 py-1 rounded">Delete</button>
+                <tr key={s.id} className="odd:bg-white even:bg-gray-50">
+                  <td className="px-2 py-2">{i + 1}</td>
+                  <td className="px-2 py-2">{s.pallet_number}</td>
+                  <td className="px-2 py-2">{s.quality_score}</td>
+                  <td className="px-2 py-2">{s.storage_score}</td>
+                  <td className="px-2 py-2">
+                    <div className="flex gap-1">
+                      <button
+                        onClick={() => handleEditSample(s.id)}
+                        className="px-2 py-1 rounded border hover:bg-gray-50"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleCopySample(s.id)}
+                        className="px-2 py-1 rounded border hover:bg-gray-50"
+                      >
+                        Copy
+                      </button>
+                      <button
+                        onClick={() => handleDeleteSample(s.id)}
+                        className="px-2 py-1 rounded bg-red-500 text-white hover:bg-red-600"
+                      >
+                        Delete
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
-        ) : <p className="italic">No samples.</p>}
-      </div>
+        ) : (
+          <p className="italic text-gray-400">No samples.</p>
+        )}
+      </>
+    ) : (
+      <>
+        {/* ======== FILES TAB ======== */}
+        <h4 className="font-semibold mb-3">Temperature recorders</h4>
+        <div className="space-y-3">
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="flex flex-col md:flex-row md:items-center gap-2 p-3 border rounded-lg">
+              <input
+                type="file"
+                accept="application/pdf"
+                onChange={(e) => {
+                  const file = e.target.files[0];
+                  setPdfFiles((prev) => {
+                    const updated = [...prev];
+                    updated[i] = file;
+                    return updated;
+                  });
+                }}
+                className="border p-2 rounded w-full md:flex-1"
+              />
 
-      <div className="flex gap-4 mb-4">
-      
-      </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={async () => {
+                    if (!pdfFiles[i] || pdfFiles[i]?.url) {
+                      toast.error('Please select a file first!');
+                      return;
+                    }
+                    setUploading(true);
+                    try {
+                      await supabase.storage.from('report-files').upload(
+                        `${reportId}/file${i + 1}.pdf`,
+                        pdfFiles[i],
+                        { cacheControl: '3600', upsert: true, contentType: 'application/pdf' }
+                      );
+                      toast.success('File uploaded successfully!');
+                      // jei turi iškeltą funkciją fetchPdfFiles – naudok ją:
+                      if (typeof fetchPdfFiles === 'function') {
+                        await fetchPdfFiles();
+                      }
+                    } catch (err) {
+                      console.error(err);
+                      toast.error('Upload failed');
+                    } finally {
+                      setUploading(false);
+                    }
+                  }}
+                  className="px-3 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
+                >
+                  Upload
+                </button>
 
-      <div className="mb-6">
-  <label className="font-semibold block mb-2">Upload Temp.recorders:</label>
-  {[0, 1, 2].map(i => (
-  <div key={i} className="flex items-center gap-2 mb-2">
-    <input
-      type="file"
-      accept="application/pdf"
-      onChange={(e) => {
-        const file = e.target.files[0];
-        setPdfFiles(prev => {
-          const updated = [...prev];
-          updated[i] = file;
-          return updated;
-        });
-      }}
-      className="border p-1 rounded w-full"
-    />
-    <button
-      onClick={async () => {
-        if (!pdfFiles[i] || pdfFiles[i]?.url) toast.error('Please select a file first!');
-        setUploading(true);
-        try {
-          await supabase.storage.from('report-files').upload(
-            `${reportId}/file${i + 1}.pdf`,
-            pdfFiles[i],
-            { cacheControl: '3600', upsert: true, contentType: 'application/pdf' }
-          );
-          toast.success(`File uploaded successfully!`);
-          fetchPdfFiles(); // arba iškviesti fetchPdfFiles()
-        } catch (err) {
-          console.error(err);
-          toast.error('Upload failed');
-        } finally {
-          setUploading(false);
-        }
-      }}
-      className="bg-blue-500 hover:bg-blue-600 text-white text-xs px-3 py-1 rounded"
-    >
-      Upload
-    </button>
+                <button
+                  onClick={async () => {
+                    setUploading(true);
+                    try {
+                      await supabase.storage.from('report-files').remove([`${reportId}/file${i + 1}.pdf`]);
+                      toast.success('File deleted!');
+                      if (typeof fetchPdfFiles === 'function') {
+                        await fetchPdfFiles();
+                      }
+                    } catch (err) {
+                      console.error(err);
+                      toast.error('Delete failed');
+                    } finally {
+                      setUploading(false);
+                    }
+                  }}
+                  className="px-3 py-2 rounded bg-red-500 text-white hover:bg-red-600"
+                >
+                  Delete
+                </button>
+              </div>
 
-    <button
-      onClick={async () => {
-        setUploading(true);
-        try {
-          await supabase.storage.from('report-files').remove([`${reportId}/file${i + 1}.pdf`]);
-          toast.success(`File deleted!`);
-          fetchPdfFiles(); // arba iškviesti fetchPdfFiles()
-        } catch (err) {
-          console.error(err);
-          toast.error('Delete failed');
-        } finally {
-          setUploading(false);
-        }
-      }}
-      className="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1 rounded"
-    >
-      Delete
-    </button>
-
-    {pdfFiles[i] && pdfFiles[i]?.url && (
-      <a
-        href={pdfFiles[i].url}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-blue-600 underline text-xs"
-      >
-        <Preview></Preview> PDF
-      </a>
+              {pdfFiles[i] && pdfFiles[i]?.url && (
+                <a
+                  href={pdfFiles[i].url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 underline text-sm"
+                >
+                  Preview PDF
+                </a>
+              )}
+            </div>
+          ))}
+        </div>
+      </>
     )}
   </div>
-))}
 </div>
 
       {showEditModal && (

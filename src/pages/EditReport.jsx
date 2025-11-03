@@ -174,6 +174,10 @@ const handleSend = async () => {
     );
 
     if (response.status === 200) {
+      await supabase
+  .from('reports')
+  .update({ sent: true })
+  .eq('id', report.id);
       alert('Report sent successfully!');
     }
   } catch (err) {

@@ -116,7 +116,7 @@ useEffect(() => {
           <table className="min-w-full table-auto border-collapse">
             <thead>
               <tr className="bg-gray-100">
-                {['DATE', 'CONTAINER', 'CLIENT REF', 'ROCHECKS REF', 'CLIENT', 'VARIETY', 'LOCATION', 'ACTION'].map(header => (
+                {['DATE', 'CONTAINER', 'CLIENT REF', 'ROCHECKS REF', 'CLIENT', 'VARIETY', 'LOCATION', 'ACTION', 'STATUS'].map(header => (
                   <th key={header} className="px-3 py-2 border-b text-center">{header}</th>
                 ))}
               </tr>
@@ -131,6 +131,13 @@ useEffect(() => {
                   <td className="px-3 py-2 border-b">{report.client}</td>
                   <td className="px-3 py-2 border-b">{report.variety}</td>
                   <td className="px-3 py-2 border-b">{report.location}</td>
+                  <td className="px-3 py-2 border-b">
+  {report.sent ? (
+    <span className="text-green-600 font-semibold">✅ Sent</span>
+  ) : (
+    <span className="text-gray-400 italic">Not sent</span>
+  )}
+</td>
                   <td className="px-3 py-2 border-b flex flex-wrap gap-1 justify-center">
   <button
     className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded"

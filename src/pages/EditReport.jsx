@@ -194,14 +194,14 @@ const handleSend = async () => {
     onClick={() => window.open(`/viewreport/${report.id}`, '_blank')}
     className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded"
   >
-    View
+    View report
   </button>
 
   <button
     onClick={handleSend}
     className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded"
   >
-    Send
+    Send report
   </button>
 
   <button

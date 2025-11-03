@@ -73,6 +73,11 @@ const pageSize = 20;
 
   useEffect(() => {
   if (!userProfile) return;
+  fetchReports();
+}, [userProfile, fetchReports]);
+
+  useEffect(() => {
+  if (!userProfile) return;
 
   // Klausom pokyčių lentelėje "reports"
   const channel = supabase.channel('reports-realtime');

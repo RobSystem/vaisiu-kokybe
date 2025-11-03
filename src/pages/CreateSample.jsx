@@ -597,156 +597,179 @@ const updatePayload = {
   )}
 </div>
 
-<h3 className="font-semibold mb-2">Coloration</h3>
-<div className="mb-2">
-  {externalColoration.map((item, i) => (
-    <div key={i} className="flex gap-2 mb-2">
-      <select
-        value={item.color}
-        onChange={(e) => updateColoration('external', i, 'color', e.target.value)}
-        className="border p-2 rounded"
-      >
-        <option>Pasirinkti</option>
-        {['Green', 'Light Green', 'Yellow', 'Turning', 'Orange', 'Brown', 'White', 'Beige', 'Green Tinges', 'Red', 'Purple'].map(opt => (
-          <option key={opt}>{opt}</option>
-        ))}
-      </select>
-      <select
-        value={item.percent}
-        onChange={(e) => updateColoration('external', i, 'percent', e.target.value)}
-        className="border p-2 rounded"
-      >
-        {[...Array(21)].map((_, i) => (
-          <option key={i}>{i * 5}%</option>
-        ))}
-      </select>
-      <button
-        onClick={() => removeColoration('external', i)}
-        className="text-red-500"
-      >
-        Delete
-      </button>
-    </div>
-  ))}
+{/* COLORATION */}
+<div className="mx-4 md:mx-6 mt-6 rounded-2xl border shadow-sm p-4">
+  <h3 className="text-sm font-semibold text-gray-800 mb-4">Coloration</h3>
 
-  <button
-    onClick={() => addColoration('external')}
-    className="bg-blue-500 text-white px-3 py-1 rounded"
-  >
-    Add External Coloration
-  </button>
-</div>
-
-<div className="mb-2">
-  {internalColoration.map((item, i) => (
-    <div key={i} className="flex gap-2 mb-2">
-      <select
-        value={item.color}
-        onChange={(e) => updateColoration('internal', i, 'color', e.target.value)}
-        className="border p-2 rounded"
-      >
-        <option>Pasirinkti</option>
-        {['Green', 'Light Green', 'Yellow', 'Orange', 'Light Yellow', 'White', 'Red', 'Purple', 'Grey'].map(opt => (
-          <option key={opt}>{opt}</option>
-        ))}
-      </select>
-      <select
-        value={item.percent}
-        onChange={(e) => updateColoration('internal', i, 'percent', e.target.value)}
-        className="border p-2 rounded"
-      >
-        {[...Array(21)].map((_, i) => (
-          <option key={i}>{i * 5}%</option>
-        ))}
-      </select>
-      <button
-        onClick={() => removeColoration('internal', i)}
-        className="text-red-500"
-      >
-        Delete
-      </button>
-    </div>
-  ))}
-
-  <button
-    onClick={() => addColoration('internal')}
-    className="bg-blue-500 text-white px-3 py-1 rounded"
-  >
-    Add Internal Coloration
-  </button>
-</div>
-
-      <h3 className="font-semibold mb-2">Consistency</h3>
-      <div className="grid md:grid-cols-3 gap-4 mb-6">
-        {['hard', 'sensitive', 'soft'].map(type => (
-          <div key={type}>
-            <label className="block text-gray-700 mb-1 capitalize">{type}</label>
-            <select value={consistency[type]} onChange={(e) => handleConsistencyChange(type, e.target.value)} className="p-2 border rounded w-full">
-              {[...Array(21)].map((_, i) => <option key={i}>{i * 5}%</option>)}
-            </select>
-          </div>
-        ))}
+  {/* External coloration */}
+  <div className="mb-4">
+    {externalColoration.map((item, i) => (
+      <div key={i} className="flex gap-2 mb-2">
+        <select
+          value={item.color}
+          onChange={(e) => updateColoration('external', i, 'color', e.target.value)}
+          className="border p-2 rounded"
+        >
+          <option>Choose...</option>
+          {['Green', 'Light Green', 'Yellow', 'Turning', 'Orange', 'Brown', 'White', 'Beige', 'Green Tinges', 'Red', 'Purple'].map(opt => (
+            <option key={opt}>{opt}</option>
+          ))}
+        </select>
+        <select
+          value={item.percent}
+          onChange={(e) => updateColoration('external', i, 'percent', e.target.value)}
+          className="border p-2 rounded"
+        >
+          {[...Array(21)].map((_, j) => (
+            <option key={j}>{j * 5}%</option>
+          ))}
+        </select>
+        <button onClick={() => removeColoration('external', i)} className="text-red-500">
+          Delete
+        </button>
       </div>
-
-      <h3 className="font-semibold mb-2">Defects</h3>
-<div className="space-y-4 mb-6">
-  <div>
-    <label className="block text-gray-700 mb-1">Major Defects</label>
-    <textarea
-      name="major_defects"
-      value={form.major_defects}
-      onChange={handleChange}
-      className="p-2 border rounded w-full h-40"
-    />
+    ))}
+    <button
+      onClick={() => addColoration('external')}
+      className="bg-blue-500 text-white px-3 py-1 rounded"
+    >
+      Add External Coloration
+    </button>
   </div>
+
+  {/* Internal coloration */}
   <div>
-    <label className="block text-gray-700 mb-1">Minor Defects</label>
-    <textarea
-      name="minor_defects"
-      value={form.minor_defects}
-      onChange={handleChange}
-      className="p-2 border rounded w-full h-40"
-    />
+    {internalColoration.map((item, i) => (
+      <div key={i} className="flex gap-2 mb-2">
+        <select
+          value={item.color}
+          onChange={(e) => updateColoration('internal', i, 'color', e.target.value)}
+          className="border p-2 rounded"
+        >
+          <option>Choose...</option>
+          {['Green', 'Light Green', 'Yellow', 'Orange', 'Light Yellow', 'White', 'Red', 'Purple', 'Grey'].map(opt => (
+            <option key={opt}>{opt}</option>
+          ))}
+        </select>
+        <select
+          value={item.percent}
+          onChange={(e) => updateColoration('internal', i, 'percent', e.target.value)}
+          className="border p-2 rounded"
+        >
+          {[...Array(21)].map((_, j) => (
+            <option key={j}>{j * 5}%</option>
+          ))}
+        </select>
+        <button onClick={() => removeColoration('internal', i)} className="text-red-500">
+          Delete
+        </button>
+      </div>
+    ))}
+    <button
+      onClick={() => addColoration('internal')}
+      className="bg-blue-500 text-white px-3 py-1 rounded"
+    >
+      Add Internal Coloration
+    </button>
   </div>
 </div>
 
-      <h3 className="font-semibold mb-2">Scoring</h3>
-      <div className="grid md:grid-cols-2 gap-4 mb-6">
-      {['quality_score', 'storage_score'].map(field => {
-  const options = field === 'quality_score'
-    ? ['7 - Good','6 - Fair','5 - Reasonable','4 - Moderate','3 - Less than moderate','2 - Poor','1 - Total Loss']
-    : ['7 - Good','6 - Normal','5 - Reduced','4 - Moderate','3 - Limited','2 - Poor','1 - No storage potential'];
-
-  return (
-    <div key={field}>
-      <label className="block text-gray-700 mb-1 capitalize">{field.replace(/_/g, ' ')}</label>
-      <select name={field} value={form[field]} onChange={handleChange} className="p-2 border rounded w-full">
-        <option value="">Pasirinkti</option>
-        {options.map(opt => (
-          <option key={opt} value={opt}>{opt}</option>
-        ))}
-      </select>
-    </div>
-  );
-})}
+{/* CONSISTENCY */}
+<div className="mx-4 md:mx-6 mt-6 rounded-2xl border shadow-sm p-4">
+  <h3 className="text-sm font-semibold text-gray-800 mb-4">Consistency</h3>
+  <div className="grid md:grid-cols-3 gap-4">
+    {['hard', 'sensitive', 'soft'].map(type => (
+      <div key={type}>
+        <label className="block text-gray-700 mb-1 capitalize">{type}</label>
+        <select
+          value={consistency[type]}
+          onChange={(e) => handleConsistencyChange(type, e.target.value)}
+          className="p-2 border rounded w-full"
+        >
+          {[...Array(21)].map((_, i) => (
+            <option key={i}>{i * 5}%</option>
+          ))}
+        </select>
       </div>
+    ))}
+  </div>
+</div>
 
-      <div className="flex gap-4">
+{/* DEFECTS */}
+<div className="mx-4 md:mx-6 mt-6 rounded-2xl border shadow-sm p-4">
+  <h3 className="text-sm font-semibold text-gray-800 mb-4">Defects</h3>
+  <div className="grid md:grid-cols-2 gap-6">
+    <div>
+      <label className="block text-gray-700 mb-1">Major Defects</label>
+      <textarea
+        name="major_defects"
+        value={form.major_defects}
+        onChange={handleChange}
+        className="p-2 border rounded w-full h-40"
+      />
+    </div>
+    <div>
+      <label className="block text-gray-700 mb-1">Minor Defects</label>
+      <textarea
+        name="minor_defects"
+        value={form.minor_defects}
+        onChange={handleChange}
+        className="p-2 border rounded w-full h-40"
+      />
+    </div>
+  </div>
+</div>
+
+{/* SCORING */}
+<div className="mx-4 md:mx-6 mt-6 rounded-2xl border shadow-sm p-4">
+  <h3 className="text-sm font-semibold text-gray-800 mb-4">Scoring</h3>
+  <div className="grid md:grid-cols-2 gap-4">
+    {['quality_score', 'storage_score'].map(field => {
+      const options = field === 'quality_score'
+        ? ['7 - Good', '6 - Fair', '5 - Reasonable', '4 - Moderate', '3 - Less than moderate', '2 - Poor', '1 - Total Loss']
+        : ['7 - Good', '6 - Normal', '5 - Reduced', '4 - Moderate', '3 - Limited', '2 - Poor', '1 - No storage potential'];
+
+      return (
+        <div key={field}>
+          <label className="block text-gray-700 mb-1 capitalize">
+            {field.replace(/_/g, ' ')}
+          </label>
+          <select
+            name={field}
+            value={form[field]}
+            onChange={handleChange}
+            className="p-2 border rounded w-full"
+          >
+            <option value="">Choose...</option>
+            {options.map(opt => (
+              <option key={opt} value={opt}>{opt}</option>
+            ))}
+          </select>
+        </div>
+      );
+    })}
+  </div>
+</div>
+
+{/* ACTION BUTTONS */}
+<div className="mx-4 md:mx-6 mt-6 flex flex-wrap gap-3 pb-10">
   <button
     onClick={handleSave}
     className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
   >
     Save and Back
-    </button>
-    {(sampleId || form.id) && (
-  <button
-    onClick={() => navigate(`/upload-photos/${sampleId || form.id}`)}
-    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
-  >
-    Upload Photos
   </button>
-)}
+
+  {(sampleId || form.id) && (
+    <button
+      onClick={() => navigate(`/upload-photos/${sampleId || form.id}`)}
+      className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+    >
+      Upload Photos
+    </button>
+  )}
 </div>
+
     </div>
   );
 }

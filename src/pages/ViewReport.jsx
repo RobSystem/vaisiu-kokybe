@@ -1,5 +1,5 @@
 // Perrašytas ViewReport.jsx su taisyklinga nuotraukų blokų struktūra
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 import { supabase } from '../supabaseClient'
 import html2pdf from 'html2pdf.js'
@@ -29,9 +29,18 @@ function ViewReport() {
     fetchData()
 
     const fetchAttachments = async () => {
-      const { data } = await supabase.storage.from('report-files').list(`${reportId}/`)
-      if (data?.length) setAttachments(data)
-    }
+  const { data } = await supabase.storage.from('report-files').list(`${reportId}/`)
+  if (!data?.length) return setAttachments([])
+  // Sudarom pilnus public URL'us
+  const files = data.map(f => {
+    const { data: pub } = supabase
+      .storage
+      .from('report-files')
+      .getPublicUrl(`${reportId}/${f.name}`)
+    return { ...f, url: pub.publicUrl }
+  })
+  setAttachments(files)
+}
     fetchAttachments()
   }, [reportId])
 

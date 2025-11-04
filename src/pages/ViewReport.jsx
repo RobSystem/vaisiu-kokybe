@@ -128,6 +128,9 @@ function ViewReport() {
       <p className="text-base font-semibold text-gray-800 uppercase tracking-wide">
   Quality Inspection Report
 </p>
+
+<div className="mt-2" />
+
       <h1 className="text-lg font-semibold text-gray-900 truncate">
         {report?.client || '—'}
         {report?.client_ref ? ` • Ref ${report.client_ref}` : ''}
@@ -162,6 +165,9 @@ function ViewReport() {
         <div className="text-[12pt] font-semibold text-gray-800 uppercase tracking-wide">
   Quality Inspection Report
 </div>
+
+<div className="mt-2" />
+
         <div className="text-[12pt] font-semibold text-gray-900">
           {report?.client || '—'}
           {report?.client_ref ? ` • Ref ${report.client_ref}` : ''}

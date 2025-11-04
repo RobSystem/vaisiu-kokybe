@@ -93,19 +93,19 @@ function ViewReport() {
 
   // QUALITY SCORE
   if (type === 'quality') {
-    if (n >= 6 && n <= 7) return 'bg-green-100 text-green-800';   // 7 Good, 6 Fair
-    if (n >= 4 && n <= 5) return 'bg-yellow-100 text-yellow-800'; // 5 Reasonable, 4 Moderate
-    if (n <= 3)         return 'bg-red-100 text-red-800';         // 3/2/1
+    if (n >= 6 && n <= 7) return 'bg-green-200 text-green-800';   // 7 Good, 6 Fair
+    if (n >= 4 && n <= 5) return 'bg-yellow-200 text-yellow-800'; // 5 Reasonable, 4 Moderate
+    if (n <= 3)         return 'bg-red-200 text-red-800';         // 3/2/1
   }
 
   // STORAGE SCORE
   if (type === 'storage') {
-    if (n >= 6 && n <= 7) return 'bg-green-100 text-green-800';   // 7 Good, 6 Normal
-    if (n >= 4 && n <= 5) return 'bg-yellow-100 text-yellow-800'; // 5 Reduced, 4 Moderate
-    if (n <= 3)         return 'bg-red-100 text-red-800';         // 3/2/1
+    if (n >= 6 && n <= 7) return 'bg-green-200 text-green-800';   // 7 Good, 6 Normal
+    if (n >= 4 && n <= 5) return 'bg-yellow-200 text-yellow-800'; // 5 Reduced, 4 Moderate
+    if (n <= 3)         return 'bg-red-200 text-red-800';         // 3/2/1
   }
 
-  return 'bg-gray-100 text-gray-800';
+  return 'bg-gray-200 text-gray-800';
 }
 
   const handleDownloadPDF = () => {
@@ -253,7 +253,7 @@ function ViewReport() {
           Pallet: {sample.pallet_number ?? idx + 1}
         </h3>
         <div className="flex flex-wrap gap-2 text-sm md:text-base">
-  <span className={'px-3 py-1.5 rounded-full font-semibold ' + getColor(sample.quality_score, 'quality')}>
+  <span className={'px-3 py-1.5 rounded-full font-semibold shadow-sm ' + getColor(sample.quality_score, 'quality')}>
     Quality Score: {sample.quality_score ?? '—'}
   </span>
   <span className={'px-3 py-1.5 rounded-full font-semibold ' + getColor(sample.storage_score, 'storage')}>

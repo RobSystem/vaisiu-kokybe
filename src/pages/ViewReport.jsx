@@ -169,6 +169,21 @@ function ViewReport() {
     >
       Download PDF
     </button>
+    {attachments?.length > 0 && (
+  <div className="flex flex-wrap justify-end gap-2 mt-2">
+    {attachments.map((file, index) => (
+      <a
+        key={index}
+        href={file.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="bg-amber-500 hover:bg-amber-600 text-white font-semibold px-4 py-2 rounded shadow-sm transition"
+      >
+        Download Temp. Recorder {index + 1}
+      </a>
+    ))}
+  </div>
+)}
   </div>
 </div>
 </div>
@@ -405,17 +420,7 @@ function ViewReport() {
   </section>
 )}
 
-      {attachments.length > 0 && (
-        <div className="mt-6">
-          <h3 className="font-semibold mb-2">Temp. Records:</h3>
-          <ul className="list-disc ml-5">
-            {attachments.map((f, i) => {
-              const url = supabase.storage.from('report-files').getPublicUrl(`${reportId}/${f.name}`).data.publicUrl
-              return <li key={i}><a href={url} className="text-blue-600 underline" target="_blank" rel="noreferrer">📎 File {i + 1}</a></li>
-            })}
-          </ul>
-        </div>
-      )}
+      
 
       {previewUrl && (
         <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50" onClick={() => setPreviewUrl(null)}>

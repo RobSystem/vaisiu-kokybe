@@ -190,11 +190,40 @@ function ViewReport() {
 </div>
 
       {/* General Info */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm mb-6">
-        <div>{renderField('Date', report.date)}{renderField('Client', report.client)}{renderField('Ref', report.client_ref)}{renderField('Container #', report.container_number)}{renderField('RoChecks Ref', report.rochecks_ref)}</div>
-        <div>{renderField('Supplier', report.supplier)}{renderField('Variety', report.variety)}{renderField('Origin', report.origin)}{renderField('Location', report.location)}{renderField('Total Pallets', report.total_pallets)}</div>
-        <div>{renderField('Type', report.type)}{renderField('Surveyor', report.surveyor)}{renderField('Brand', report.brand)}{renderField('Temperature', report.temperature)}{renderField('Category', report.category)}</div>
+     <div className="mt-8 border rounded-2xl overflow-hidden shadow-sm">
+  <div className="bg-gray-50 border-b px-6 py-3">
+    <h2 className="text-xl font-semibold text-gray-800">General Information</h2>
+  </div>
+
+  <div className="divide-y divide-gray-200">
+    {[
+      ['Date', report?.date ? new Date(report.date).toLocaleDateString() : '—'],
+      ['Client', report?.client || '—'],
+      ['Ref', report?.client_ref || '—'],
+      ['Container #', report?.container_number || '—'],
+      ['Supplier', report?.supplier || '—'],
+      ['Variety', report?.variety || '—'],
+      ['Origin', report?.origin || '—'],
+      ['Location', report?.location || '—'],
+      ['Total Pallets', report?.total_pallets || '—'],
+      ['Type', report?.type || '—'],
+      ['Surveyor', report?.surveyor || '—'],
+      ['Brand', report?.brand || '—'],
+      ['Temperature', report?.temperature || '—'],
+      ['Category', report?.category || '—'],
+    ].map(([label, value], i) => (
+      <div
+        key={label}
+        className={`grid md:grid-cols-2 px-6 py-2 ${
+          i % 2 === 0 ? 'bg-white' : 'bg-gray-50'
+        }`}
+      >
+        <span className="font-medium text-gray-700">{label}</span>
+        <span className="text-gray-900">{value}</span>
       </div>
+    ))}
+  </div>
+</div>
 
       {/* Each Sample */}
       {samples.map(sample => (

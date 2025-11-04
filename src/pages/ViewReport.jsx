@@ -391,16 +391,16 @@ function ViewReport() {
       </div>
 
       {/* Conclusion */}
-      {report.conclusion && (
-        <div className="rounded-xl border bg-white">
-          <div className="px-4 py-2 border-b bg-gray-50 text-sm font-semibold text-gray-700">
-            Conclusion
-          </div>
-          <div className="p-4 text-gray-900 whitespace-pre-wrap">
-            {report.conclusion}
-          </div>
-        </div>
-      )}
+     {report.conclusion && (
+  <div className="rounded-xl border bg-white">
+    <div className="px-4 py-2 border-b bg-gray-50 text-base font-semibold text-gray-700">
+      Conclusion
+    </div>
+    <div className="p-5 text-gray-900 text-[18px] leading-relaxed whitespace-pre-wrap">
+      {report.conclusion}
+    </div>
+  </div>
+)}
     </div>
   </section>
 )}

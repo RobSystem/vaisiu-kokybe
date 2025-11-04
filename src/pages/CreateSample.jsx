@@ -751,24 +751,7 @@ const updatePayload = {
   </div>
 </div>
 
-{/* ACTION BUTTONS */}
-<div className="mx-4 md:mx-6 mt-6 flex flex-wrap gap-3 pb-10">
-  <button
-    onClick={handleSave}
-    className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
-  >
-    Save and Back
-  </button>
 
-  {(sampleId || form.id) && (
-    <button
-      onClick={() => navigate(`/upload-photos/${sampleId || form.id}`)}
-      className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
-    >
-      Upload Photos
-    </button>
-  )}
-</div>
 
     </div>
   );

@@ -126,7 +126,7 @@ export default function Dashboard() {
       <div className="mt-6 border rounded-2xl p-4 shadow-sm">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-lg font-semibold text-gray-800">Recent reports</h3>
-          <Link to="/allreports" className="text-blue-600 hover:underline text-sm">See all</Link>
+          <Link to="/all" className="text-blue-600 hover:underline text-sm">See all</Link>
         </div>
 
         <div className="overflow-auto">

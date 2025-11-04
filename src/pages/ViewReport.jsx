@@ -355,37 +355,55 @@ function ViewReport() {
 
       {/* Final Summary */}
       {(report.qualityScore || report.storageScore || report.conclusion) && (
-        <div className="mt-6 p-4 bg-gray-100 border rounded space-y-2 break-before-page">
-          <div className="flex flex-wrap gap-6 text-lg">
-            {report.qualityScore && (
-              <p className={"font-bold " + getColor(report.qualityScore, 'quality')}>
-                Quality Score: {report.qualityScore}
-              </p>
-            )}
-            {report.storageScore && (
-              <p className={"font-bold " + getColor(report.storageScore, 'storage')}>
-                Storage Score: {report.storageScore}
-              </p>
-            )}
+  <section className="mt-8 border rounded-2xl shadow-sm overflow-hidden print:break-inside-avoid">
+    {/* Header */}
+    <div className="bg-gray-50 border-b px-6 py-3">
+      <h2 className="text-2xl font-bold text-gray-900 uppercase tracking-wide">
+        Final Summary
+      </h2>
+    </div>
+
+    {/* Content */}
+    <div className="px-6 py-6 space-y-6 text-[17px] leading-relaxed">
+      {/* Scores as chips (naudoja tavo getColor su gradientais) */}
+      <div className="flex flex-wrap gap-2">
+        {report.qualityScore && (
+          <span
+            className={
+              "px-4 py-2 rounded-full font-semibold shadow-sm " +
+              getColor(report.qualityScore, "quality")
+            }
+          >
+            Quality Score: {report.qualityScore}
+          </span>
+        )}
+
+        {report.storageScore && (
+          <span
+            className={
+              "px-4 py-2 rounded-full font-semibold shadow-sm " +
+              getColor(report.storageScore, "storage")
+            }
+          >
+            Storage Score: {report.storageScore}
+          </span>
+        )}
+      </div>
+
+      {/* Conclusion */}
+      {report.conclusion && (
+        <div className="rounded-xl border bg-white">
+          <div className="px-4 py-2 border-b bg-gray-50 text-sm font-semibold text-gray-700">
+            Conclusion
           </div>
-          {report.conclusion && (
-            <div>
-              <p className="font-semibold">Conclusion:</p>
-              <p className="whitespace-pre-line">{report.conclusion}</p>
-            </div>
-          )}
+          <div className="p-4 text-gray-900 whitespace-pre-wrap">
+            {report.conclusion}
+          </div>
         </div>
       )}
-
-      {/* PDF Download & Attachments */}
-      <div className="mt-8">
-        <button
-          onClick={handleDownloadPDF}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded"
-        >
-          Download PDF
-        </button>
-      </div>
+    </div>
+  </section>
+)}
 
       {attachments.length > 0 && (
         <div className="mt-6">

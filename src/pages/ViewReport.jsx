@@ -313,35 +313,41 @@ function ViewReport() {
       </div>
 
       {/* Photos – toje pačioje kortelėje */}
-      {groups.length > 0 && (
-        <>
-          <div className="border-t bg-gray-50 px-6 py-3">
-            <h4 className="text-base md:text-lg font-semibold text-gray-800">Photos</h4>
-          </div>
+     {photosForSample.length > 0 && (
+  <>
+    <div className="border-t bg-gray-50 px-6 py-3">
+      <h4 className="text-base md:text-lg font-semibold text-gray-800">Photos</h4>
+    </div>
 
-          {groups.map((group, index) => (
-            <div
-              key={index}
-              className={`px-6 py-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 ${index > 0 ? 'pdf-photo-break' : ''}`}
-            >
-              {group.map((photo) => (
-                <button
-                  key={photo.id || photo.url}
-                  onClick={() => setPreviewUrl(photo.url)}
-                  className="block group focus:outline-none"
-                  title="Open photo"
-                >
-                  <img
-                    src={photo.url}
-                    alt=""
-                    className="w-full h-28 md:h-32 object-cover rounded-md border group-hover:opacity-90"
-                  />
-                </button>
-              ))}
+    <div className="px-6 py-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+      {photosForSample.map((photo, i) => {
+        const url = photo.url || photo.publicUrl || photo.path;
+
+        // print'e darysim puslapio lūžį kas 28 (tik spausdinant)
+        const printBreakClass = i > 0 && i % 28 === 0 ? 'print:break-before-page' : '';
+
+        return (
+          <button
+            key={photo.id || url || i}
+            onClick={() => setPreviewUrl(url)}
+            title="Open photo"
+            className={`group block focus:outline-none ${printBreakClass}`}
+          >
+            {/* Vienodas rėmelis, bet be kirpimo: object-contain + fiksuotas santykis */}
+            <div className="aspect-[4/3] w-full overflow-hidden rounded-md border bg-white">
+              <img
+                src={url}
+                alt=""
+                loading="lazy"
+                className="w-full h-full object-contain group-hover:opacity-90"
+              />
             </div>
-          ))}
-        </>
-      )}
+          </button>
+        );
+      })}
+    </div>
+  </>
+)}
     </section>
   );
 })}

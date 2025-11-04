@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
+import toast from 'react-hot-toast';
 
 function CreateSample() {
   const navigate = useNavigate();
@@ -121,11 +122,12 @@ const updatePayload = {
       }));
     }
 
-    if (error) alert('Nepavyko išsaugoti');
-    else {
-      alert('Išsaugota sėkmingai!');
-      navigate(`/edit/${reportId}`);
-    }
+    if (error) {
+  toast.error('Failed to save');
+} else {
+  toast.success('Saved successfully!');
+  navigate(`/edit/${reportId}`);
+}
   };
   const saveWithoutRedirect = async () => {
     const cleanedForm = Object.fromEntries(
@@ -155,8 +157,11 @@ const updatePayload = {
       ({ error } = await supabase.from('samples').update(updatePayload).eq('id', sampleId));
     }
   
-    if (error) alert('Nepavyko išsaugoti');
-    else alert('Išsaugota sėkmingai!');
+    if (error) {
+  toast.error('Failed to save');
+} else {
+  toast.success('Saved successfully!');
+}
   };
 
   return (

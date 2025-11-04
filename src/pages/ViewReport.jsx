@@ -192,13 +192,13 @@ function ViewReport() {
       {/* General Info */}
      <div className="mt-8 border rounded-2xl overflow-hidden shadow-sm">
   <div className="bg-gray-50 border-b px-6 py-3">
-    <h2 className="text-xl font-semibold text-gray-800 uppercase tracking-wide">
+    <h2 className="text-2xl font-bold text-gray-900 uppercase tracking-wide">
       General Information
     </h2>
   </div>
 
   {/* 3 column layout */}
-  <div className="grid md:grid-cols-3 gap-x-8 gap-y-2 px-6 py-4 text-[15px]">
+  <div className="grid md:grid-cols-3 gap-x-10 gap-y-3 px-8 py-6 text-[17px] leading-relaxed">
     <div>
       <p><span className="font-semibold text-gray-700">Date:</span> {report?.date ? new Date(report.date).toLocaleDateString() : '—'}</p>
       <p><span className="font-semibold text-gray-700">Client:</span> {report?.client || '—'}</p>

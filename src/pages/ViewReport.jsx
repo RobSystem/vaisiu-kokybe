@@ -226,78 +226,108 @@ function ViewReport() {
 </div>
 
       {/* Each Sample */}
-      {samples.map(sample => (
-        <div key={sample.id}>
-          {/* Sample Info */}
-          <div className="border rounded p-4 mb-6 bg-gray-50 break-before-page">
-            <h3 className="font-semibold text-lg mb-2">Pallet: {sample.pallet_number}</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-              <div>
-                {renderField('GGN #', sample.ggn_number)}
-                {renderField('GGN Exp', sample.ggn_exp_date)}
-                {renderField('Grower Code', sample.grower_code)}
-                {renderField('Packing Code', sample.packing_code)}
-                {renderField('Variety', sample.variety)}
-                {renderField('Brand', sample.brand)}
-              </div>
-              <div>
-                {renderField('Packing Type', sample.packing_type)}
-                {renderField('Size', sample.size)}
-                {(sample.box_weight_min || sample.box_weight_max) && renderInlineList('Box Weight', [`${sample.box_weight_min || ''} – ${sample.box_weight_max || ''}`], 'kg')}
-                {sample.box_weight_extra?.length > 0 && renderInlineList('Extra Box Weights', sample.box_weight_extra, 'kg')}
-                {(sample.fruit_weight_min || sample.fruit_weight_max) && renderInlineList('Fruit Weight', [`${sample.fruit_weight_min || ''} – ${sample.fruit_weight_max || ''}`], 'g')}
-                {sample.fruit_weights_extra?.length > 0 && renderInlineList('Extra Fruit Weights', sample.fruit_weights_extra, 'g')}
-                {(sample.pressures_min || sample.pressures_max) && renderInlineList('Pressures', [`${sample.pressures_min || ''} – ${sample.pressures_max || ''}`], 'kg')}
-                {sample.pressures_extra?.length > 0 && renderInlineList('Extra Pressures', sample.pressures_extra, 'kg')}
-                {(sample.brix_min || sample.brix_max) && renderInlineList('Brix', [`${sample.brix_min || ''} – ${sample.brix_max || ''}`], '°')}
-                {sample.brix_extra?.length > 0 && renderInlineList('Extra Brix', sample.brix_extra, '°')}
-                {(sample.fruit_diameter_min || sample.fruit_diameter_max) && renderInlineList('Diameter', [`${sample.fruit_diameter_min || ''} – ${sample.fruit_diameter_max || ''}`], 'mm')}
-                {sample.diameter_extra?.length > 0 && renderInlineList('Extra Diameters', sample.diameter_extra, 'mm')}
-              </div>
-              <div>
-                {renderList('External Coloration', sample.external_coloration)}
-                {renderList('Internal Coloration', sample.internal_coloration)}
-                {renderConsistency(sample.consistency)}
-                {renderMultiLine('Minor Defects', sample.minor_defects)}
-                {renderMultiLine('Major Defects', sample.major_defects)}
-              </div>
-            </div>
-
-            <div className="flex gap-6 mt-4 pr-[80px]">
-              <p className={"font-bold " + getColor(sample.quality_score, 'quality')}>Quality Score: {sample.quality_score}</p>
-              <p className={"font-bold " + getColor(sample.storage_score, 'storage')}>Storage Score: {sample.storage_score}</p>
-            </div>
-          </div>
-
-         {(() => {
+     {samples.map((sample, idx) => {
   const photosForSample = getPhotosForSample(sample.id);
   const groups = [];
-
   for (let i = 0; i < photosForSample.length; i += 28) {
     groups.push(photosForSample.slice(i, i + 28));
   }
 
   return (
-    <div className="border rounded p-4 mb-6 bg-white break-before-page">
-      <h4 className="font-semibold text-md mb-2">Photos</h4>
-      {groups.map((group, index) => (
-        <div key={index} className={`flex flex-wrap gap-4 mt-4 ${index > 0 ? 'pdf-photo-break' : ''}`}>
-          {group.map((photo) => (
-            <img
-  key={photo.id}
-  src={photo.url}
-  alt="sample"
-  onClick={() => setPreviewUrl(photo.url)}
-  className="w-36 h-36 object-cover rounded border cursor-pointer hover:opacity-80 transition"
-/>
+    <section key={sample.id || idx} className="mt-8 border rounded-2xl shadow-sm overflow-hidden break-before-page">
+      {/* Header */}
+      <div className="flex items-center justify-between bg-gray-50 px-6 py-3">
+        <h3 className="text-xl md:text-2xl font-semibold text-gray-900">
+          Pallet: {sample.pallet_number ?? idx + 1}
+        </h3>
+        <div className="flex flex-wrap gap-2 text-sm md:text-base">
+          <span className="px-2.5 py-1 rounded-full bg-amber-100 text-amber-800 font-semibold">
+            Quality Score: {sample.quality_score || '—'}
+          </span>
+          <span className="px-2.5 py-1 rounded-full bg-sky-100 text-sky-800 font-semibold">
+            Storage Score: {sample.storage_score || '—'}
+          </span>
+        </div>
+      </div>
+
+      {/* Info – 3 stulpeliai, didesnis/paryškintas tekstas */}
+      <div className="grid md:grid-cols-3 gap-8 px-6 py-6 text-[16px] leading-relaxed">
+        <div className="space-y-1">
+          {renderField('GGN #', sample.ggn_number)}
+          {renderField('GGN Exp', sample.ggn_exp_date || sample.ggn_exp)}
+          {renderField('Grower Code', sample.grower_code)}
+          {renderField('Packing Code', sample.packing_code)}
+          {renderField('Variety', sample.variety)}
+          {renderField('Brand', sample.brand)}
+        </div>
+
+        <div className="space-y-1">
+          {renderField('Packing Type', sample.packing_type)}
+          {renderField('Size', sample.size)}
+          {(sample.box_weight_min || sample.box_weight_max) &&
+            renderInlineList('Box Weight', [`${sample.box_weight_min || ''} – ${sample.box_weight_max || ''}`], 'kg')}
+          {sample.box_weight_extra?.length > 0 &&
+            renderInlineList('Extra Box Weights', sample.box_weight_extra, 'kg')}
+          {(sample.fruit_weight_min || sample.fruit_weight_max) &&
+            renderInlineList('Fruit Weight', [`${sample.fruit_weight_min || ''} – ${sample.fruit_weight_max || ''}`], 'g')}
+          {sample.fruit_weights_extra?.length > 0 &&
+            renderInlineList('Extra Fruit Weights', sample.fruit_weights_extra, 'g')}
+          {(sample.pressures_min || sample.pressures_max) &&
+            renderInlineList('Pressures', [`${sample.pressures_min || ''} – ${sample.pressures_max || ''}`], 'kg')}
+          {sample.pressures_extra?.length > 0 &&
+            renderInlineList('Extra Pressures', sample.pressures_extra, 'kg')}
+          {(sample.brix_min || sample.brix_max) &&
+            renderInlineList('Brix', [`${sample.brix_min || ''} – ${sample.brix_max || ''}`], '°')}
+          {sample.brix_extra?.length > 0 &&
+            renderInlineList('Extra Brix', sample.brix_extra, '°')}
+          {(sample.fruit_diameter_min || sample.fruit_diameter_max) &&
+            renderInlineList('Diameter', [`${sample.fruit_diameter_min || ''} – ${sample.fruit_diameter_max || ''}`], 'mm')}
+          {sample.diameter_extra?.length > 0 &&
+            renderInlineList('Extra Diameters', sample.diameter_extra, 'mm')}
+        </div>
+
+        <div className="space-y-2">
+          {renderList('External Coloration', sample.external_coloration)}
+          {renderList('Internal Coloration', sample.internal_coloration)}
+          {renderConsistency(sample.consistency)}
+          {renderMultiLine('Minor Defects', sample.minor_defects)}
+          {renderMultiLine('Major Defects', sample.major_defects)}
+        </div>
+      </div>
+
+      {/* Photos – toje pačioje kortelėje */}
+      {groups.length > 0 && (
+        <>
+          <div className="border-t bg-gray-50 px-6 py-3">
+            <h4 className="text-base md:text-lg font-semibold text-gray-800">Photos</h4>
+          </div>
+
+          {groups.map((group, index) => (
+            <div
+              key={index}
+              className={`px-6 py-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 ${index > 0 ? 'pdf-photo-break' : ''}`}
+            >
+              {group.map((photo) => (
+                <button
+                  key={photo.id || photo.url}
+                  onClick={() => setPreviewUrl(photo.url)}
+                  className="block group focus:outline-none"
+                  title="Open photo"
+                >
+                  <img
+                    src={photo.url}
+                    alt=""
+                    className="w-full h-28 md:h-32 object-cover rounded-md border group-hover:opacity-90"
+                  />
+                </button>
+              ))}
+            </div>
           ))}
-        </div>
-      ))}
-    </div>
+        </>
+      )}
+    </section>
   );
-})()}
-        </div>
-      ))}
+})}
 
 
       {/* Final Summary */}

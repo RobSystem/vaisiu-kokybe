@@ -170,14 +170,15 @@ function ViewReport() {
       Download PDF
     </button>
     {attachments?.length > 0 && (
-  <div className="flex flex-wrap justify-end gap-2 mt-2">
+  <div className="relative z-10 flex flex-wrap justify-end gap-2 mt-2">
     {attachments.map((file, index) => (
       <a
         key={index}
         href={file.url}
         target="_blank"
         rel="noopener noreferrer"
-        className="bg-amber-500 hover:bg-amber-600 text-white font-semibold px-4 py-2 rounded shadow-sm transition"
+        download
+        className="cursor-pointer bg-amber-500 hover:bg-amber-600 text-white font-semibold px-4 py-2 rounded shadow-sm transition focus:outline-none focus:ring-2 focus:ring-amber-300"
       >
         Download Temp. Recorder {index + 1}
       </a>

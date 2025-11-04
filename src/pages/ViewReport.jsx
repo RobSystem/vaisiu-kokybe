@@ -81,7 +81,6 @@ function ViewReport() {
     </div>
   )
   function getColor(score, type) {
-  // paimame pirmą skaičių iš "5 - Reasonable" arba tiesiog grąžinam jei jau number
   const n = typeof score === 'number'
     ? score
     : (() => {
@@ -89,23 +88,29 @@ function ViewReport() {
         return m ? parseInt(m[1], 10) : null;
       })();
 
-  if (n == null) return 'bg-gray-100 text-gray-800';
+  if (n == null) return 'bg-gradient-to-r from-gray-200 to-gray-300 text-gray-900';
 
   // QUALITY SCORE
   if (type === 'quality') {
-    if (n >= 6 && n <= 7) return 'bg-green-200 text-green-800';   // 7 Good, 6 Fair
-    if (n >= 4 && n <= 5) return 'bg-yellow-200 text-yellow-800'; // 5 Reasonable, 4 Moderate
-    if (n <= 3)         return 'bg-red-200 text-red-800';         // 3/2/1
+    if (n >= 6 && n <= 7)
+      return 'bg-gradient-to-r from-green-300 to-green-400 text-green-900';
+    if (n >= 4 && n <= 5)
+      return 'bg-gradient-to-r from-yellow-200 to-yellow-300 text-yellow-900';
+    if (n <= 3)
+      return 'bg-gradient-to-r from-red-300 to-red-400 text-red-900';
   }
 
   // STORAGE SCORE
   if (type === 'storage') {
-    if (n >= 6 && n <= 7) return 'bg-green-200 text-green-800';   // 7 Good, 6 Normal
-    if (n >= 4 && n <= 5) return 'bg-yellow-200 text-yellow-800'; // 5 Reduced, 4 Moderate
-    if (n <= 3)         return 'bg-red-200 text-red-800';         // 3/2/1
+    if (n >= 6 && n <= 7)
+      return 'bg-gradient-to-r from-green-300 to-green-400 text-green-900';
+    if (n >= 4 && n <= 5)
+      return 'bg-gradient-to-r from-yellow-200 to-yellow-300 text-yellow-900';
+    if (n <= 3)
+      return 'bg-gradient-to-r from-red-300 to-red-400 text-red-900';
   }
 
-  return 'bg-gray-200 text-gray-800';
+  return 'bg-gradient-to-r from-gray-200 to-gray-300 text-gray-900';
 }
 
   const handleDownloadPDF = () => {

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { supabase } from '../supabaseClient';
+ import { supabase } from "../supabaseClient";
 
 function Sidebar({ navigate, onLogout }) {
   const [role, setRole] = useState(null);

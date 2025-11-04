@@ -18,7 +18,7 @@ function Sidebar({ navigate, onLogout }) {
   }, []);
 
   const navItemsMain = [
-    { label: 'Dashboard', path: '/' },
+    { label: 'Dashboard', path: '/dashboard' },
     { label: 'Create Report', path: '/create' },
     { label: 'All Reports', path: '/all' },
     { label: 'Done Reports', path: '/done' },

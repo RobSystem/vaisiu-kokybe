@@ -14,7 +14,7 @@ import AdminPanel from './pages/AdminPanel';
 import AdminClients from './pages/AdminClients';
 import AddUserPage from './pages/AddUserPage';
 import { Toaster } from 'react-hot-toast';
-
+import Dashboard from "./pages/Dashboard";
 
 
 function Login({ onLogin }) {
@@ -85,6 +85,7 @@ function MainApp({ user, onLogout }) {
           <Route path="/admin/clients" element={<AdminClients />} />
           <Route path="/viewreport/:reportId" element={<ViewReport />} />
           <Route path="/admin/add-user" element={<AddUserPage />} />
+          <Route path="/dashboard" element={<Dashboard />} />
         </Routes>
       </div>
     </div>

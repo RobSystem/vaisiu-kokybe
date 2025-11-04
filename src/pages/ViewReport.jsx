@@ -240,14 +240,14 @@ function ViewReport() {
         <h3 className="text-xl md:text-2xl font-semibold text-gray-900">
           Pallet: {sample.pallet_number ?? idx + 1}
         </h3>
-        <div className="flex flex-wrap gap-2 text-sm md:text-base">
-          <span className="px-2.5 py-1 rounded-full bg-amber-100 text-amber-800 font-semibold">
-            Quality Score: {sample.quality_score || '—'}
-          </span>
-          <span className="px-2.5 py-1 rounded-full bg-sky-100 text-sky-800 font-semibold">
-            Storage Score: {sample.storage_score || '—'}
-          </span>
-        </div>
+        <div className="flex flex-wrap gap-6 text-sm md:text-base">
+  <p className={'font-bold ' + getColor(sample.quality_score, 'quality')}>
+    Quality Score: {sample.quality_score ?? '—'}
+  </p>
+  <p className={'font-bold ' + getColor(sample.storage_score, 'storage')}>
+    Storage Score: {sample.storage_score ?? '—'}
+  </p>
+</div>
       </div>
 
       {/* Info – 3 stulpeliai, didesnis/paryškintas tekstas */}

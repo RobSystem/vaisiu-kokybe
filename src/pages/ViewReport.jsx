@@ -80,21 +80,19 @@ function ViewReport() {
       </div>
     </div>
   )
-  const getColor = (val, type) => {
-    if (!val) return ''
-    const num = parseInt(val)
-    if (type === 'quality') {
-      if (num >= 6) return 'text-green-600'
-      if (num >= 4) return 'text-orange-500'
-      return 'text-red-600'
-    }
-    if (type === 'storage') {
-      if (num >= 6) return 'text-green-600'
-      if (num >= 4) return 'text-orange-500'
-      return 'text-red-600'
-    }
-    return ''
+  function getColor(score, type) {
+  if (type === 'quality') {
+    if (score >= 8) return 'bg-green-100 text-green-800';
+    if (score >= 5) return 'bg-yellow-100 text-yellow-800';
+    return 'bg-red-100 text-red-800';
   }
+  if (type === 'storage') {
+    if (score >= 8) return 'bg-blue-100 text-blue-800';
+    if (score >= 5) return 'bg-sky-100 text-sky-800';
+    return 'bg-gray-100 text-gray-700';
+  }
+  return 'bg-gray-100 text-gray-800';
+}
 
   const handleDownloadPDF = () => {
     const el = reportRef.current
@@ -240,13 +238,13 @@ function ViewReport() {
         <h3 className="text-xl md:text-2xl font-semibold text-gray-900">
           Pallet: {sample.pallet_number ?? idx + 1}
         </h3>
-        <div className="flex flex-wrap gap-6 text-sm md:text-base">
-  <p className={'font-bold ' + getColor(sample.quality_score, 'quality')}>
+        <div className="flex flex-wrap gap-2 text-sm md:text-base">
+  <span className={'px-3 py-1.5 rounded-full font-semibold ' + getColor(sample.quality_score, 'quality')}>
     Quality Score: {sample.quality_score ?? '—'}
-  </p>
-  <p className={'font-bold ' + getColor(sample.storage_score, 'storage')}>
+  </span>
+  <span className={'px-3 py-1.5 rounded-full font-semibold ' + getColor(sample.storage_score, 'storage')}>
     Storage Score: {sample.storage_score ?? '—'}
-  </p>
+  </span>
 </div>
       </div>
 

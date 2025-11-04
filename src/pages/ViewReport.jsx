@@ -81,16 +81,36 @@ function ViewReport() {
     </div>
   )
   function getColor(score, type) {
+  if (!score) return 'bg-gray-100 text-gray-800';
+
+  // QUALITY SCORE
   if (type === 'quality') {
-    if (score >= 8) return 'bg-green-100 text-green-800';
-    if (score >= 5) return 'bg-yellow-100 text-yellow-800';
-    return 'bg-red-100 text-red-800';
+    if (score >= 6 && score <= 7) {
+      // 7 - Good, 6 - Fair → ŽALIA
+      return 'bg-green-100 text-green-800';
+    } else if (score >= 4 && score <= 5) {
+      // 5 - Reasonable, 4 - Moderate → GELTONA
+      return 'bg-yellow-100 text-yellow-800';
+    } else if (score <= 3) {
+      // 3, 2, 1 → RAUDONA
+      return 'bg-red-100 text-red-800';
+    }
   }
+
+  // STORAGE SCORE
   if (type === 'storage') {
-    if (score >= 8) return 'bg-blue-100 text-blue-800';
-    if (score >= 5) return 'bg-sky-100 text-sky-800';
-    return 'bg-gray-100 text-gray-700';
+    if (score >= 6 && score <= 7) {
+      // 7 - Good, 6 - Normal → ŽALIA
+      return 'bg-green-100 text-green-800';
+    } else if (score >= 4 && score <= 5) {
+      // 5 - Reduced, 4 - Moderate → GELTONA
+      return 'bg-yellow-100 text-yellow-800';
+    } else if (score <= 3) {
+      // 3, 2, 1 → RAUDONA
+      return 'bg-red-100 text-red-800';
+    }
   }
+
   return 'bg-gray-100 text-gray-800';
 }
 

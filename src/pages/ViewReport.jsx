@@ -1,5 +1,5 @@
 // Perrašytas ViewReport.jsx su taisyklinga nuotraukų blokų struktūra
-import { useEffect, useState, useRef, useMemo } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useParams } from 'react-router-dom'
 import { supabase } from '../supabaseClient'
 import html2pdf from 'html2pdf.js'
@@ -29,18 +29,9 @@ function ViewReport() {
     fetchData()
 
     const fetchAttachments = async () => {
-  const { data } = await supabase.storage.from('report-files').list(`${reportId}/`)
-  if (!data?.length) return setAttachments([])
-  // Sudarom pilnus public URL'us
-  const files = data.map(f => {
-    const { data: pub } = supabase
-      .storage
-      .from('report-files')
-      .getPublicUrl(`${reportId}/${f.name}`)
-    return { ...f, url: pub.publicUrl }
-  })
-  setAttachments(files)
-}
+      const { data } = await supabase.storage.from('report-files').list(`${reportId}/`)
+      if (data?.length) setAttachments(data)
+    }
     fetchAttachments()
   }, [reportId])
 
@@ -135,26 +126,6 @@ function ViewReport() {
       }).from(el).save()
     }, 500)
   }
-const recorderLinks = useMemo(() => {
-  return (attachments || []).map((f, i) => {
-    const raw = f.url || f.publicUrl || f.path || '';
-    if (!raw) return null;
-
-    // Jei URL jau turi domeną – naudosim jį, kitaip – praplėsim nuo puslapio kilmės
-    let href = raw;
-    try {
-      const u = new URL(raw, window.location.origin);
-      // Jei nėra ?download= — pridedam, kad priverstinai siųstų (Supabase tai palaiko)
-      if (!u.searchParams.has('download')) {
-        u.searchParams.set('download', f.name || `temp-recorder-${i + 1}.pdf`);
-      }
-      href = u.toString();
-    } catch {
-      // jei URL „keistas“, paliekam koks yra
-    }
-    return href;
-  });
-}, [attachments]);
 
   return (
     <div ref={reportRef} className="w-full px-6 py-6 bg-white">
@@ -199,14 +170,14 @@ const recorderLinks = useMemo(() => {
       Download PDF
     </button>
     {attachments?.length > 0 && (
-  <div className="relative z-10 flex flex-wrap justify-end gap-2 mt-2">
+  <div className="flex flex-wrap justify-end gap-2 mt-2">
     {attachments.map((file, index) => (
       <a
         key={index}
-        href={recorderLinks[index] || file.url}
+        href={file.url}
         target="_blank"
         rel="noopener noreferrer"
-        className="cursor-pointer bg-amber-500 hover:bg-amber-600 text-white font-semibold px-4 py-2 rounded shadow-sm transition focus:outline-none focus:ring-2 focus:ring-amber-300"
+        className="bg-amber-500 hover:bg-amber-600 text-white font-semibold px-4 py-2 rounded shadow-sm transition"
       >
         Download Temp. Recorder {index + 1}
       </a>

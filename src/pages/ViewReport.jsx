@@ -113,10 +113,76 @@ function ViewReport() {
   return (
     <div ref={reportRef} className="w-full px-6 py-6 bg-white">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <img src="/Logoedit2.png" alt="Logo" className="h-14" />
-        <h1 className="text-2xl font-bold text-center flex-1">QUALITY CONTROL REPORT</h1>
+      <div className="sticky top-0 z-30 bg-white/90 backdrop-blur border-b print:hidden">
+  <div className="max-w-6xl mx-auto px-4 py-3 flex items-center gap-4">
+    {/* Logo (tavo kelias arba <img src={logo} /> jei importuoji) */}
+    <img
+      src="/logo.png"
+      alt="Logo"
+      className="h-8 w-auto"
+      onError={(e) => { e.currentTarget.style.display = 'none'; }}
+    />
+
+    {/* Summary (client, ref, container, date…) */}
+    <div className="flex-1 min-w-0">
+      <p className="text-[11px] text-gray-500 uppercase tracking-wide">
+        Quality Inspection Report
+      </p>
+      <h1 className="text-lg font-semibold text-gray-900 truncate">
+        {report?.client || '—'}
+        {report?.client_ref ? ` • Ref ${report.client_ref}` : ''}
+        {report?.container_number ? ` • Container ${report.container_number}` : ''}
+      </h1>
+
+      <div className="mt-1 text-[12px] text-gray-600 flex flex-wrap gap-x-4 gap-y-1">
+        {report?.date && <span>{new Date(report.date).toLocaleDateString()}</span>}
+        {report?.location && <span>{report.location}</span>}
+        {report?.variety && <span>{report.variety}</span>}
       </div>
+    </div>
+
+    {/* Actions */}
+    <div className="flex items-center gap-2">
+      {/* jei tavo PDF funkcija turi kitą pavadinimą (pvz., generatePDF), pakeisk onClick atitinkamai */}
+      <button
+        onClick={handleDownloadPDF}
+        className="px-3 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
+      >
+        Download PDF
+      </button>
+    </div>
+  </div>
+</div>
+
+{/* PRINT HEADER (rodyti tik PDF/spausdinant) */}
+<div className="hidden print:block">
+  <div className="max-w-[100%] mx-auto px-4 py-2 border-b">
+    <div className="flex items-center justify-between">
+      <div>
+        <div className="text-[10pt] text-gray-500 uppercase tracking-wide">
+          Quality Inspection Report
+        </div>
+        <div className="text-[12pt] font-semibold text-gray-900">
+          {report?.client || '—'}
+          {report?.client_ref ? ` • Ref ${report.client_ref}` : ''}
+          {report?.container_number ? ` • Container ${report.container_number}` : ''}
+        </div>
+        <div className="text-[9pt] text-gray-700 mt-0.5">
+          {report?.date && new Date(report.date).toLocaleDateString()}
+          {report?.location ? ` • ${report.location}` : ''}
+          {report?.variety ? ` • ${report.variety}` : ''}
+        </div>
+      </div>
+      {/* jei turi mažą spausdinamą logotipą */}
+      <img
+        src="/logo.png"
+        alt=""
+        className="h-6 w-auto"
+        onError={(e) => { e.currentTarget.style.display = 'none'; }}
+      />
+    </div>
+  </div>
+</div>
 
       {/* General Info */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm mb-6">

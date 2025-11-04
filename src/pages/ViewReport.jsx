@@ -28,10 +28,42 @@ function ViewReport() {
     }
     fetchData()
 
-    const fetchAttachments = async () => {
-      const { data } = await supabase.storage.from('report-files').list(`${reportId}/`)
-      if (data?.length) setAttachments(data)
+   const fetchAttachments = async () => {
+  try {
+    const { data } = await supabase
+      .storage
+      .from('report-files')
+      .list(`${reportId}/`);
+
+    if (!data?.length) {
+      setAttachments([]);
+      return;
     }
+
+    // Sudarom pilnus URL + ?download=<fileName>
+    const files = data.map((f) => {
+      const path = `${reportId}/${f.name}`;
+      const { data: pub } = supabase.storage.from('report-files').getPublicUrl(path);
+      let url = pub?.publicUrl || '';
+
+      // Pridedam ?download=, kad naršyklė siųstų failą
+      if (url) {
+        const u = new URL(url, window.location.origin);
+        if (!u.searchParams.has('download')) {
+          u.searchParams.set('download', f.name);
+        }
+        url = u.toString();
+      }
+
+      return { ...f, url, name: f.name };
+    });
+
+    setAttachments(files);
+  } catch (e) {
+    console.error('Failed to load attachments:', e);
+    setAttachments([]);
+  }
+};
     fetchAttachments()
   }, [reportId])
 
@@ -170,18 +202,17 @@ function ViewReport() {
       Download PDF
     </button>
     {attachments?.length > 0 && (
-  <div className="flex flex-wrap justify-end gap-2 mt-2">
+  <div className="relative z-10 flex flex-wrap justify-end gap-2 mt-2">
     {attachments.map((file, index) => (
-      <a
-        key={index}
-        href={file.url}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="bg-amber-500 hover:bg-amber-600 text-white font-semibold px-4 py-2 rounded shadow-sm transition"
-      >
-        Download Temp. Recorder {index + 1}
-      </a>
-    ))}
+  <a
+    key={index}
+    href={file.url}
+    rel="noopener noreferrer"
+    className="cursor-pointer bg-amber-500 hover:bg-amber-600 text-white font-semibold px-4 py-2 rounded shadow-sm transition focus:outline-none focus:ring-2 focus:ring-amber-300"
+  >
+    Download Temp. Recorder {index + 1}
+  </a>
+))}
   </div>
 )}
   </div>

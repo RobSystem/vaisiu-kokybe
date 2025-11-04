@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import supabase from "../supabaseClient"; // <-- palik savo kelią
+import { supabase } from "./supabaseClient";
 
 export default function Dashboard() {
   const [loading, setLoading] = useState(true);

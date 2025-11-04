@@ -114,7 +114,7 @@ function ViewReport() {
     <div ref={reportRef} className="w-full px-6 py-6 bg-white">
       {/* Header */}
       <div className="sticky top-0 z-30 bg-white/90 backdrop-blur border-b print:hidden">
-  <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+  <div className="w-full px-8 py-3 flex items-center justify-between">
   {/* Left: Logo */}
   <div className="flex-shrink-0 mr-6">
     <img

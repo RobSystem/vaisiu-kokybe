@@ -114,47 +114,46 @@ function ViewReport() {
     <div ref={reportRef} className="w-full px-6 py-6 bg-white">
       {/* Header */}
       <div className="sticky top-0 z-30 bg-white/90 backdrop-blur border-b print:hidden">
-  <div className="max-w-6xl mx-auto px-4 py-3 flex items-center gap-4">
-    {/* Logo (tavo kelias arba <img src={logo} /> jei importuoji) */}
+  <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+  {/* Left: Logo */}
+  <div className="flex-shrink-0 mr-6">
     <img
-  src="/Logoedit2.png"
-  alt="Company Logo"
-  className="h-10 w-auto object-contain"
-  onError={(e) => { e.currentTarget.style.display = 'none'; }}
-/>
+      src="/Logoedit2.png"
+      alt="Company Logo"
+      className="h-12 w-auto object-contain"
+      onError={(e) => { e.currentTarget.style.display = 'none'; }}
+    />
+  </div>
 
-    {/* Summary (client, ref, container, date…) */}
-    <div className="flex-1 min-w-0">
-      <p className="text-2xl font-bold text-gray-900 uppercase tracking-widest leading-tight">
-  Quality Inspection Report
-</p>
+  {/* Center: Summary */}
+  <div className="flex-1 text-center">
+    <p className="text-2xl font-bold text-gray-900 uppercase tracking-widest leading-tight">
+      Quality Inspection Report
+    </p>
 
-<div className="mt-2" />
+    <h1 className="text-lg font-semibold text-gray-900 mt-2">
+      {report?.client || '—'}
+      {report?.client_ref ? ` • Ref ${report.client_ref}` : ''}
+      {report?.container_number ? ` • Container ${report.container_number}` : ''}
+    </h1>
 
-      <h1 className="text-lg font-semibold text-gray-900 truncate">
-        {report?.client || '—'}
-        {report?.client_ref ? ` • Ref ${report.client_ref}` : ''}
-        {report?.container_number ? ` • Container ${report.container_number}` : ''}
-      </h1>
-
-      <div className="mt-1 text-[12px] text-gray-600 flex flex-wrap gap-x-4 gap-y-1">
-        {report?.date && <span>{new Date(report.date).toLocaleDateString()}</span>}
-        {report?.location && <span>{report.location}</span>}
-        {report?.variety && <span>{report.variety}</span>}
-      </div>
-    </div>
-
-    {/* Actions */}
-    <div className="flex items-center gap-2">
-      {/* jei tavo PDF funkcija turi kitą pavadinimą (pvz., generatePDF), pakeisk onClick atitinkamai */}
-      <button
-        onClick={handleDownloadPDF}
-        className="px-3 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
-      >
-        Download PDF
-      </button>
+    <div className="mt-1 text-[12px] text-gray-600 flex justify-center flex-wrap gap-x-4 gap-y-1">
+      {report?.date && <span>{new Date(report.date).toLocaleDateString()}</span>}
+      {report?.location && <span>{report.location}</span>}
+      {report?.variety && <span>{report.variety}</span>}
     </div>
   </div>
+
+  {/* Right: Actions */}
+  <div className="flex-shrink-0">
+    <button
+      onClick={handleDownloadPDF}
+      className="px-3 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
+    >
+      Download PDF
+    </button>
+  </div>
+</div>
 </div>
 
 {/* PRINT HEADER (rodyti tik PDF/spausdinant) */}

@@ -126,6 +126,26 @@ function ViewReport() {
       }).from(el).save()
     }, 500)
   }
+const recorderLinks = useMemo(() => {
+  return (attachments || []).map((f, i) => {
+    const raw = f.url || f.publicUrl || f.path || '';
+    if (!raw) return null;
+
+    // Jei URL jau turi domeną – naudosim jį, kitaip – praplėsim nuo puslapio kilmės
+    let href = raw;
+    try {
+      const u = new URL(raw, window.location.origin);
+      // Jei nėra ?download= — pridedam, kad priverstinai siųstų (Supabase tai palaiko)
+      if (!u.searchParams.has('download')) {
+        u.searchParams.set('download', f.name || `temp-recorder-${i + 1}.pdf`);
+      }
+      href = u.toString();
+    } catch {
+      // jei URL „keistas“, paliekam koks yra
+    }
+    return href;
+  });
+}, [attachments]);
 
   return (
     <div ref={reportRef} className="w-full px-6 py-6 bg-white">
@@ -174,10 +194,9 @@ function ViewReport() {
     {attachments.map((file, index) => (
       <a
         key={index}
-        href={file.url}
+        href={recorderLinks[index] || file.url}
         target="_blank"
         rel="noopener noreferrer"
-        download
         className="cursor-pointer bg-amber-500 hover:bg-amber-600 text-white font-semibold px-4 py-2 rounded shadow-sm transition focus:outline-none focus:ring-2 focus:ring-amber-300"
       >
         Download Temp. Recorder {index + 1}

@@ -117,11 +117,11 @@ function ViewReport() {
   <div className="max-w-6xl mx-auto px-4 py-3 flex items-center gap-4">
     {/* Logo (tavo kelias arba <img src={logo} /> jei importuoji) */}
     <img
-      src="/logo.png"
-      alt="Logo"
-      className="h-8 w-auto"
-      onError={(e) => { e.currentTarget.style.display = 'none'; }}
-    />
+  src="/Logoedit2.png"
+  alt="Company Logo"
+  className="h-10 w-auto object-contain"
+  onError={(e) => { e.currentTarget.style.display = 'none'; }}
+/>
 
     {/* Summary (client, ref, container, date…) */}
     <div className="flex-1 min-w-0">
@@ -181,11 +181,11 @@ function ViewReport() {
       </div>
       {/* jei turi mažą spausdinamą logotipą */}
       <img
-        src="/logo.png"
-        alt=""
-        className="h-6 w-auto"
-        onError={(e) => { e.currentTarget.style.display = 'none'; }}
-      />
+  src="/Logoedit2.png"
+  alt="Logo"
+  className="h-8 w-auto object-contain"
+  onError={(e) => { e.currentTarget.style.display = 'none'; }}
+/>
     </div>
   </div>
 </div>

@@ -125,9 +125,9 @@ function ViewReport() {
 
     {/* Summary (client, ref, container, date…) */}
     <div className="flex-1 min-w-0">
-      <p className="text-[11px] text-gray-500 uppercase tracking-wide">
-        Quality Inspection Report
-      </p>
+      <p className="text-base font-semibold text-gray-800 uppercase tracking-wide">
+  Quality Inspection Report
+</p>
       <h1 className="text-lg font-semibold text-gray-900 truncate">
         {report?.client || '—'}
         {report?.client_ref ? ` • Ref ${report.client_ref}` : ''}
@@ -159,9 +159,9 @@ function ViewReport() {
   <div className="max-w-[100%] mx-auto px-4 py-2 border-b">
     <div className="flex items-center justify-between">
       <div>
-        <div className="text-[10pt] text-gray-500 uppercase tracking-wide">
-          Quality Inspection Report
-        </div>
+        <div className="text-[12pt] font-semibold text-gray-800 uppercase tracking-wide">
+  Quality Inspection Report
+</div>
         <div className="text-[12pt] font-semibold text-gray-900">
           {report?.client || '—'}
           {report?.client_ref ? ` • Ref ${report.client_ref}` : ''}

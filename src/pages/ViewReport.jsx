@@ -192,36 +192,36 @@ function ViewReport() {
       {/* General Info */}
      <div className="mt-8 border rounded-2xl overflow-hidden shadow-sm">
   <div className="bg-gray-50 border-b px-6 py-3">
-    <h2 className="text-xl font-semibold text-gray-800">General Information</h2>
+    <h2 className="text-xl font-semibold text-gray-800 uppercase tracking-wide">
+      General Information
+    </h2>
   </div>
 
-  <div className="divide-y divide-gray-200">
-    {[
-      ['Date', report?.date ? new Date(report.date).toLocaleDateString() : '—'],
-      ['Client', report?.client || '—'],
-      ['Ref', report?.client_ref || '—'],
-      ['Container #', report?.container_number || '—'],
-      ['Supplier', report?.supplier || '—'],
-      ['Variety', report?.variety || '—'],
-      ['Origin', report?.origin || '—'],
-      ['Location', report?.location || '—'],
-      ['Total Pallets', report?.total_pallets || '—'],
-      ['Type', report?.type || '—'],
-      ['Surveyor', report?.surveyor || '—'],
-      ['Brand', report?.brand || '—'],
-      ['Temperature', report?.temperature || '—'],
-      ['Category', report?.category || '—'],
-    ].map(([label, value], i) => (
-      <div
-        key={label}
-        className={`grid md:grid-cols-2 px-6 py-2 ${
-          i % 2 === 0 ? 'bg-white' : 'bg-gray-50'
-        }`}
-      >
-        <span className="font-medium text-gray-700">{label}</span>
-        <span className="text-gray-900">{value}</span>
-      </div>
-    ))}
+  {/* 3 column layout */}
+  <div className="grid md:grid-cols-3 gap-x-8 gap-y-2 px-6 py-4 text-[15px]">
+    <div>
+      <p><span className="font-semibold text-gray-700">Date:</span> {report?.date ? new Date(report.date).toLocaleDateString() : '—'}</p>
+      <p><span className="font-semibold text-gray-700">Client:</span> {report?.client || '—'}</p>
+      <p><span className="font-semibold text-gray-700">Ref:</span> {report?.client_ref || '—'}</p>
+      <p><span className="font-semibold text-gray-700">Container #:</span> {report?.container_number || '—'}</p>
+      <p><span className="font-semibold text-gray-700">RoChecks Ref:</span> {report?.rochecks_ref || '—'}</p>
+    </div>
+
+    <div>
+      <p><span className="font-semibold text-gray-700">Supplier:</span> {report?.supplier || '—'}</p>
+      <p><span className="font-semibold text-gray-700">Variety:</span> {report?.variety || '—'}</p>
+      <p><span className="font-semibold text-gray-700">Origin:</span> {report?.origin || '—'}</p>
+      <p><span className="font-semibold text-gray-700">Location:</span> {report?.location || '—'}</p>
+      <p><span className="font-semibold text-gray-700">Total Pallets:</span> {report?.total_pallets || '—'}</p>
+    </div>
+
+    <div>
+      <p><span className="font-semibold text-gray-700">Type:</span> {report?.type || '—'}</p>
+      <p><span className="font-semibold text-gray-700">Surveyor:</span> {report?.surveyor || '—'}</p>
+      <p><span className="font-semibold text-gray-700">Brand:</span> {report?.brand || '—'}</p>
+      <p><span className="font-semibold text-gray-700">Temperature:</span> {report?.temperature || '—'}</p>
+      <p><span className="font-semibold text-gray-700">Category:</span> {report?.category || '—'}</p>
+    </div>
   </div>
 </div>
 

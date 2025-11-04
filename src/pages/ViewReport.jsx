@@ -125,7 +125,7 @@ function ViewReport() {
 
     {/* Summary (client, ref, container, date…) */}
     <div className="flex-1 min-w-0">
-      <p className="text-base font-semibold text-gray-800 uppercase tracking-wide">
+      <p className="text-2xl font-bold text-gray-900 uppercase tracking-widest leading-tight">
   Quality Inspection Report
 </p>
 
@@ -162,7 +162,7 @@ function ViewReport() {
   <div className="max-w-[100%] mx-auto px-4 py-2 border-b">
     <div className="flex items-center justify-between">
       <div>
-        <div className="text-[12pt] font-semibold text-gray-800 uppercase tracking-wide">
+        <div className="text-[16pt] font-bold text-gray-900 uppercase tracking-widest leading-tight">
   Quality Inspection Report
 </div>
 

@@ -62,94 +62,60 @@ useEffect(() => {
   if (page > totalPages) setPage(totalPages);
 }, [totalPages, page]);
   const handleSend = async (report) => {
-  const confirmed = window.confirm('Are you sure you want to send the report?');
-  if (!confirmed) return;
+  const ok = window.confirm('Are you sure you want to send the report?');
+  if (!ok) return;
 
   try {
-    // 1) Kliento email + CC
-    const { data: clientData, error } = await supabase
+    // Kliento el. paštai
+    const { data: clientData, error: clientErr } = await supabase
       .from('clients')
       .select('email, cc_emails')
-      .eq('name', report.client) // naudok tą patį kriterijų kaip EditReport
+      .eq('name', report.client)
       .single();
 
-    if (error || !clientData?.email) {
+    if (clientErr || !clientData?.email) {
       alert('Client email not found.');
       return;
     }
-
     const toEmail = clientData.email;
     const ccList = Array.isArray(clientData.cc_emails)
       ? clientData.cc_emails.filter(Boolean).join(',')
       : '';
-// iš tekstų "3 - ..." pasiimam skaičių
-const parseLevel = (val) => {
-  if (!val) return null;
-  const m = String(val).trim().match(/^(\d+)/);
-  return m ? Number(m[1]) : null;
-};
 
-// pagal lygį grąžinam spalvas (inline CSS-friendly)
-const levelColors = (level) => {
-  // 1–3 RED, 4–5 YELLOW, 6–7 GREEN
-  if (level >= 1 && level <= 3) {
-    return {
-      bg:   '#fde2e2', // švelni raudona fono
-      border: '#fca5a5',
-      text: '#b91c1c', // tamsesnė raudona tekstui
-    };
-  }
-  if (level >= 4 && level <= 5) {
-    return {
-      bg:   '#fef3c7', // švelni geltona
-      border: '#fcd34d',
-      text: '#92400e', // ruda/geltona tekstui
-    };
-  }
-  // 6–7
-  return {
-    bg:   '#dcfce7', // švelni žalia
-    border: '#86efac',
-    text: '#166534', // tamsesnė žalia
-  };
-};
+    // DB reikšmės (Done puslapyje paprastai jau galutinės)
+    const qStr = report.qualityScore;
+    const sStr = report.storageScore;
+    const latestConclusion = (report.conclusion?.trim() || '—').replace(/\n/g, '<br>');
 
-const qLevel = parseLevel(form?.qualityScore || report?.qualityScore);
-const sLevel = parseLevel(form?.storageScore || report?.storageScore);
+    // Spalvos
+    const qc = levelColors(parseLevel(qStr) ?? 6);
+    const sc = levelColors(parseLevel(sStr) ?? 6);
 
-const qc = levelColors(qLevel ?? 6); // jei neranda – laikom „gerai“
-const sc = levelColors(sLevel ?? 6);
+    // Siuntimas
+    const response = await emailjs.send(
+      'service_v9qenwn',
+      'template_sf4fphk',
+      {
+        to_email: toEmail,
+        cc: ccList,
 
-    // 2) Siunčiam per EmailJS
-    await emailjs.send(
-  'service_v9qenwn',
-  'template_sf4fphk',
-  {
-    to_email: toEmail,
-    cc: ccList, // jei naudoji CC
-    container_number: report.container_number || '—',
-    client_ref: report.client_ref || '—',
-    variety: report.variety || '—',
+        container_number: report.container_number || '—',
+        client_ref: report.client_ref || '—',
+        variety: report.variety || '—',
 
-    qualityScore: form.qualityScore || report.qualityScore || '—',
-    storageScore: form.storageScore || report.storageScore || '—',
-    conclusion: latestConclusion, // kaip darėm anksčiau
+        qualityScore: qStr || '—',
+        storageScore: sStr || '—',
+        conclusion: latestConclusion,
 
-    // 👇 nauji spalvų kintamieji šablonui
-    quality_bg: qc.bg,
-    quality_border: qc.border,
-    quality_text: qc.text,
-    storage_bg: sc.bg,
-    storage_border: sc.border,
-    storage_text: sc.text,
+        quality_bg: qc.bg, quality_border: qc.border, quality_text: qc.text,
+        storage_bg: sc.bg, storage_border: sc.border, storage_text: sc.text,
 
-    id: report.id,
-  },
-  'nBddtmb09-d6gjfcl'
-);
+        id: report.id,
+      },
+      'nBddtmb09-d6gjfcl'
+    );
 
-    if (response.status === 200) {
-      // 🔹 Pažymim siųstą
+    if (response?.status === 200) {
       await supabase.from('reports').update({ sent: true }).eq('id', report.id);
       alert('Report sent successfully!');
     } else {
@@ -160,6 +126,7 @@ const sc = levelColors(sLevel ?? 6);
     alert(`Error sending report:\n${err?.message || 'Unknown error'}`);
   }
 };
+
 
   return (
     <div className="w-full px-4 py-6 text-xs">

@@ -160,118 +160,87 @@ const fetchPdfFiles = async () => {
   }
 const handleSend = async () => {
   if (!report) return;
-  const confirmed = window.confirm('Are you sure you want to send the report?');
-  if (!confirmed) return;
+  const ok = window.confirm('Are you sure you want to send the report?');
+  if (!ok) return;
 
   try {
-    // (pasirinktinai) prieš siųsdami išsaugom naujausias reikšmes į DB,
-    // kad Edit/Done puslapiai visur matytų tą pačią išvadą:
-    await supabase
-      .from('reports')
-      .update({
-        qualityScore: form.qualityScore,
-        storageScore: form.storageScore,
-        conclusion: form.conclusion,   // 👈 svarbiausia
-      })
-      .eq('id', report.id);
+    // jei turi "form" (redagavimo būseną) – sinchronizuojam į DB
+    if (typeof form !== 'undefined') {
+      await supabase
+        .from('reports')
+        .update({
+          qualityScore: form.qualityScore,
+          storageScore: form.storageScore,
+          conclusion: form.conclusion,
+        })
+        .eq('id', report.id);
+    }
 
-    // paimam kliento email + (jei naudoji CC, gali ir cc_emails čia pridėti)
-    const { data: clientData, error } = await supabase
+    // Kliento el. paštai
+    const { data: clientData, error: clientErr } = await supabase
       .from('clients')
       .select('email, cc_emails')
       .eq('name', report.client)
       .single();
 
-    if (error || !clientData?.email) {
-      toast.error('Client email not found.');
+    if (clientErr || !clientData?.email) {
+      toast?.error?.('Client email not found.');
       return;
     }
-
-    // naujausia išvada – pirmiau iš formos, jei tuščia – iš report
-    const latestConclusion =
-      (form.conclusion && form.conclusion.trim()) ||
-      (report.conclusion && report.conclusion.trim()) ||
-      '—';
-
+    const toEmail = clientData.email;
     const ccList = Array.isArray(clientData.cc_emails)
       ? clientData.cc_emails.filter(Boolean).join(',')
       : '';
-// iš tekstų "3 - ..." pasiimam skaičių
-const parseLevel = (val) => {
-  if (!val) return null;
-  const m = String(val).trim().match(/^(\d+)/);
-  return m ? Number(m[1]) : null;
-};
 
-// pagal lygį grąžinam spalvas (inline CSS-friendly)
-const levelColors = (level) => {
-  // 1–3 RED, 4–5 YELLOW, 6–7 GREEN
-  if (level >= 1 && level <= 3) {
-    return {
-      bg:   '#fde2e2', // švelni raudona fono
-      border: '#fca5a5',
-      text: '#b91c1c', // tamsesnė raudona tekstui
-    };
-  }
-  if (level >= 4 && level <= 5) {
-    return {
-      bg:   '#fef3c7', // švelni geltona
-      border: '#fcd34d',
-      text: '#92400e', // ruda/geltona tekstui
-    };
-  }
-  // 6–7
-  return {
-    bg:   '#dcfce7', // švelni žalia
-    border: '#86efac',
-    text: '#166534', // tamsesnė žalia
-  };
-};
+    // Vėliausios reikšmės: pirmiausia iš formos, jei jos nėra – iš report
+    const qStr = (typeof form !== 'undefined' && form.qualityScore) ? form.qualityScore : report.qualityScore;
+    const sStr = (typeof form !== 'undefined' && form.storageScore) ? form.storageScore : report.storageScore;
+    const latestConclusion = (
+      (typeof form !== 'undefined' && form.conclusion?.trim()) ||
+      (report.conclusion?.trim()) ||
+      '—'
+    ).replace(/\n/g, '<br>');
 
-const qLevel = parseLevel(form?.qualityScore || report?.qualityScore);
-const sLevel = parseLevel(form?.storageScore || report?.storageScore);
+    // Spalvos
+    const qc = levelColors(parseLevel(qStr) ?? 6);
+    const sc = levelColors(parseLevel(sStr) ?? 6);
 
-const qc = levelColors(qLevel ?? 6); // jei neranda – laikom „gerai“
-const sc = levelColors(sLevel ?? 6);
+    // Siuntimas
+    const response = await emailjs.send(
+      'service_v9qenwn',    // service ID
+      'template_sf4fphk',   // template ID
+      {
+        to_email: toEmail,
+        cc: ccList, // jei šablone pridėjai {{cc}} į CC lauką
 
-    await emailjs.send(
-  'service_v9qenwn',
-  'template_sf4fphk',
-  {
-    to_email: toEmail,
-    cc: ccList, // jei naudoji CC
-    container_number: report.container_number || '—',
-    client_ref: report.client_ref || '—',
-    variety: report.variety || '—',
+        container_number: report.container_number || '—',
+        client_ref: report.client_ref || '—',
+        variety: report.variety || '—',
 
-    qualityScore: form.qualityScore || report.qualityScore || '—',
-    storageScore: form.storageScore || report.storageScore || '—',
-    conclusion: latestConclusion, // kaip darėm anksčiau
+        qualityScore: qStr || '—',
+        storageScore: sStr || '—',
+        conclusion: latestConclusion,
 
-    // 👇 nauji spalvų kintamieji šablonui
-    quality_bg: qc.bg,
-    quality_border: qc.border,
-    quality_text: qc.text,
-    storage_bg: sc.bg,
-    storage_border: sc.border,
-    storage_text: sc.text,
+        quality_bg: qc.bg, quality_border: qc.border, quality_text: qc.text,
+        storage_bg: sc.bg, storage_border: sc.border, storage_text: sc.text,
 
-    id: report.id,
-  },
-  'nBddtmb09-d6gjfcl'
-);
+        id: report.id,
+      },
+      'nBddtmb09-d6gjfcl'   // public key
+    );
 
-    if (response.status === 200) {
+    if (response?.status === 200) {
       await supabase.from('reports').update({ sent: true }).eq('id', report.id);
-      toast.success('Report sent successfully!');
+      toast?.success?.('Report sent successfully!');
     } else {
-      toast.error('Email service returned non-200 response.');
+      toast?.error?.('Email service returned non-200 response.');
     }
   } catch (err) {
     console.error('Sending error:', err);
-    toast.error(`Error sending report: ${err?.message || 'Unknown error'}`);
+    toast?.error?.(`Error sending report: ${err?.message || 'Unknown error'}`);
   }
 };
+
   return (
     <div className="w-full px-4 py-6 text-xs">
 <div className="sticky top-0 z-20 bg-white/90 backdrop-blur border-b">

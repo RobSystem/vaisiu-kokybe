@@ -164,11 +164,22 @@ const handleSend = async () => {
   if (!confirmed) return;
 
   try {
-    // 1) Pasiimam kliento pagr. email + CC masyvą
+    // (pasirinktinai) prieš siųsdami išsaugom naujausias reikšmes į DB,
+    // kad Edit/Done puslapiai visur matytų tą pačią išvadą:
+    await supabase
+      .from('reports')
+      .update({
+        qualityScore: form.qualityScore,
+        storageScore: form.storageScore,
+        conclusion: form.conclusion,   // 👈 svarbiausia
+      })
+      .eq('id', report.id);
+
+    // paimam kliento email + (jei naudoji CC, gali ir cc_emails čia pridėti)
     const { data: clientData, error } = await supabase
       .from('clients')
       .select('email, cc_emails')
-      .eq('name', report.client) // jei vardai identiški DB
+      .eq('name', report.client)
       .single();
 
     if (error || !clientData?.email) {
@@ -176,28 +187,31 @@ const handleSend = async () => {
       return;
     }
 
-    // 2) Paruošiam gavėjus: to + cc
-    const toEmail = clientData.email;
+    // naujausia išvada – pirmiau iš formos, jei tuščia – iš report
+    const latestConclusion =
+      (form.conclusion && form.conclusion.trim()) ||
+      (report.conclusion && report.conclusion.trim()) ||
+      '—';
+
     const ccList = Array.isArray(clientData.cc_emails)
-      ? clientData.cc_emails.filter(Boolean).join(',') // "a@x.com,b@y.com"
+      ? clientData.cc_emails.filter(Boolean).join(',')
       : '';
 
-    // 3) EmailJS siuntimas
     const response = await emailjs.send(
-      'service_v9qenwn',     // tavo service ID
-      'template_sf4fphk',    // tavo template ID
+      'service_v9qenwn',
+      'template_sf4fphk',
       {
-        to_email: toEmail,   // NAUDOJAM kaip „To“
-        cc: ccList,          // 🔹 PRIDĖTA: CC sąrašas (žr. pastabą žemiau)
+        to_email: clientData.email,
+        cc: ccList, // jeigu šablone pridėjai {{cc}}
         container_number: report.container_number || '—',
         client_ref: report.client_ref || '—',
         variety: report.variety || '—',
-        qualityScore: report.qualityScore || '—',
-        storageScore: report.storageScore || '—',
-        conclusion: report.conclusion || '—',
+        qualityScore: form.qualityScore || report.qualityScore || '—',
+        storageScore: form.storageScore || report.storageScore || '—',
+        conclusion: latestConclusion, // 👈 dabar tikrai pateks
         id: report.id,
       },
-      'nBddtmb09-d6gjfcl'    // tavo public key
+      'nBddtmb09-d6gjfcl'
     );
 
     if (response.status === 200) {

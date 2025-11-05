@@ -140,31 +140,58 @@ function App() {
 );
 }
 function AdminRoute({ children }) {
-  const [ok, setOk] = useState(null); // null = tikrina; true = leidzia; false = neleis
+  const [status, setStatus] = useState('loading'); // 'loading' | 'allow' | 'deny'
   const navigate = useNavigate();
 
   useEffect(() => {
     let alive = true;
+
     (async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) { if (alive) { setOk(false); navigate('/all'); } return; }
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          if (!alive) return;
+          setStatus('deny');
+          navigate('/all');
+          return;
+        }
 
-      // 1) bandome iš app_metadata
-      if (user.app_metadata?.role === 'admin') { if (alive) setOk(true); return; }
+        // 1) bandome iš app_metadata
+        const metaRole = (user.app_metadata?.role || '').toString().trim().toLowerCase();
+        if (metaRole === 'admin') {
+          if (!alive) return;
+          setStatus('allow');
+          return;
+        }
 
-      // 2) kitaip – iš profiles.role
-      const { data: profile } = await supabase
-        .from('profiles').select('role').eq('id', user.id).single();
+        // 2) bandome iš profiles.role (jei turi lentelę)
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', user.id)
+          .maybeSingle(); // nekels klaidos, jei nerasta
 
-      if (!alive) return;
-      if (profile?.role === 'admin') setOk(true);
-      else { setOk(false); navigate('/all'); }
+        const dbRole = (profile?.role || '').toString().trim().toLowerCase();
+        if (!alive) return;
+
+        if (dbRole === 'admin') {
+          setStatus('allow');
+        } else {
+          setStatus('deny');
+          navigate('/all'); // maršrutas į All Reports
+        }
+      } catch (e) {
+        console.warn('AdminRoute check failed:', e);
+        if (!alive) return;
+        setStatus('deny');
+        navigate('/all');
+      }
     })();
 
     return () => { alive = false; };
   }, [navigate]);
 
-  if (ok === null) return null;     // galima rodyti "checking..." jeigu nori
-  return ok ? children : null;
+  if (status === 'loading') return null; // arba loaderis
+  return status === 'allow' ? children : null;
 }
 export default App;

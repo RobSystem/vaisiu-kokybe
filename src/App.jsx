@@ -85,7 +85,14 @@ function MainApp({ user, onLogout }) {
           <Route path="/admin/clients" element={<AdminClients />} />
           <Route path="/viewreport/:reportId" element={<ViewReport />} />
           <Route path="/admin/add-user" element={<AddUserPage />} />
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route
+  path="/dashboard"
+  element={
+    <AdminRoute>
+      <Dashboard />
+    </AdminRoute>
+  }
+/>
         </Routes>
       </div>
     </div>
@@ -132,5 +139,32 @@ function App() {
   </Router>
 );
 }
+function AdminRoute({ children }) {
+  const [ok, setOk] = useState(null); // null = tikrina; true = leidzia; false = neleis
+  const navigate = useNavigate();
 
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { if (alive) { setOk(false); navigate('/all'); } return; }
+
+      // 1) bandome iš app_metadata
+      if (user.app_metadata?.role === 'admin') { if (alive) setOk(true); return; }
+
+      // 2) kitaip – iš profiles.role
+      const { data: profile } = await supabase
+        .from('profiles').select('role').eq('id', user.id).single();
+
+      if (!alive) return;
+      if (profile?.role === 'admin') setOk(true);
+      else { setOk(false); navigate('/all'); }
+    })();
+
+    return () => { alive = false; };
+  }, [navigate]);
+
+  if (ok === null) return null;     // galima rodyti "checking..." jeigu nori
+  return ok ? children : null;
+}
 export default App;

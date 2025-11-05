@@ -130,39 +130,62 @@ const updatePayload = {
 }
   };
   const saveWithoutRedirect = async () => {
-    const cleanedForm = Object.fromEntries(
-      Object.entries(form).map(([key, value]) => [key, value === '' || value === 'Pasirinkti' ? null : value])
-    );
-  
-    const fruitTrimmed = trimArray(fruitWeightsExtra);
-    const boxTrimmed = trimArray(boxWeightExtra);
-    const pressuresTrimmed = trimArray(pressuresExtra);
-    const brixTrimmed = trimArray(brixExtra);
-    const diameterTrimmed = trimArray(diameterExtra);
-  
-    const updatePayload = {
-      ...cleanedForm,
-      fruit_weights_extra: fruitTrimmed.length > 0 ? fruitTrimmed : null,
-      box_weight_extra: boxTrimmed.length > 0 ? boxTrimmed : null,
-      pressures_extra: pressuresTrimmed.length > 0 ? pressuresTrimmed : null,
-      brix_extra: brixTrimmed.length > 0 ? brixTrimmed : null,
-      diameter_extra: diameterTrimmed.length > 0 ? diameterTrimmed : null,
-      external_coloration: externalColoration.length > 0 ? externalColoration : null,
-      internal_coloration: internalColoration.length > 0 ? internalColoration : null,
-      consistency: consistency
-    };
-  
-    let error;
-    if (sampleId) {
-      ({ error } = await supabase.from('samples').update(updatePayload).eq('id', sampleId));
-    }
-  
-    if (error) {
-  toast.error('Failed to save');
-} else {
-  toast.success('Saved successfully!');
-}
+  const cleanedForm = Object.fromEntries(
+    Object.entries(form).map(([key, value]) => [key, value === '' || value === 'Pasirinkti' ? null : value])
+  );
+
+  const fruitTrimmed = trimArray(fruitWeightsExtra);
+  const boxTrimmed = trimArray(boxWeightExtra);
+  const pressuresTrimmed = trimArray(pressuresExtra);
+  const brixTrimmed = trimArray(brixExtra);
+  const diameterTrimmed = trimArray(diameterExtra);
+
+  const updatePayload = {
+    ...cleanedForm,
+    fruit_weights_extra: fruitTrimmed.length > 0 ? fruitTrimmed : null,
+    box_weight_extra: boxTrimmed.length > 0 ? boxTrimmed : null,
+    pressures_extra: pressuresTrimmed.length > 0 ? pressuresTrimmed : null,
+    brix_extra: brixTrimmed.length > 0 ? brixTrimmed : null,
+    diameter_extra: diameterTrimmed.length > 0 ? diameterTrimmed : null,
+    external_coloration: externalColoration.length > 0 ? externalColoration : null,
+    internal_coloration: internalColoration.length > 0 ? internalColoration : null,
+    consistency: consistency,
   };
+
+  let error;
+  if (sampleId) {
+    ({ error } = await supabase.from('samples').update(updatePayload).eq('id', sampleId));
+  } else {
+    // naujas įrašas – randam sekantį position
+    const { data: existingSamples } = await supabase
+      .from('samples')
+      .select('position')
+      .eq('report_id', reportId)
+      .order('position', { ascending: false })
+      .limit(1);
+
+    const nextPosition = (existingSamples?.[0]?.position || 0) + 1;
+
+    const { data: inserted, error: insertError } = await supabase
+      .from('samples')
+      .insert({ report_id: reportId, position: nextPosition, ...updatePayload })
+      .select()
+      .single();
+
+    error = insertError;
+
+    if (!insertError && inserted?.id) {
+      // kad iškart galėtum įkelti nuotraukas ir toliau redaguoti
+      setForm(prev => ({ ...prev, id: inserted.id }));
+    }
+  }
+
+  if (error) {
+    toast.error('Failed to save');
+  } else {
+    toast.success('Saved successfully!');
+  }
+};
 
   return (
     <div className="w-full px-4 py-6 text-sm">
@@ -184,7 +207,7 @@ const updatePayload = {
       {/* Save (neperkrauna puslapio) */}
       <button
         type="button"
-        onClick={saveWithoutRedirect}
+        onClick={sampleId ? saveWithoutRedirect : handleSave}
         className="px-3 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700"
       >
         Save
@@ -246,7 +269,7 @@ const updatePayload = {
 
       <div className="flex justify-end mt-4">
         <button
-          onClick={saveWithoutRedirect}
+          onClick={sampleId ? saveWithoutRedirect : handleSave}
           className="bg-green-500 hover:bg-green-600 text-white text-sm px-4 py-2 rounded"
           type="button"
         >
@@ -592,7 +615,7 @@ const updatePayload = {
 )}
     <div className="flex justify-end pt-6">
   <button
-    onClick={saveWithoutRedirect}
+    onClick={sampleId ? saveWithoutRedirect : handleSave}
     className="bg-green-500 hover:bg-green-600 text-white text-sm px-6 py-2 rounded"
     type="button"
   >

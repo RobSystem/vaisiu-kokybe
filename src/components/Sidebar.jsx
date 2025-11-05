@@ -10,7 +10,7 @@ function Sidebar({ navigate, onLogout }) {
       const { data: { session } } = await supabase.auth.getSession();
       const user = session?.user;
       if (user) {
-        setRole(user.user_metadata?.role || 'user');
+        setRole((user.user_metadata?.role || 'user').toString().trim().toLowerCase());
         setUserName(user.user_metadata?.name || 'User');
       }
     };

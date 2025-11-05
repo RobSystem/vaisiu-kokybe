@@ -156,29 +156,35 @@ function AdminRoute({ children }) {
           return;
         }
 
-        // 1) bandome iš app_metadata
-        const metaRole = (user.app_metadata?.role || '').toString().trim().toLowerCase();
+        // ✅ Tikriname ir user_metadata, ir app_metadata
+        const metaRole =
+          (user.user_metadata?.role ||
+           user.app_metadata?.role ||
+           '')
+          .toString().trim().toLowerCase();
+
         if (metaRole === 'admin') {
           if (!alive) return;
           setStatus('allow');
           return;
         }
 
-        // 2) bandome iš profiles.role (jei turi lentelę)
+        // ✅ Jei nenaudoji profiles – šitas blokas nieko nesugadins
         const { data: profile } = await supabase
           .from('profiles')
           .select('role')
           .eq('id', user.id)
-          .maybeSingle(); // nekels klaidos, jei nerasta
+          .maybeSingle();
 
         const dbRole = (profile?.role || '').toString().trim().toLowerCase();
+
         if (!alive) return;
 
         if (dbRole === 'admin') {
           setStatus('allow');
         } else {
           setStatus('deny');
-          navigate('/all'); // maršrutas į All Reports
+          navigate('/all');
         }
       } catch (e) {
         console.warn('AdminRoute check failed:', e);
@@ -191,7 +197,7 @@ function AdminRoute({ children }) {
     return () => { alive = false; };
   }, [navigate]);
 
-  if (status === 'loading') return null; // arba loaderis
+  if (status === 'loading') return null;
   return status === 'allow' ? children : null;
 }
 export default App;

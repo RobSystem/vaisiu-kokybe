@@ -4,7 +4,7 @@ import { supabase } from '../supabaseClient';
 function AdminClients() {
   const [clients, setClients] = useState([]);
   const [showModal, setShowModal] = useState(false);
-  const [newClient, setNewClient] = useState({ name: '', email: '' });
+  const [newClient, setNewClient] = useState({ name: '', email: '', ccEmails: [''] });
   const [editClientId, setEditClientId] = useState(null);
 
   useEffect(() => {
@@ -17,19 +17,25 @@ function AdminClients() {
   };
 
   const handleSaveClient = async () => {
-    if (!newClient.name || !newClient.email) return;
+  if (!newClient.name || !newClient.email) return;
 
-    if (editClientId) {
-      await supabase.from('clients').update(newClient).eq('id', editClientId);
-    } else {
-      await supabase.from('clients').insert([newClient]);
-    }
-
-    setShowModal(false);
-    setNewClient({ name: '', email: '' });
-    setEditClientId(null);
-    fetchClients();
+  const payload = {
+    name: newClient.name,
+    email: newClient.email,
+    cc_emails: (newClient.ccEmails || []).map(e => e.trim()).filter(Boolean)
   };
+
+  if (editClientId) {
+    await supabase.from('clients').update(payload).eq('id', editClientId);
+  } else {
+    await supabase.from('clients').insert([payload]);
+  }
+
+  setShowModal(false);
+  setNewClient({ name: '', email: '', ccEmails: [''] });
+  setEditClientId(null);
+  fetchClients();
+};
 
   const handleDelete = async (id) => {
     await supabase.from('clients').delete().eq('id', id);
@@ -37,17 +43,21 @@ function AdminClients() {
   };
 
   const handleEdit = (client) => {
-    setNewClient({ name: client.name, email: client.email });
-    setEditClientId(client.id);
-    setShowModal(true);
-  };
+  setNewClient({
+    name: client.name,
+    email: client.email,
+    ccEmails: Array.isArray(client.cc_emails) && client.cc_emails.length ? client.cc_emails : [''],
+  });
+  setEditClientId(client.id);
+  setShowModal(true);
+};
 
   return (
     <div className="w-full px-4 mt-10">
       <h2 className="text-xl font-semibold mb-4">Client Management</h2>
       <button
         onClick={() => {
-          setNewClient({ name: '', email: '' });
+          setNewClient({ name: '', email: '', ccEmails: [''] });
           setEditClientId(null);
           setShowModal(true);
         }}
@@ -56,44 +66,42 @@ function AdminClients() {
         Add Client
       </button>
 
-      {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded shadow-md w-[300px]">
-            <h3 className="text-lg font-semibold mb-4">
-              {editClientId ? 'Edit Client' : 'Add New Client'}
-            </h3>
-            <input
-              type="text"
-              placeholder="Client name"
-              value={newClient.name}
-              onChange={(e) => setNewClient({ ...newClient, name: e.target.value })}
-              className="w-full mb-3 p-2 border rounded"
-            />
-            <input
-              type="email"
-              placeholder="Client email"
-              value={newClient.email}
-              onChange={(e) => setNewClient({ ...newClient, email: e.target.value })}
-              className="w-full mb-3 p-2 border rounded"
-            />
-            <div className="flex justify-between mt-4">
-              <button
-                onClick={handleSaveClient}
-                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
-              >
-                Save
-              </button>
-              <button
-                onClick={() => setShowModal(false)}
-                className="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
+      <label className="block text-sm font-medium mb-1">CC emails (optional)</label>
+{(newClient.ccEmails || []).map((cc, idx) => (
+  <div key={idx} className="flex items-center gap-2 mb-2">
+    <input
+      type="email"
+      placeholder={`cc email #${idx + 1}`}
+      value={cc}
+      onChange={(e) => {
+        const copy = [...newClient.ccEmails];
+        copy[idx] = e.target.value;
+        setNewClient({ ...newClient, ccEmails: copy });
+      }}
+      className="flex-1 p-2 border rounded"
+    />
+    <button
+      type="button"
+      onClick={() => {
+        const copy = [...newClient.ccEmails];
+        copy.splice(idx, 1);
+        if (copy.length === 0) copy.push('');
+        setNewClient({ ...newClient, ccEmails: copy });
+      }}
+      className="px-2 py-2 text-sm bg-gray-200 rounded hover:bg-gray-300"
+      title="Remove"
+    >
+      −
+    </button>
+  </div>
+))}
+<button
+  type="button"
+  onClick={() => setNewClient({ ...newClient, ccEmails: [...(newClient.ccEmails || []), ''] })}
+  className="mb-3 px-2 py-1 text-sm bg-blue-100 text-blue-700 rounded hover:bg-blue-200"
+>
+  + Add CC
+</button>
       <div className="overflow-x-auto">
         <table className="w-full bg-white border rounded shadow text-sm">
           <thead className="bg-gray-100">
@@ -107,7 +115,14 @@ function AdminClients() {
             {clients.map((client) => (
               <tr key={client.id} className="hover:bg-gray-50 border-b">
                 <td className="p-3">{client.name}</td>
-                <td className="p-3">{client.email}</td>
+                <td className="p-3">
+  <div>{client.email}</div>
+  {Array.isArray(client.cc_emails) && client.cc_emails.length > 0 && (
+    <div className="text-xs text-gray-500">
+      CC: {client.cc_emails.join(', ')}
+    </div>
+  )}
+</td>
                 <td className="p-3 text-center space-x-2">
                   <button
                     onClick={() => handleEdit(client)}

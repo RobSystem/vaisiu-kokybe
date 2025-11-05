@@ -217,5 +217,15 @@ useEffect(() => {
     </div>
   );
 }
-
+function parseLevel(val) {
+  if (!val) return null;
+  const m = String(val).trim().match(/^(\d+)/);
+  return m ? Number(m[1]) : null;
+}
+function levelColors(level) {
+  // 1–3 RED, 4–5 YELLOW, 6–7 GREEN
+  if (level >= 1 && level <= 3) return { bg:'#fde2e2', border:'#fca5a5', text:'#b91c1c' };
+  if (level >= 4 && level <= 5) return { bg:'#fef3c7', border:'#fcd34d', text:'#92400e' };
+  return { bg:'#dcfce7', border:'#86efac', text:'#166534' };
+}
 export default DoneReports;

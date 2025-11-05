@@ -164,22 +164,31 @@ const handleSend = async () => {
   if (!confirmed) return;
 
   try {
+    // 1) Pasiimam kliento pagr. email + CC masyvą
     const { data: clientData, error } = await supabase
       .from('clients')
-      .select('email')
-      .eq('name', report.client)
+      .select('email, cc_emails')
+      .eq('name', report.client) // jei vardai identiški DB
       .single();
 
     if (error || !clientData?.email) {
-      toast.error("Client email not found.");
+      toast.error('Client email not found.');
       return;
     }
 
+    // 2) Paruošiam gavėjus: to + cc
+    const toEmail = clientData.email;
+    const ccList = Array.isArray(clientData.cc_emails)
+      ? clientData.cc_emails.filter(Boolean).join(',') // "a@x.com,b@y.com"
+      : '';
+
+    // 3) EmailJS siuntimas
     const response = await emailjs.send(
-      'service_v9qenwn',              // Your EmailJS service ID
-      'template_sf4fphk',             // Your template ID
+      'service_v9qenwn',     // tavo service ID
+      'template_sf4fphk',    // tavo template ID
       {
-        to_email: clientData.email,
+        to_email: toEmail,   // NAUDOJAM kaip „To“
+        cc: ccList,          // 🔹 PRIDĖTA: CC sąrašas (žr. pastabą žemiau)
         container_number: report.container_number || '—',
         client_ref: report.client_ref || '—',
         variety: report.variety || '—',
@@ -188,19 +197,18 @@ const handleSend = async () => {
         conclusion: report.conclusion || '—',
         id: report.id,
       },
-      'nBddtmb09-d6gjfcl'             // Your public key
+      'nBddtmb09-d6gjfcl'    // tavo public key
     );
 
     if (response.status === 200) {
-      await supabase
-  .from('reports')
-  .update({ sent: true })
-  .eq('id', report.id);
+      await supabase.from('reports').update({ sent: true }).eq('id', report.id);
       toast.success('Report sent successfully!');
+    } else {
+      toast.error('Email service returned non-200 response.');
     }
   } catch (err) {
     console.error('Sending error:', err);
-   toast.error(`Error sending report: ${err?.message || 'Unknown error'}`);
+    toast.error(`Error sending report: ${err?.message || 'Unknown error'}`);
   }
 };
   return (

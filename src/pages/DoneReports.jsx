@@ -66,22 +66,30 @@ useEffect(() => {
   if (!confirmed) return;
 
   try {
+    // 1) Kliento email + CC
     const { data: clientData, error } = await supabase
       .from('clients')
-      .select('email')
-      .ilike('name', `%${report.client}%`)
+      .select('email, cc_emails')
+      .eq('name', report.client) // naudok tą patį kriterijų kaip EditReport
       .single();
 
     if (error || !clientData?.email) {
-      alert("Client email not found.");
+      alert('Client email not found.');
       return;
     }
 
+    const toEmail = clientData.email;
+    const ccList = Array.isArray(clientData.cc_emails)
+      ? clientData.cc_emails.filter(Boolean).join(',')
+      : '';
+
+    // 2) Siunčiam per EmailJS
     const response = await emailjs.send(
-      'service_v9qenwn',            // tavo service ID (tokį naudoji AllReports)
-      'template_sf4fphk',       // naujasis HTML šablono ID
+      'service_v9qenwn',
+      'template_sf4fphk',
       {
-        to_email: clientData.email,
+        to_email: toEmail,
+        cc: ccList, // 🔹 PRIDĖTA: CC
         container_number: report.container_number || '—',
         client_ref: report.client_ref || '—',
         variety: report.variety || '—',
@@ -90,11 +98,15 @@ useEffect(() => {
         conclusion: report.conclusion || '—',
         id: report.id,
       },
-      'nBddtmb09-d6gjfcl'           // tavo EmailJS public key
+      'nBddtmb09-d6gjfcl'
     );
 
     if (response.status === 200) {
+      // 🔹 Pažymim siųstą
+      await supabase.from('reports').update({ sent: true }).eq('id', report.id);
       alert('Report sent successfully!');
+    } else {
+      alert('Email service returned non-200 response.');
     }
   } catch (err) {
     console.error('Sending error:', err);

@@ -196,23 +196,70 @@ const handleSend = async () => {
     const ccList = Array.isArray(clientData.cc_emails)
       ? clientData.cc_emails.filter(Boolean).join(',')
       : '';
+// iš tekstų "3 - ..." pasiimam skaičių
+const parseLevel = (val) => {
+  if (!val) return null;
+  const m = String(val).trim().match(/^(\d+)/);
+  return m ? Number(m[1]) : null;
+};
 
-    const response = await emailjs.send(
-      'service_v9qenwn',
-      'template_sf4fphk',
-      {
-        to_email: clientData.email,
-        cc: ccList, // jeigu šablone pridėjai {{cc}}
-        container_number: report.container_number || '—',
-        client_ref: report.client_ref || '—',
-        variety: report.variety || '—',
-        qualityScore: form.qualityScore || report.qualityScore || '—',
-        storageScore: form.storageScore || report.storageScore || '—',
-        conclusion: latestConclusion, // 👈 dabar tikrai pateks
-        id: report.id,
-      },
-      'nBddtmb09-d6gjfcl'
-    );
+// pagal lygį grąžinam spalvas (inline CSS-friendly)
+const levelColors = (level) => {
+  // 1–3 RED, 4–5 YELLOW, 6–7 GREEN
+  if (level >= 1 && level <= 3) {
+    return {
+      bg:   '#fde2e2', // švelni raudona fono
+      border: '#fca5a5',
+      text: '#b91c1c', // tamsesnė raudona tekstui
+    };
+  }
+  if (level >= 4 && level <= 5) {
+    return {
+      bg:   '#fef3c7', // švelni geltona
+      border: '#fcd34d',
+      text: '#92400e', // ruda/geltona tekstui
+    };
+  }
+  // 6–7
+  return {
+    bg:   '#dcfce7', // švelni žalia
+    border: '#86efac',
+    text: '#166534', // tamsesnė žalia
+  };
+};
+
+const qLevel = parseLevel(form?.qualityScore || report?.qualityScore);
+const sLevel = parseLevel(form?.storageScore || report?.storageScore);
+
+const qc = levelColors(qLevel ?? 6); // jei neranda – laikom „gerai“
+const sc = levelColors(sLevel ?? 6);
+
+    await emailjs.send(
+  'service_v9qenwn',
+  'template_sf4fphk',
+  {
+    to_email: toEmail,
+    cc: ccList, // jei naudoji CC
+    container_number: report.container_number || '—',
+    client_ref: report.client_ref || '—',
+    variety: report.variety || '—',
+
+    qualityScore: form.qualityScore || report.qualityScore || '—',
+    storageScore: form.storageScore || report.storageScore || '—',
+    conclusion: latestConclusion, // kaip darėm anksčiau
+
+    // 👇 nauji spalvų kintamieji šablonui
+    quality_bg: qc.bg,
+    quality_border: qc.border,
+    quality_text: qc.text,
+    storage_bg: sc.bg,
+    storage_border: sc.border,
+    storage_text: sc.text,
+
+    id: report.id,
+  },
+  'nBddtmb09-d6gjfcl'
+);
 
     if (response.status === 200) {
       await supabase.from('reports').update({ sent: true }).eq('id', report.id);

@@ -6,14 +6,27 @@ function cx(...cls) {
   return cls.filter(Boolean).join(" ");
 }
 
-function SentBadge({ sent }) {
-  return sent ? (
-    <span className="inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">
-      <span className="text-emerald-600">●</span> Sent
-    </span>
-  ) : (
-    <span className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-semibold text-slate-600">
-      <span className="text-slate-400">●</span> Not sent
+function StatusBadge({ report }) {
+  // paprasta logika dabar, bet plečiama ateityje
+  if (report.status === "done") {
+    return (
+      <span className="inline-flex items-center gap-1 rounded-full border border-slate-300 bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-700">
+        Archived
+      </span>
+    );
+  }
+
+  if (report.sent) {
+    return (
+      <span className="inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">
+        <span className="text-emerald-600">●</span> Sent
+      </span>
+    );
+  }
+
+  return (
+    <span className="inline-flex items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-xs font-semibold text-amber-700">
+      <span className="text-amber-500">●</span> Not sent
     </span>
   );
 }
@@ -282,8 +295,8 @@ export default function AllReports({ setSelectedReport }) {
                         </td>
 
                         <td className="border-b border-slate-100 px-4 py-3">
-                          <SentBadge sent={!!report.sent} />
-                        </td>
+  <StatusBadge report={report} />
+</td>
                       </tr>
                     ))
                   )}

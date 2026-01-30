@@ -133,7 +133,7 @@ function MainApp({ onLogout }) {
     <div className="min-h-screen w-full bg-white text-slate-900">
       <TopNav onLogout={onLogout} />
 
-      <main className="mx-auto w-full max-w-[1400px] px-4 py-6">
+      <main className="w-full p-0">
         <Routes>
           {/* default */}
           <Route path="/" element={<Navigate to="/dashboard" replace />} />

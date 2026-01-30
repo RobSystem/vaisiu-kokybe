@@ -31,7 +31,40 @@ const trimArray = (arr) =>
         .map((v) => (typeof v === "string" ? v.trim() : v))
         .filter((v) => v !== "")
     : [];
+function Field({ label, children }) {
+  return (
+    <div>
+      <label className="block text-xs font-semibold text-slate-600 mb-1">{label}</label>
+      {children}
+    </div>
+  );
+}
 
+function Input(props) {
+  return (
+    <input
+      {...props}
+      className={[
+        "h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-900 outline-none",
+        "focus:border-brand-400/70",
+        props.className || "",
+      ].join(" ")}
+    />
+  );
+}
+
+function Select(props) {
+  return (
+    <select
+      {...props}
+      className={[
+        "h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-900 outline-none",
+        "focus:border-brand-400/70",
+        props.className || "",
+      ].join(" ")}
+    />
+  );
+}
 export default function CreateSample() {
   const navigate = useNavigate();
   const { reportId, sampleId } = useParams();

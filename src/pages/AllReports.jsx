@@ -209,7 +209,7 @@ export default function AllReports({ setSelectedReport }) {
                       "Variety",
                       "Location",
                       "Actions",
-                      "Sent",
+                      "Status",
                     ].map((h) => (
                       <th key={h} className="border-b border-slate-200 px-4 py-3">
                         {h}

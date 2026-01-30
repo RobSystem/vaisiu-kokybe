@@ -42,6 +42,7 @@ const initialForm = {
   origin: "",
   location: "",
   total_pallets: "",
+  report_type_id: "",
   type: "Conventional",
   surveyor: "",
   status: "active",
@@ -65,6 +66,8 @@ const [clients, setClients] = useState([]);
 const [users, setUsers] = useState([]);
 
 const [formData, setFormData] = useState(initialForm);
+const [reportTypes, setReportTypes] = useState([]);
+const [basicReportTypeId, setBasicReportTypeId] = useState(null);
   const pageSize = 20;
 
   const navigate = useNavigate();
@@ -231,6 +234,22 @@ const handleCreateSubmit = async (e) => {
   fetchClients();
   fetchUsers();
 }, []);
+useEffect(() => {
+  const fetchReportTypes = async () => {
+    const { data, error } = await supabase
+      .from("report_types")
+      .select("id, name")
+      .order("name", { ascending: true });
+
+    if (!error && data) {
+      setReportTypes(data);
+      const basic = data.find((t) => t.name?.toUpperCase() === "BASIC");
+      if (basic) setBasicReportTypeId(basic.id);
+    }
+  };
+
+  fetchReportTypes();
+}, []);
 
 useEffect(() => {
   if (!createOpen) return;
@@ -241,9 +260,10 @@ useEffect(() => {
   setFormData((prev) => ({
     ...initialForm,
     date: today,
+    report_type_id: basicReportTypeId || "",
     surveyor: userProfile?.role === "user" ? (userProfile?.name || "") : prev.surveyor,
   }));
-}, [createOpen, userProfile]);
+}, [createOpen, userProfile, basicReportTypeId]);
 
   return (
     <div className="w-full px-6 py-6">
@@ -345,7 +365,25 @@ useEffect(() => {
               required
             />
           </div>
-
+<div>
+  <label className="block text-xs font-semibold text-slate-600 mb-1">
+    REPORT TYPE
+  </label>
+  <select
+    name="report_type_id"
+    value={formData.report_type_id}
+    onChange={handleCreateChange}
+    className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-brand-400/60"
+    required
+  >
+    <option value="">-- Select report type --</option>
+    {reportTypes.map((t) => (
+      <option key={t.id} value={t.id}>
+        {t.name}
+      </option>
+    ))}
+  </select>
+</div>
           {/* CLIENT */}
           <div>
             <label className="block text-xs font-semibold text-slate-600 mb-1">CLIENT</label>

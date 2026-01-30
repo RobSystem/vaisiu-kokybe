@@ -130,7 +130,7 @@ function MainApp({ onLogout }) {
   const [selectedReport, setSelectedReport] = useState(null);
 
   return (
-    <div className="min-h-screen w-full bg-slate-950 text-slate-100">
+    <div className="min-h-screen w-full bg-white text-slate-900">
       <TopNav onLogout={onLogout} />
 
       <main className="mx-auto w-full max-w-[1400px] px-4 py-6">

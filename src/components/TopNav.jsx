@@ -39,7 +39,8 @@ export default function TopNav({ onLogout }) {
   }, [role]);
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-brand-400/25 bg-slate-950/70 backdrop-blur">
+    <header className="sticky top-0 z-50 w-full border-b border-brand-400/30 bg-gradient-to-r from-slate-950 via-slate-950 to-brand-900/40 backdrop-blur">
+
       <div className="mx-auto w-full max-w-[1400px] px-4">
         <div className="flex h-16 items-center justify-between gap-3">
           {/* Left: brand */}

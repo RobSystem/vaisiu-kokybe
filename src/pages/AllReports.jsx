@@ -1,240 +1,328 @@
-import { useEffect, useState } from 'react';
-import { supabase } from '../supabaseClient';
-import { useNavigate } from 'react-router-dom';
-import { useCallback } from 'react';
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { supabase } from "../supabaseClient";
+import { useNavigate } from "react-router-dom";
 
-function AllReports({ setSelectedReport }) {
+function cx(...cls) {
+  return cls.filter(Boolean).join(" ");
+}
+
+function SentBadge({ sent }) {
+  return sent ? (
+    <span className="inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">
+      <span className="text-emerald-600">●</span> Sent
+    </span>
+  ) : (
+    <span className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-semibold text-slate-600">
+      <span className="text-slate-400">●</span> Not sent
+    </span>
+  );
+}
+
+export default function AllReports({ setSelectedReport }) {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sentFilter, setSentFilter] = useState("all"); // all | sent | notsent
+
   const [userProfile, setUserProfile] = useState(null);
+
   const [page, setPage] = useState(1);
-const pageSize = 20;
+  const pageSize = 20;
+
   const navigate = useNavigate();
-  
+
   const fetchReports = useCallback(async () => {
-  setLoading(true);
+    setLoading(true);
 
-  let query = supabase
-    .from('reports')
-    .select('*')
-    .eq('status', 'active')
-    .order('date', { ascending: false });
+    let query = supabase
+      .from("reports")
+      .select("*")
+      .eq("status", "active")
+      .order("date", { ascending: false });
 
-  if (userProfile?.role === 'user') {
-    query = query.eq('surveyor', userProfile.name);
-  }
+    // jei paprastas user – rodom tik jo ataskaitas
+    if (userProfile?.role === "user") {
+      query = query.eq("surveyor", userProfile.name);
+    }
 
-  const { data, error } = await query;
-  if (!error && data) setReports(data);
-  setLoading(false);
-}, [userProfile]);
+    const { data, error } = await query;
+    if (!error && data) setReports(data);
+    setLoading(false);
+  }, [userProfile]);
 
   const handleDone = async (id) => {
-    const { data, error } = await supabase
-      .from('reports')
-      .update({ status: 'done' })
-      .eq('id', id)
-      .select();
-
-    if (!error) {
-      setReports((prev) => prev.filter((r) => r.id !== id));
-    }
+    const { error } = await supabase.from("reports").update({ status: "done" }).eq("id", id);
+    if (!error) setReports((prev) => prev.filter((r) => r.id !== id));
   };
 
-    const handleDelete = async (id) => {
-    if (!window.confirm('Ar tikrai nori ištrinti šią ataskaitą?')) return;
+  const handleDelete = async (id) => {
+    if (!window.confirm("Ar tikrai nori ištrinti šią ataskaitą?")) return;
 
-    const { error } = await supabase.from('reports').delete().eq('id', id);
-
+    const { error } = await supabase.from("reports").delete().eq("id", id);
     if (!error) {
       setReports((prev) => prev.filter((r) => r.id !== id));
-      alert('Ataskaita ištrinta sėkmingai!');
+      // palikau alert, bet jei nori – pakeisim į toast
+      alert("Ataskaita ištrinta sėkmingai!");
     }
   };
 
   useEffect(() => {
     const fetchUserProfile = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) return;
 
       const { data, error } = await supabase
-        .from('user_profiles')
-        .select('name, role')
-        .eq('id', user.id)
+        .from("user_profiles")
+        .select("name, role")
+        .eq("id", user.id)
         .single();
 
-      if (!error) {
-        setUserProfile(data);
-      }
+      if (!error) setUserProfile(data);
     };
 
     fetchUserProfile();
   }, []);
 
   useEffect(() => {
-  if (!userProfile) return;
-  fetchReports();
-}, [userProfile, fetchReports]);
+    if (!userProfile) return;
+    fetchReports();
+  }, [userProfile, fetchReports]);
+
+  // realtime update: paprasta, bet patikima strategija
+  useEffect(() => {
+    if (!userProfile) return;
+
+    const channel = supabase.channel("reports-realtime");
+    channel.on(
+      "postgres_changes",
+      { schema: "public", table: "reports", event: "*" },
+      () => fetchReports()
+    );
+    channel.subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [userProfile, fetchReports]);
+
+  const filteredReports = useMemo(() => {
+    const q = searchTerm.trim().toLowerCase();
+
+    return reports
+      .filter((r) => {
+        if (sentFilter === "sent") return !!r.sent;
+        if (sentFilter === "notsent") return !r.sent;
+        return true;
+      })
+      .filter((r) => {
+        if (!q) return true;
+        const fields = [
+          r.client,
+          r.container_number,
+          r.location,
+          r.variety,
+          r.client_ref,
+          r.rochecks_ref,
+        ];
+        return fields.some((f) => (f ?? "").toString().toLowerCase().includes(q));
+      });
+  }, [reports, searchTerm, sentFilter]);
+
+  const total = filteredReports.length;
+  const totalPages = Math.max(1, Math.ceil(total / pageSize));
+  const start = (page - 1) * pageSize;
+  const end = Math.min(start + pageSize, total);
+  const pageReports = filteredReports.slice(start, end);
 
   useEffect(() => {
-  if (!userProfile) return;
+    if (page > totalPages) setPage(totalPages);
+  }, [totalPages, page]);
 
-  // Klausom pokyčių lentelėje "reports"
-  const channel = supabase.channel('reports-realtime');
-
-  channel.on(
-    'postgres_changes',
-    {
-      schema: 'public',
-      table: 'reports',
-      event: '*', // INSERT, UPDATE, DELETE
-    },
-    (payload) => {
-      // Reaguojam tik į tai, kas gali pakeisti AllReports sąrašą ar jo rodymą:
-      // - INSERT su status='active' (atsiras naujas įrašas)
-      // - UPDATE: pasikeitė 'sent' (norim pamatyti "Sent" žymę), ar 'status' (pvz. active -> done -> reikia pašalinti)
-      // - DELETE: pašalinta ataskaita
-      const newRow = payload.new || {};
-      const oldRow = payload.old || {};
-
-      const statusChanged = newRow.status !== oldRow.status;
-      const sentChanged = newRow.sent !== oldRow.sent;
-
-      if (
-        payload.eventType === 'INSERT' ||
-        payload.eventType === 'DELETE' ||
-        statusChanged ||
-        sentChanged
-      ) {
-        fetchReports(); // paprasčiausia ir patikima strategija
-      }
-    }
-  );
-
-  channel.subscribe();
-
-  // Išvalymas išeinant iš puslapio
-  return () => {
-    supabase.removeChannel(channel);
-  };
-}, [userProfile, fetchReports]);
-
-  const filteredReports = reports.filter((r) =>
-    [r.client, r.container_number, r.location, r.variety, r.client_ref, r.rochecks_ref]
-      .some((field) => field?.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
-const total = filteredReports.length;
-const totalPages = Math.max(1, Math.ceil(total / pageSize));
-const start = (page - 1) * pageSize;
-const end = Math.min(start + pageSize, total);
-const pageReports = filteredReports.slice(start, end);
-
-useEffect(() => {
-  if (page > totalPages) setPage(totalPages);
-}, [totalPages, page]);
   return (
-    <div className="w-full px-4 py-6 text-xs">
-      <h2 className="text-lg font-semibold mb-4">All Reports</h2>
-
-      <input
-        type="text"
-        placeholder="Search..."
-        value={searchTerm}
-        onChange={(e) => {
-  setSearchTerm(e.target.value);
-  setPage(1);
-}}
-        className="mb-4 p-2 border border-gray-300 rounded w-full max-w-xs"
-      />
-
-      {loading ? (
-        <p>Kraunama...</p>
-      ) : (
-        <div className="overflow-x-auto">
-          <table className="min-w-full table-auto border-collapse">
-            <thead>
-              <tr className="bg-gray-100">
-                {['DATE', 'CONTAINER', 'CLIENT REF', 'ROCHECKS REF', 'CLIENT', 'VARIETY', 'LOCATION', 'ACTION', 'STATUS'].map(header => (
-                  <th key={header} className="px-3 py-2 border-b text-center">{header}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {pageReports.map(report => (
-                <tr key={report.id} className="text-center">
-                  <td className="px-3 py-2 border-b">{report.date}</td>
-                  <td className="px-3 py-2 border-b">{report.container_number}</td>
-                  <td className="px-3 py-2 border-b">{report.client_ref}</td>
-                  <td className="px-3 py-2 border-b">{report.rochecks_ref}</td>
-                  <td className="px-3 py-2 border-b">{report.client}</td>
-                  <td className="px-3 py-2 border-b">{report.variety}</td>
-                  <td className="px-3 py-2 border-b">{report.location}</td>
-                                    <td className="px-3 py-2 border-b flex flex-wrap gap-1 justify-center">
-  <button
-    className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded"
-    onClick={() => {
-      setSelectedReport(report);
-      navigate(`/edit/${report.id}`);
-    }}
-  >
-    Edit
-  </button>
-
-  <button
-    className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded"
-    onClick={() => handleDone(report.id)}
-  >
-    Done
-  </button>
-
-  <button
-    className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
-    onClick={() => handleDelete(report.id)}
-  >
-    Delete
-  </button>
-</td>
-<td className="px-3 py-2 border-b">
-  {report.sent ? (
-    <span className="text-green-600 font-semibold">✅ Sent</span>
-  ) : (
-    <span className="text-gray-400 italic">Not sent</span>
-  )}
-</td>
-
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <p className="italic mt-2">
-  Showing {total === 0 ? 0 : start + 1}–{end} of {total} entries
-</p>
-
-<div className="flex items-center gap-2 mt-3 justify-center">
-  <button
-    className="px-3 py-1 rounded border disabled:opacity-50"
-    onClick={() => setPage(p => Math.max(1, p - 1))}
-    disabled={page === 1}
-  >
-    Previous
-  </button>
-
-  <span className="text-sm">
-    Page {page} of {totalPages}
-  </span>
-
-  <button
-    className="px-3 py-1 rounded border disabled:opacity-50"
-    onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-    disabled={page === totalPages}
-  >
-    Next
-  </button>
-</div>
+    <div className="w-full px-6 py-6">
+      {/* Page header */}
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+            Inspections
+          </div>
+          <h2 className="text-xl font-bold text-slate-900">All Reports</h2>
         </div>
-      )}
+
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <div className="flex gap-2">
+            <select
+              value={sentFilter}
+              onChange={(e) => {
+                setSentFilter(e.target.value);
+                setPage(1);
+              }}
+              className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-700 outline-none focus:border-brand-400/60"
+            >
+              <option value="all">All</option>
+              <option value="sent">Sent</option>
+              <option value="notsent">Not sent</option>
+            </select>
+
+            <input
+              type="text"
+              placeholder="Search client, ref, container, location..."
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setPage(1);
+              }}
+              className="h-10 w-full min-w-[240px] rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:border-brand-400/60"
+            />
+          </div>
+
+          <button
+            type="button"
+            onClick={() => navigate("/create")}
+            className="h-10 rounded-xl bg-brand-600 px-4 text-sm font-semibold text-white hover:bg-brand-500 transition"
+          >
+            + New inspection
+          </button>
+        </div>
+      </div>
+
+      {/* Table card */}
+      <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
+        {loading ? (
+          <div className="p-6 text-sm text-slate-600">Kraunama…</div>
+        ) : (
+          <>
+            <div className="w-full overflow-x-auto">
+              <table className="min-w-[1100px] w-full border-collapse text-sm">
+                <thead className="sticky top-0 bg-slate-50">
+                  <tr className="text-left text-xs font-bold uppercase tracking-wide text-slate-600">
+                    {[
+                      "Date",
+                      "Container",
+                      "Client Ref",
+                      "Rochecks Ref",
+                      "Client",
+                      "Variety",
+                      "Location",
+                      "Actions",
+                      "Sent",
+                    ].map((h) => (
+                      <th key={h} className="border-b border-slate-200 px-4 py-3">
+                        {h}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {pageReports.length === 0 ? (
+                    <tr>
+                      <td colSpan={9} className="px-4 py-10 text-center text-slate-500">
+                        No reports found.
+                      </td>
+                    </tr>
+                  ) : (
+                    pageReports.map((report) => (
+                      <tr key={report.id} className="hover:bg-slate-50/70">
+                        <td className="border-b border-slate-100 px-4 py-3 text-slate-800">
+                          {report.date}
+                        </td>
+                        <td className="border-b border-slate-100 px-4 py-3">
+                          {report.container_number || "-"}
+                        </td>
+                        <td className="border-b border-slate-100 px-4 py-3">
+                          {report.client_ref || "-"}
+                        </td>
+                        <td className="border-b border-slate-100 px-4 py-3">
+                          {report.rochecks_ref || "-"}
+                        </td>
+                        <td className="border-b border-slate-100 px-4 py-3 font-medium text-slate-900">
+                          {report.client}
+                        </td>
+                        <td className="border-b border-slate-100 px-4 py-3">
+                          {report.variety}
+                        </td>
+                        <td className="border-b border-slate-100 px-4 py-3">
+                          {report.location}
+                        </td>
+
+                        <td className="border-b border-slate-100 px-4 py-3">
+                          <div className="flex flex-wrap gap-2">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setSelectedReport?.(report);
+                                navigate(`/edit/${report.id}`);
+                              }}
+                              className="rounded-lg border border-brand-400/40 bg-brand-50 px-3 py-1.5 text-xs font-semibold text-brand-700 hover:bg-brand-100 transition"
+                            >
+                              Edit
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => handleDone(report.id)}
+                              className="rounded-lg border border-emerald-300/60 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 hover:bg-emerald-100 transition"
+                            >
+                              Done
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => handleDelete(report.id)}
+                              className="rounded-lg border border-red-300/60 bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-100 transition"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </td>
+
+                        <td className="border-b border-slate-100 px-4 py-3">
+                          <SentBadge sent={!!report.sent} />
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Footer / pagination */}
+            <div className="flex flex-col gap-3 border-t border-slate-200 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-xs text-slate-500">
+                Showing {total === 0 ? 0 : start + 1}–{end} of {total} entries
+              </p>
+
+              <div className="flex items-center justify-center gap-2">
+                <button
+                  className="h-9 rounded-xl border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  disabled={page === 1}
+                >
+                  Previous
+                </button>
+
+                <span className="text-sm text-slate-700">
+                  Page <span className="font-semibold">{page}</span> of{" "}
+                  <span className="font-semibold">{totalPages}</span>
+                </span>
+
+                <button
+                  className="h-9 rounded-xl border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                  disabled={page === totalPages}
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 }
-
-export default AllReports;

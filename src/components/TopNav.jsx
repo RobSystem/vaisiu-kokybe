@@ -108,12 +108,20 @@ export default function TopNav({ onLogout }) {
             </div>
 
             <button
-              onClick={onLogout}
-              type="button"
-              className="rounded-xl border border-red-400/20 bg-red-500/10 px-3 py-2 text-sm font-semibold text-red-200 hover:bg-red-500/15 hover:text-red-100 transition"
-            >
-              Log out
-            </button>
+  onClick={onLogout}
+  type="button"
+  className="
+    relative rounded-xl px-4 py-2 text-sm font-semibold
+    text-red-100
+    bg-red-600/80
+    hover:bg-red-600
+    transition
+    shadow-[0_0_0_1px_rgba(239,68,68,0.35),0_0_20px_rgba(239,68,68,0.35)]
+    hover:shadow-[0_0_0_1px_rgba(239,68,68,0.6),0_0_28px_rgba(239,68,68,0.6)]
+  "
+>
+  Log out
+</button>
           </div>
         </div>
       </div>

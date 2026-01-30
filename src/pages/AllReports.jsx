@@ -31,6 +31,22 @@ function StatusBadge({ report }) {
   );
 }
 
+const initialForm = {
+  date: "",
+  client: "",
+  client_ref: "",
+  container_number: "",
+  rochecks_ref: "",
+  supplier: "",
+  variety: "",
+  origin: "",
+  location: "",
+  total_pallets: "",
+  type: "Conventional",
+  surveyor: "",
+  status: "active",
+};
+
 export default function AllReports({ setSelectedReport }) {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -41,6 +57,14 @@ export default function AllReports({ setSelectedReport }) {
   const [userProfile, setUserProfile] = useState(null);
 
   const [page, setPage] = useState(1);
+  const [createOpen, setCreateOpen] = useState(false);
+const [createLoading, setCreateLoading] = useState(false);
+const [createMessage, setCreateMessage] = useState("");
+
+const [clients, setClients] = useState([]);
+const [users, setUsers] = useState([]);
+
+const [formData, setFormData] = useState(initialForm);
   const pageSize = 20;
 
   const navigate = useNavigate();
@@ -79,6 +103,44 @@ export default function AllReports({ setSelectedReport }) {
       alert("Ataskaita ištrinta sėkmingai!");
     }
   };
+
+  const handleCreateChange = (e) => {
+  const { name, value } = e.target;
+  setFormData((prev) => ({ ...prev, [name]: value }));
+};
+
+const handleCreateSubmit = async (e) => {
+  e.preventDefault();
+  setCreateMessage("");
+
+  // tokia pati validacija kaip CreateReport.jsx (visi laukai privalomi)
+  for (const [key, value] of Object.entries(formData)) {
+    if (!value) {
+      setCreateMessage(`Laukas "${key}" yra privalomas.`);
+      return;
+    }
+  }
+
+  setCreateLoading(true);
+
+  const { data, error } = await supabase
+    .from("reports")
+    .insert([formData])
+    .select()
+    .single();
+
+  setCreateLoading(false);
+
+  if (error || !data) {
+    setCreateMessage("Klaida kuriant inspekciją.");
+    return;
+  }
+
+  // uždarom modal ir einam į edit (tas pats flow kaip anksčiau)
+  setCreateOpen(false);
+  navigate(`/edit/${data.id}`);
+};
+
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -155,6 +217,34 @@ export default function AllReports({ setSelectedReport }) {
     if (page > totalPages) setPage(totalPages);
   }, [totalPages, page]);
 
+  useEffect(() => {
+  const fetchClients = async () => {
+    const { data, error } = await supabase.from("clients").select("id, name");
+    if (!error && data) setClients(data);
+  };
+
+  const fetchUsers = async () => {
+    const { data, error } = await supabase.from("user_profiles").select("id, name");
+    if (!error && data) setUsers(data);
+  };
+
+  fetchClients();
+  fetchUsers();
+}, []);
+
+useEffect(() => {
+  if (!createOpen) return;
+
+  const today = new Date().toISOString().slice(0, 10);
+  setCreateMessage("");
+
+  setFormData((prev) => ({
+    ...initialForm,
+    date: today,
+    surveyor: userProfile?.role === "user" ? (userProfile?.name || "") : prev.surveyor,
+  }));
+}, [createOpen, userProfile]);
+
   return (
     <div className="w-full px-6 py-6">
       {/* Page header */}
@@ -193,16 +283,242 @@ export default function AllReports({ setSelectedReport }) {
             />
           </div>
 
-          <button
-            type="button"
-            onClick={() => navigate("/create")}
+          <button type="button" onClick={() => setCreateOpen(true)}
             className="h-10 rounded-xl bg-brand-600 px-4 text-sm font-semibold text-white hover:bg-brand-500 transition"
           >
             + New inspection
           </button>
         </div>
       </div>
+{createOpen && (
+  <div
+    className="fixed inset-0 z-[60] flex items-center justify-center p-4"
+    onMouseDown={(e) => {
+      // click ant backdrop uždaro
+      if (e.target === e.currentTarget) setCreateOpen(false);
+    }}
+  >
+    <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
 
+    <div className="relative w-full max-w-3xl rounded-2xl border border-slate-200 bg-white shadow-xl">
+      <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4">
+        <div>
+          <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+            Inspections
+          </div>
+          <h3 className="text-lg font-bold text-slate-900">New inspection</h3>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setCreateOpen(false)}
+          className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+        >
+          Close
+        </button>
+      </div>
+
+      <form onSubmit={handleCreateSubmit} className="p-5">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          {/* DATE */}
+          <div>
+            <label className="block text-xs font-semibold text-slate-600 mb-1">DATE</label>
+            <input
+              type="date"
+              name="date"
+              value={formData.date}
+              onChange={handleCreateChange}
+              className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-brand-400/60"
+              required
+            />
+          </div>
+
+          {/* VARIETY */}
+          <div>
+            <label className="block text-xs font-semibold text-slate-600 mb-1">VARIETY</label>
+            <input
+              type="text"
+              name="variety"
+              value={formData.variety}
+              onChange={handleCreateChange}
+              className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-brand-400/60"
+              required
+            />
+          </div>
+
+          {/* CLIENT */}
+          <div>
+            <label className="block text-xs font-semibold text-slate-600 mb-1">CLIENT</label>
+            <select
+              name="client"
+              value={formData.client}
+              onChange={handleCreateChange}
+              className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-brand-400/60"
+              required
+            >
+              <option value="">-- Select client --</option>
+              {clients.map((c) => (
+                <option key={c.id} value={c.name}>{c.name}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* SUPPLIER */}
+          <div>
+            <label className="block text-xs font-semibold text-slate-600 mb-1">SUPPLIER</label>
+            <input
+              type="text"
+              name="supplier"
+              value={formData.supplier}
+              onChange={handleCreateChange}
+              className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-brand-400/60"
+              required
+            />
+          </div>
+
+          {/* CLIENT REF */}
+          <div>
+            <label className="block text-xs font-semibold text-slate-600 mb-1">CLIENT REF</label>
+            <input
+              type="text"
+              name="client_ref"
+              value={formData.client_ref}
+              onChange={handleCreateChange}
+              className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-brand-400/60"
+              required
+            />
+          </div>
+
+          {/* ORIGIN */}
+          <div>
+            <label className="block text-xs font-semibold text-slate-600 mb-1">ORIGIN</label>
+            <input
+              type="text"
+              name="origin"
+              value={formData.origin}
+              onChange={handleCreateChange}
+              className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-brand-400/60"
+              required
+            />
+          </div>
+
+          {/* CONTAINER NUMBER */}
+          <div>
+            <label className="block text-xs font-semibold text-slate-600 mb-1">CONTAINER</label>
+            <input
+              type="text"
+              name="container_number"
+              value={formData.container_number}
+              onChange={handleCreateChange}
+              className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-brand-400/60"
+              required
+            />
+          </div>
+
+          {/* LOCATION */}
+          <div>
+            <label className="block text-xs font-semibold text-slate-600 mb-1">LOCATION</label>
+            <input
+              type="text"
+              name="location"
+              value={formData.location}
+              onChange={handleCreateChange}
+              className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-brand-400/60"
+              required
+            />
+          </div>
+
+          {/* ROCHECKS REF */}
+          <div>
+            <label className="block text-xs font-semibold text-slate-600 mb-1">ROCHECKS REF</label>
+            <input
+              type="text"
+              name="rochecks_ref"
+              value={formData.rochecks_ref}
+              onChange={handleCreateChange}
+              className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-brand-400/60"
+              required
+            />
+          </div>
+
+          {/* TOTAL PALLETS */}
+          <div>
+            <label className="block text-xs font-semibold text-slate-600 mb-1">TOTAL PALLETS</label>
+            <input
+              type="text"
+              name="total_pallets"
+              value={formData.total_pallets}
+              onChange={handleCreateChange}
+              className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-brand-400/60"
+              required
+            />
+          </div>
+
+          {/* TYPE */}
+          <div>
+            <label className="block text-xs font-semibold text-slate-600 mb-1">TYPE</label>
+            <select
+              name="type"
+              value={formData.type}
+              onChange={handleCreateChange}
+              className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-brand-400/60"
+              required
+            >
+              <option value="Conventional">Conventional</option>
+              <option value="Organic">Organic</option>
+            </select>
+          </div>
+
+          {/* SURVEYOR */}
+          <div>
+            <label className="block text-xs font-semibold text-slate-600 mb-1">SURVEYOR</label>
+            <select
+              name="surveyor"
+              value={formData.surveyor}
+              onChange={handleCreateChange}
+              className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-brand-400/60"
+              required
+              disabled={userProfile?.role === "user"} // user negali keisti
+            >
+              <option value="">-- Select surveyor --</option>
+              {userProfile?.role === "admin"
+                ? users.map((u) => (
+                    <option key={u.id} value={u.name}>{u.name}</option>
+                  ))
+                : userProfile && (
+                    <option value={userProfile.name}>{userProfile.name}</option>
+                  )}
+            </select>
+          </div>
+        </div>
+
+        {createMessage && (
+          <div className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            {createMessage}
+          </div>
+        )}
+
+        <div className="mt-5 flex items-center justify-end gap-2">
+          <button
+            type="button"
+            onClick={() => setCreateOpen(false)}
+            className="h-10 rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+          >
+            Cancel
+          </button>
+
+          <button
+            type="submit"
+            disabled={createLoading}
+            className="h-10 rounded-xl bg-brand-600 px-4 text-sm font-semibold text-white hover:bg-brand-500 disabled:opacity-60"
+          >
+            {createLoading ? "Creating..." : "Create"}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+)}
       {/* Table card */}
       <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
         {loading ? (

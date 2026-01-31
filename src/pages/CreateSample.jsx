@@ -167,6 +167,8 @@ export default function CreateSample() {
   // defects options (allowed by report type)
   const [minorOptions, setMinorOptions] = useState([]); // [{id,name}]
   const [majorOptions, setMajorOptions] = useState([]);
+  const [minorMode, setMinorMode] = useState("qty"); // qty | pct
+const [majorMode, setMajorMode] = useState("qty");
 
   // NEW defects rows (id + qty)
   const [minorRows, setMinorRows] = useState([]); // [{ id:"", qty:"" }]
@@ -302,7 +304,28 @@ export default function CreateSample() {
         if (d.severity === "minor") minors.push({ id: d.id, name: d.name });
         if (d.severity === "major") majors.push({ id: d.id, name: d.name });
       });
+let minMode = "qty";
+let majMode = "qty";
 
+(data || []).forEach((row) => {
+  const d = row.defect;
+  if (!d?.id) return;
+
+  if (d.severity === "minor") {
+    minors.push({ id: d.id, name: d.name });
+    if (row.input_mode) minMode = row.input_mode;
+  }
+
+  if (d.severity === "major") {
+    majors.push({ id: d.id, name: d.name });
+    if (row.input_mode) majMode = row.input_mode;
+  }
+});
+
+setMinorOptions(minors);
+setMajorOptions(majors);
+setMinorMode(minMode);
+setMajorMode(majMode);
       setMinorOptions(minors);
       setMajorOptions(majors);
     };
@@ -330,14 +353,26 @@ export default function CreateSample() {
 
       // supports both old format [id,id] and new [{id,qty}]
       const safeRows = (v) =>
-        Array.isArray(v)
-          ? v
-              .map((x) => ({
-                id: typeof x === "string" ? x : (x?.id || ""),
-                qty: typeof x === "object" && x ? (x.qty ?? "") : "",
-              }))
-              .filter((x) => x.id || x.qty !== "")
-          : [];
+  Array.isArray(v)
+    ? v
+        .map((x) => {
+          // very old: ["uuid", "uuid2"]
+          if (typeof x === "string") return { id: x, value: "", unit: null };
+
+          // old: {id, qty}
+          if (x && typeof x === "object" && "qty" in x) {
+            return { id: x.id || "", value: x.qty ?? "", unit: "qty" };
+          }
+
+          // new: {id, value, unit}
+          if (x && typeof x === "object") {
+            return { id: x.id || "", value: x.value ?? "", unit: x.unit ?? null };
+          }
+
+          return { id: "", value: "", unit: null };
+        })
+        .filter((r) => r.id || r.value !== "")
+    : [];
 
       setMinorRows(safeRows(data?.minor_defects_selected));
       setMajorRows(safeRows(data?.major_defects_selected));
@@ -354,8 +389,8 @@ export default function CreateSample() {
     setForm((p) => ({ ...p, [name]: value }));
   };
 
-  const addMinorRow = () => setMinorRows((p) => [...p, { id: "", qty: "" }]);
-  const addMajorRow = () => setMajorRows((p) => [...p, { id: "", qty: "" }]);
+  const addMinorRow = () => setMinorRows((p) => [...p, { id: "", value: "", unit: null }]);
+const addMajorRow = () => setMajorRows((p) => [...p, { id: "", value: "", unit: null }]);
 
   const updateRow = (setter, index, key, value) => {
     setter((prev) => {
@@ -401,25 +436,28 @@ export default function CreateSample() {
       payload.internal_coloration = internalColoration.length ? internalColoration : null;
       payload.consistency = consistency;
 
-      const normalizeRows = (rows) =>
-        rows
-          .filter((r) => r && r.id)
-          .map((r) => ({
-            id: r.id,
-            qty: safeNumberOrNull(r.qty),
-          }));
+      const normalizeRows = (rows, mode) =>
+  rows
+    .filter((r) => r && r.id)
+    .map((r) => ({
+      id: r.id,
+      value: r.value === "" ? null : Number(r.value),
+      unit: mode, // 'qty' or 'pct'
+    }))
+    .filter((r) => r.value !== null && Number.isFinite(r.value));
 
-      const minorPayload = normalizeRows(minorRows);
-      const majorPayload = normalizeRows(majorRows);
+      const minorPayload = normalizeRows(minorRows, minorMode);
+const majorPayload = normalizeRows(majorRows, majorMode);
 
-      payload.minor_defects_selected = minorPayload.length ? minorPayload : null;
-      payload.major_defects_selected = majorPayload.length ? majorPayload : null;
+payload.minor_defects_selected = minorPayload.length ? minorPayload : null;
+payload.major_defects_selected = majorPayload.length ? majorPayload : null;
 
       // legacy text (kad senos vietos nesulūžtų)
       const minorNames = minorPayload.map((r) => defectNameById.get(r.id)).filter(Boolean);
-      const majorNames = majorPayload.map((r) => defectNameById.get(r.id)).filter(Boolean);
-      payload.minor_defects = minorNames.length ? minorNames.join(", ") : null;
-      payload.major_defects = majorNames.length ? majorNames.join(", ") : null;
+const majorNames = majorPayload.map((r) => defectNameById.get(r.id)).filter(Boolean);
+
+payload.minor_defects = minorNames.length ? minorNames.join(", ") : null;
+payload.major_defects = majorNames.length ? majorNames.join(", ") : null;
 
       if (sampleId) {
         const { error } = await supabase.from("samples").update(payload).eq("id", sampleId);
@@ -752,13 +790,15 @@ export default function CreateSample() {
 
                     <div className="md:col-span-3">
                       <input
-                        type="number"
-                        min="0"
-                        placeholder="Qty"
-                        value={row.qty ?? ""}
-                        onChange={(e) => updateRow(setMinorRows, idx, "qty", e.target.value)}
-                        className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-brand-400/70"
-                      />
+  type="number"
+  min="0"
+  max={minorMode === "pct" ? "100" : undefined}
+  step={minorMode === "pct" ? "0.1" : "1"}
+  placeholder={minorMode === "pct" ? "%" : "Qty"}
+  value={row.value ?? ""}
+  onChange={(e) => updateRow(setMinorRows, idx, "value", e.target.value)}
+  className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-brand-400/70"
+/>
                     </div>
 
                     <div className="md:col-span-2 md:flex md:justify-end">
@@ -804,14 +844,16 @@ export default function CreateSample() {
                     </div>
 
                     <div className="md:col-span-3">
-                      <input
-                        type="number"
-                        min="0"
-                        placeholder="Qty"
-                        value={row.qty ?? ""}
-                        onChange={(e) => updateRow(setMajorRows, idx, "qty", e.target.value)}
-                        className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-brand-400/70"
-                      />
+                     <input
+  type="number"
+  min="0"
+  max={majorMode === "pct" ? "100" : undefined}
+  step={majorMode === "pct" ? "0.1" : "1"}
+  placeholder={majorMode === "pct" ? "%" : "Qty"}
+  value={row.value ?? ""}
+  onChange={(e) => updateRow(setMinorRows, idx, "value", e.target.value)}
+  className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-brand-400/70"
+/>
                     </div>
 
                     <div className="md:col-span-2 md:flex md:justify-end">

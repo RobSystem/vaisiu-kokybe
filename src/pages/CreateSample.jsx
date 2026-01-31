@@ -364,7 +364,7 @@ setMajorMode(majMode);
 
           return { id: "", value: "", unit: null };
         })
-        .filter((r) => r.id || r.value !== "")
+        .filter((r) => r.id)
     : [];
 
       setMinorRows(safeRows(data?.minor_defects_selected));
@@ -434,10 +434,9 @@ const addMajorRow = () => setMajorRows((p) => [...p, { id: "", value: "", unit: 
     .filter((r) => r && r.id)
     .map((r) => ({
       id: r.id,
-      value: r.value === "" ? null : Number(r.value),
-      unit: mode, // 'qty' or 'pct'
-    }))
-    .filter((r) => r.value !== null && Number.isFinite(r.value));
+      value: r.value === "" || r.value === null || r.value === undefined ? null : Number(r.value),
+      unit: mode, // 'qty' | 'pct'
+    }));
 
       const minorPayload = normalizeRows(minorRows, minorMode);
 const majorPayload = normalizeRows(majorRows, majorMode);

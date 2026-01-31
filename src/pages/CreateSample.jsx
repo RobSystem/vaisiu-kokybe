@@ -232,6 +232,8 @@ const [majorMode, setMajorMode] = useState("qty");
   const [consistency, setConsistency] = useState({ hard: "", sensitive: "", soft: "" });
   const [boxWeightExtra, setBoxWeightExtra] = useState([]); // 10 small inputs
 const [fruitWeightExtra, setFruitWeightExtra] = useState([]); // 10 small inputs
+const [allowedColorsExternal, setAllowedColorsExternal] = useState([]);
+const [allowedColorsInternal, setAllowedColorsInternal] = useState([]);
 
   const defectNameById = useMemo(() => {
     const map = new Map();

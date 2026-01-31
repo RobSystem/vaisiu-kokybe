@@ -218,6 +218,8 @@ const [majorMode, setMajorMode] = useState("qty");
   const [externalColoration, setExternalColoration] = useState([]);
   const [internalColoration, setInternalColoration] = useState([]);
   const [consistency, setConsistency] = useState({ hard: "", sensitive: "", soft: "" });
+  const [boxWeightExtra, setBoxWeightExtra] = useState([]); // 10 small inputs
+const [fruitWeightExtra, setFruitWeightExtra] = useState([]); // 10 small inputs
 
   const defectNameById = useMemo(() => {
     const map = new Map();
@@ -343,6 +345,17 @@ setMajorMode(majMode);
       setExternalColoration(Array.isArray(data?.external_coloration) ? data.external_coloration : []);
       setInternalColoration(Array.isArray(data?.internal_coloration) ? data.internal_coloration : []);
       setConsistency(data?.consistency || { hard: "", sensitive: "", soft: "" });
+      if (Array.isArray(data?.box_weight_extra) && data.box_weight_extra.length) {
+  setBoxWeightExtra(toTen(data.box_weight_extra));
+} else {
+  setBoxWeightExtra([]);
+}
+
+if (Array.isArray(data?.fruit_weights_extra) && data.fruit_weights_extra.length) {
+  setFruitWeightExtra(toTen(data.fruit_weights_extra));
+} else {
+  setFruitWeightExtra([]);
+}
 
       // supports both old format [id,id] and new [{id,qty}]
       const safeRows = (v) =>
@@ -381,6 +394,29 @@ setMajorMode(majMode);
     const { name, value } = e.target;
     setForm((p) => ({ ...p, [name]: value }));
   };
+  const toTen = (arr) => {
+  const a = Array.isArray(arr) ? arr.map((v) => (v === null || v === undefined ? "" : String(v))) : [];
+  while (a.length < 10) a.push("");
+  return a.slice(0, 10);
+};
+
+const addBoxWeightExtra = () => setBoxWeightExtra((p) => (p.length ? p : Array(10).fill("")));
+const removeBoxWeightExtra = () => setBoxWeightExtra([]);
+const setBoxExtraAt = (i, val) => setBoxWeightExtra((p) => {
+  const c = [...p];
+  c[i] = val;
+  return c;
+});
+const clearBoxExtraAt = (i) => setBoxExtraAt(i, "");
+
+const addFruitWeightExtra = () => setFruitWeightExtra((p) => (p.length ? p : Array(10).fill("")));
+const removeFruitWeightExtra = () => setFruitWeightExtra([]);
+const setFruitExtraAt = (i, val) => setFruitWeightExtra((p) => {
+  const c = [...p];
+  c[i] = val;
+  return c;
+});
+const clearFruitExtraAt = (i) => setFruitExtraAt(i, "");
 
   const addMinorRow = () => setMinorRows((p) => [...p, { id: "", value: "", unit: null }]);
 const addMajorRow = () => setMajorRows((p) => [...p, { id: "", value: "", unit: null }]);
@@ -428,6 +464,11 @@ const addMajorRow = () => setMajorRows((p) => [...p, { id: "", value: "", unit: 
       payload.external_coloration = externalColoration.length ? externalColoration : null;
       payload.internal_coloration = internalColoration.length ? internalColoration : null;
       payload.consistency = consistency;
+      const bwExtra = (boxWeightExtra || []).map(safeNumberOrNull).filter((v) => v !== null);
+const fwExtra = (fruitWeightExtra || []).map(safeNumberOrNull).filter((v) => v !== null);
+
+payload.box_weight_extra = bwExtra.length ? bwExtra : null;
+payload.fruit_weights_extra = fwExtra.length ? fwExtra : null;
 
       const normalizeRows = (rows, mode) =>
   rows
@@ -583,6 +624,56 @@ payload.major_defects = majorNames.length ? majorNames.join(", ") : null;
                     </Field>
                   </>
                 )}
+                {showField("box_weight") && (
+  <div className="md:col-span-2">
+    <div className="flex items-center gap-2">
+      <button
+        type="button"
+        onClick={addBoxWeightExtra}
+        className="h-9 rounded-xl border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+      >
+        + Add extra
+      </button>
+
+      {boxWeightExtra.length > 0 && (
+        <button
+          type="button"
+          onClick={removeBoxWeightExtra}
+          className="h-9 rounded-xl border border-red-200 bg-red-50 px-3 text-xs font-semibold text-red-700 hover:bg-red-100"
+        >
+          Remove extras
+        </button>
+      )}
+    </div>
+
+    {boxWeightExtra.length > 0 && (
+      <>
+        <div className="my-3 border-t border-slate-200" />
+        <div className="grid grid-cols-2 gap-2 md:grid-cols-5">
+          {boxWeightExtra.map((v, i) => (
+            <div key={i} className="flex items-center gap-1">
+              <input
+                type="number"
+                placeholder={`#${i + 1}`}
+                value={v}
+                onChange={(e) => setBoxExtraAt(i, e.target.value)}
+                className="h-9 w-full rounded-lg border border-slate-200 bg-white px-2 text-sm outline-none focus:border-brand-400/70"
+              />
+              <button
+                type="button"
+                onClick={() => clearBoxExtraAt(i)}
+                className="h-9 w-9 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-500 hover:bg-slate-50"
+                title="Clear"
+              >
+                ×
+              </button>
+            </div>
+          ))}
+        </div>
+      </>
+    )}
+  </div>
+)}
 
                 {showField("fruit_weight") && (
                   <>
@@ -594,6 +685,57 @@ payload.major_defects = majorNames.length ? majorNames.join(", ") : null;
                     </Field>
                   </>
                 )}
+                {showField("fruit_weight") && (
+  <div className="md:col-span-2">
+    <div className="flex items-center gap-2">
+      <button
+        type="button"
+        onClick={addFruitWeightExtra}
+        className="h-9 rounded-xl border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+      >
+        + Add extra
+      </button>
+
+      {fruitWeightExtra.length > 0 && (
+        <button
+          type="button"
+          onClick={removeFruitWeightExtra}
+          className="h-9 rounded-xl border border-red-200 bg-red-50 px-3 text-xs font-semibold text-red-700 hover:bg-red-100"
+        >
+          Remove extras
+        </button>
+      )}
+    </div>
+
+    {fruitWeightExtra.length > 0 && (
+      <>
+        <div className="my-3 border-t border-slate-200" />
+        <div className="grid grid-cols-2 gap-2 md:grid-cols-5">
+          {fruitWeightExtra.map((v, i) => (
+            <div key={i} className="flex items-center gap-1">
+              <input
+                type="number"
+                placeholder={`#${i + 1}`}
+                value={v}
+                onChange={(e) => setFruitExtraAt(i, e.target.value)}
+                className="h-9 w-full rounded-lg border border-slate-200 bg-white px-2 text-sm outline-none focus:border-brand-400/70"
+              />
+              <button
+                type="button"
+                onClick={() => clearFruitExtraAt(i)}
+                className="h-9 w-9 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-500 hover:bg-slate-50"
+                title="Clear"
+              >
+                ×
+              </button>
+            </div>
+          ))}
+        </div>
+      </>
+    )}
+  </div>
+)}
+
 
                 {showField("pressures") && (
                   <>

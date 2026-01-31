@@ -1112,16 +1112,31 @@ navigate(`/create-sample/${reportId}/${inserted.id}`, { replace: true });
                     </div>
 
                     <div className="md:col-span-3">
-                      <input
-  type="number"
-  min="0"
-  max={minorMode === "pct" ? "100" : undefined}
-  step={minorMode === "pct" ? "0.1" : "1"}
-  placeholder={minorMode === "pct" ? "%" : "Qty"}
-  value={row.value ?? ""}
-  onChange={(e) => updateRow(setMinorRows, idx, "value", e.target.value)}
-  className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-brand-400/70"
-/>
+                      {minorMode === "pct" ? (
+  <select
+    value={row.value ?? ""}
+    onChange={(e) => updateRow(setMinorRows, idx, "value", e.target.value)}
+    className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-brand-400/70"
+  >
+    <option value="">%</option>
+    {PERCENT_OPTIONS.map((p) => (
+      <option key={p} value={p}>
+        {p}%
+      </option>
+    ))}
+  </select>
+) : (
+  <input
+    type="number"
+    min="0"
+    step="1"
+    placeholder="Qty"
+    value={row.value ?? ""}
+    onChange={(e) => updateRow(setMinorRows, idx, "value", e.target.value)}
+    className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-brand-400/70"
+  />
+)}
+
                     </div>
 
                     <div className="md:col-span-2 md:flex md:justify-end">
@@ -1167,16 +1182,31 @@ navigate(`/create-sample/${reportId}/${inserted.id}`, { replace: true });
                     </div>
 
                     <div className="md:col-span-3">
-                     <input
-  type="number"
-  min="0"
-  max={majorMode === "pct" ? "100" : undefined}
-  step={majorMode === "pct" ? "0.1" : "1"}
-  placeholder={majorMode === "pct" ? "%" : "Qty"}
-  value={row.value ?? ""}
-  onChange={(e) => updateRow(setMajorRows, idx, "value", e.target.value)}
-  className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-brand-400/70"
-/>
+                     {majorMode === "pct" ? (
+  <select
+    value={row.value ?? ""}
+    onChange={(e) => updateRow(setMajorRows, idx, "value", e.target.value)}
+    className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-brand-400/70"
+  >
+    <option value="">%</option>
+    {PERCENT_OPTIONS.map((p) => (
+      <option key={p} value={p}>
+        {p}%
+      </option>
+    ))}
+  </select>
+) : (
+  <input
+    type="number"
+    min="0"
+    step="1"
+    placeholder="Qty"
+    value={row.value ?? ""}
+    onChange={(e) => updateRow(setMajorRows, idx, "value", e.target.value)}
+    className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-brand-400/70"
+  />
+)}
+
                     </div>
 
                     <div className="md:col-span-2 md:flex md:justify-end">

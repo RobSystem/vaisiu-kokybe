@@ -116,6 +116,7 @@ const TAB = {
   MEASURE: "measure",
   DEFECTS: "defects",
   SCORING: "scoring",
+  PHOTOS: "photos",
 };
 
 const MEASURE_TAB = {
@@ -185,6 +186,11 @@ const [majorMode, setMajorMode] = useState("qty");
   // NEW defects rows (id + qty)
   const [minorRows, setMinorRows] = useState([]); // [{ id:"", qty:"" }]
   const [majorRows, setMajorRows] = useState([]);
+
+  const [files, setFiles] = useState([]);
+const [photos, setPhotos] = useState([]);
+const [previewUrl, setPreviewUrl] = useState(null);
+const [uploadProgress, setUploadProgress] = useState(0);
 
   const [form, setForm] = useState({
     // pallet
@@ -466,6 +472,87 @@ const addMajorRow = () => setMajorRows((p) => [...p, { id: "", value: "", unit: 
     setter((prev) => prev.filter((_, i) => i !== idx));
   };
 
+  const fetchPhotos = async () => {
+  if (!sampleId) return;
+
+  const { data, error } = await supabase
+    .from("sample_photos")
+    .select("*")
+    .eq("sample_id", sampleId)
+    .order("created_at", { ascending: true });
+
+  if (error) {
+    console.error("❌ Klaida gaunant nuotraukas iš DB:", error.message);
+  } else {
+    setPhotos(data || []);
+  }
+};
+
+useEffect(() => {
+  // kraunam kai sampleId atsiranda arba kai pereini į PHOTOS tab
+  if (activeTab === TAB.PHOTOS) fetchPhotos();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, [sampleId, activeTab]);
+
+const handleFileChange = (e) => setFiles([...e.target.files]);
+
+const removeSelectedFile = (index) => {
+  const newFiles = [...files];
+  newFiles.splice(index, 1);
+  setFiles(newFiles);
+};
+
+const handleUpload = async () => {
+  if (!sampleId) {
+    toast.error("Pirmiausia išsaugok sample (Save), tada galėsi įkelti nuotraukas.");
+    return;
+  }
+  if (!files.length) return;
+
+  let uploaded = 0;
+
+  for (const file of files) {
+    const filePath = `samples/${sampleId}/${Date.now()}-${file.name}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from("photos")
+      .upload(filePath, file);
+
+    if (uploadError) {
+      toast.error("Nepavyko įkelti: " + file.name);
+      continue;
+    }
+
+    const publicUrl = supabase.storage
+      .from("photos")
+      .getPublicUrl(filePath).data.publicUrl;
+
+    await supabase.from("sample_photos").insert({ sample_id: sampleId, url: publicUrl });
+
+    uploaded++;
+    setUploadProgress(Math.round((uploaded / files.length) * 100));
+  }
+
+  toast.success("Nuotraukos įkeltos!");
+  setFiles([]);
+  setUploadProgress(0);
+  fetchPhotos();
+};
+
+const handleDeletePhoto = async (photoId, url) => {
+  const path = url.split("/storage/v1/object/public/photos/")[1];
+
+  const { error: deleteError } = await supabase.storage.from("photos").remove([path]);
+  if (deleteError) {
+    toast.error("Nepavyko ištrinti iš bucket");
+    return;
+  }
+
+  const { error: dbError } = await supabase.from("sample_photos").delete().eq("id", photoId);
+  if (dbError) toast.error("Nepavyko ištrinti iš DB");
+  else fetchPhotos();
+};
+
   /* =========================
      Save
      ========================= */
@@ -521,12 +608,20 @@ payload.major_defects = majorNames.length ? majorNames.join(", ") : null;
 
         const nextPosition = (last?.[0]?.position || 0) + 1;
 
-        const { error } = await supabase.from("samples").insert({
-          report_id: reportId,
-          position: nextPosition,
-          ...payload,
-        });
-        if (error) throw error;
+        const { data: inserted, error } = await supabase
+  .from("samples")
+  .insert({
+    report_id: reportId,
+    position: nextPosition,
+    ...payload,
+  })
+  .select("id")
+  .single();
+
+if (error) throw error;
+
+// pereinam į /create-sample/:reportId/:sampleId, kad Photo tab turėtų sampleId
+navigate(`/create-sample/${reportId}/${inserted.id}`, { replace: true });
       }
 
       toast.success("Saved successfully!");
@@ -579,6 +674,11 @@ payload.major_defects = majorNames.length ? majorNames.join(", ") : null;
           <TabButton label="Measurements" active={activeTab === TAB.MEASURE} onClick={() => setActiveTab(TAB.MEASURE)} />
           <TabButton label="Defects" active={activeTab === TAB.DEFECTS} onClick={() => setActiveTab(TAB.DEFECTS)} />
           <TabButton label="Scoring" active={activeTab === TAB.SCORING} onClick={() => setActiveTab(TAB.SCORING)} />
+            <TabButton
+  label="Photos"
+  active={activeTab === TAB.PHOTOS}
+  onClick={() => setActiveTab(TAB.PHOTOS)}
+/>
         </div>
       </div>
 
@@ -1127,6 +1227,113 @@ payload.major_defects = majorNames.length ? majorNames.join(", ") : null;
           </div>
         </div>
       )}
+      {/* PHOTOS */}
+{activeTab === TAB.PHOTOS && (
+  <Card
+    title="Photos"
+    right={
+      !sampleId ? (
+        <span className="text-xs text-slate-500">Save sample first to enable uploads</span>
+      ) : null
+    }
+  >
+    {!sampleId ? (
+      <div className="text-sm text-slate-600">
+        Pirmiausia paspausk <b>Save</b>, kad sistema sukurtų sample ID. Tada galėsi įkelti nuotraukas.
+      </div>
+    ) : (
+      <>
+        <input
+          type="file"
+          multiple
+          onChange={handleFileChange}
+          className="mb-4"
+        />
+
+        {files.length > 0 && (
+          <ul className="mb-4 text-slate-700 space-y-2">
+            {files.map((file, index) => (
+              <li
+                key={index}
+                className="flex items-center justify-between bg-slate-50 border border-slate-200 p-2 rounded-xl"
+              >
+                <span className="text-sm">{file.name}</span>
+                <button
+                  type="button"
+                  onClick={() => removeSelectedFile(index)}
+                  className="h-8 rounded-lg bg-red-500 text-white text-xs px-3 hover:bg-red-600"
+                >
+                  Remove
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+
+        {uploadProgress > 0 && (
+          <div className="w-full bg-slate-200 rounded h-2 mb-4">
+            <div
+              className="bg-green-500 h-2 rounded"
+              style={{ width: `${uploadProgress}%` }}
+            />
+          </div>
+        )}
+
+        <div className="flex gap-3 mb-6">
+          <button
+            type="button"
+            onClick={handleUpload}
+            className="h-10 rounded-xl bg-brand-600 px-4 text-sm font-semibold text-white hover:bg-brand-500"
+          >
+            Upload Photos
+          </button>
+
+          <button
+            type="button"
+            onClick={fetchPhotos}
+            className="h-10 rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+          >
+            Refresh
+          </button>
+        </div>
+
+        <h3 className="text-sm font-semibold mb-2">Uploaded Photos</h3>
+        {photos.length === 0 && <p className="text-slate-500 text-sm">Nuotraukų kol kas nėra.</p>}
+
+        <div className="flex flex-wrap gap-4 mt-4">
+          {photos.map((photo) => (
+            <div key={photo.id} className="relative">
+              <img
+                src={photo.url}
+                alt="photo"
+                className="w-40 h-40 object-cover rounded-xl border border-slate-200 cursor-pointer"
+                onClick={() => setPreviewUrl(photo.url)}
+              />
+              <button
+                type="button"
+                onClick={() => handleDeletePhoto(photo.id, photo.url)}
+                className="absolute top-2 right-2 bg-black/60 text-white text-xs rounded-full w-7 h-7 flex items-center justify-center"
+                title="Ištrinti"
+              >
+                ❌
+              </button>
+            </div>
+          ))}
+        </div>
+
+        {previewUrl && (
+          <div
+            className="fixed inset-0 bg-black/80 flex justify-center items-center z-50"
+            onClick={() => setPreviewUrl(null)}
+          >
+            <img src={previewUrl} alt="preview" className="max-w-[90%] max-h-[90%] rounded-xl" />
+          </div>
+        )}
+      </>
+    )}
+  </Card>
+)}
+
     </div>
   );
 }

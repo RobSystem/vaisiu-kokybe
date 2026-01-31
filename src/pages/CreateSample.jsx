@@ -147,6 +147,18 @@ const STORAGE_OPTIONS = [
   "1 - No storage potential",
 ];
 
+const DEFAULT_COLORS = [
+  "Orange",
+  "Light Green",
+  "Green",
+  "Yellow",
+  "Red",
+  "Brown",
+  "Black",
+  "White",
+];
+
+const PERCENT_OPTIONS = Array.from({ length: 101 }, (_, i) => String(i));
 /* =========================
    Component
    ========================= */
@@ -818,59 +830,132 @@ payload.major_defects = majorNames.length ? majorNames.join(", ") : null;
           )}
 
           {measureTab === MEASURE_TAB.COLORATION && (
-            <Card
-              title="Coloration"
-              right={
-                <div className="flex gap-2">
-                  <button type="button" onClick={() => addColor("external")} className="h-9 rounded-xl bg-brand-600 px-3 text-xs font-semibold text-white hover:bg-brand-500">
-                    + External
-                  </button>
-                  <button type="button" onClick={() => addColor("internal")} className="h-9 rounded-xl bg-brand-600 px-3 text-xs font-semibold text-white hover:bg-brand-500">
-                    + Internal
-                  </button>
-                </div>
-              }
-            >
-              <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-                <div className="rounded-xl border border-slate-200 p-4">
-                  <div className="text-sm font-semibold text-slate-900 mb-3">External coloration</div>
-                  {externalColoration.length === 0 ? (
-                    <div className="text-sm text-slate-500">No entries.</div>
-                  ) : (
-                    <div className="space-y-2">
-                      {externalColoration.map((row, idx) => (
-                        <div key={idx} className="flex items-center gap-2">
-                          <Input placeholder="Color" value={row.color ?? ""} onChange={(e) => updateColor("external", idx, "color", e.target.value)} />
-                          <Input placeholder="%" className="w-28" value={row.percent ?? ""} onChange={(e) => updateColor("external", idx, "percent", e.target.value)} />
-                          <button type="button" onClick={() => removeColor("external", idx)} className="h-10 rounded-xl border border-red-200 bg-red-50 px-3 text-xs font-semibold text-red-700 hover:bg-red-100">
-                            Remove
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
+            <Card title="Coloration">
+  <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+    {/* External */}
+    <div className="rounded-xl border border-slate-200 p-4">
+      <div className="mb-3 flex items-center justify-between">
+        <div className="text-sm font-semibold text-slate-900">External coloration</div>
 
-                <div className="rounded-xl border border-slate-200 p-4">
-                  <div className="text-sm font-semibold text-slate-900 mb-3">Internal coloration</div>
-                  {internalColoration.length === 0 ? (
-                    <div className="text-sm text-slate-500">No entries.</div>
-                  ) : (
-                    <div className="space-y-2">
-                      {internalColoration.map((row, idx) => (
-                        <div key={idx} className="flex items-center gap-2">
-                          <Input placeholder="Color" value={row.color ?? ""} onChange={(e) => updateColor("internal", idx, "color", e.target.value)} />
-                          <Input placeholder="%" className="w-28" value={row.percent ?? ""} onChange={(e) => updateColor("internal", idx, "percent", e.target.value)} />
-                          <button type="button" onClick={() => removeColor("internal", idx)} className="h-10 rounded-xl border border-red-200 bg-red-50 px-3 text-xs font-semibold text-red-700 hover:bg-red-100">
-                            Remove
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
+        <button
+          type="button"
+          onClick={() => addColor("external")}
+          className="h-9 rounded-xl bg-brand-600 px-3 text-xs font-semibold text-white hover:bg-brand-500"
+        >
+          + Add External
+        </button>
+      </div>
+
+      {externalColoration.length === 0 ? (
+        <div className="text-sm text-slate-500">No entries.</div>
+      ) : (
+        <div className="space-y-2">
+          {externalColoration.map((row, idx) => (
+            <div key={idx} className="grid grid-cols-1 gap-2 md:grid-cols-12 md:items-center">
+              <div className="md:col-span-7">
+                <select
+                  value={row.color ?? ""}
+                  onChange={(e) => updateColor("external", idx, "color", e.target.value)}
+                  className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-brand-400/70"
+                >
+                  <option value="">Choose color...</option>
+                  {(allowedColorsExternal?.length ? allowedColorsExternal : DEFAULT_COLORS).map((c) => (
+                    <option key={c} value={c}>{c}</option>
+                  ))}
+                </select>
               </div>
-            </Card>
+
+              <div className="md:col-span-3">
+                <select
+                  value={row.percent ?? ""}
+                  onChange={(e) => updateColor("external", idx, "percent", e.target.value)}
+                  className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-brand-400/70"
+                >
+                  <option value="">%</option>
+                  {PERCENT_OPTIONS.map((p) => (
+                    <option key={p} value={p}>{p}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="md:col-span-2 md:flex md:justify-end">
+                <button
+                  type="button"
+                  onClick={() => removeColor("external", idx)}
+                  className="h-10 w-full rounded-xl border border-red-200 bg-red-50 px-3 text-xs font-semibold text-red-700 hover:bg-red-100 md:w-auto"
+                >
+                  Remove
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+
+    {/* Internal */}
+    <div className="rounded-xl border border-slate-200 p-4">
+      <div className="mb-3 flex items-center justify-between">
+        <div className="text-sm font-semibold text-slate-900">Internal coloration</div>
+
+        <button
+          type="button"
+          onClick={() => addColor("internal")}
+          className="h-9 rounded-xl bg-brand-600 px-3 text-xs font-semibold text-white hover:bg-brand-500"
+        >
+          + Add Internal
+        </button>
+      </div>
+
+      {internalColoration.length === 0 ? (
+        <div className="text-sm text-slate-500">No entries.</div>
+      ) : (
+        <div className="space-y-2">
+          {internalColoration.map((row, idx) => (
+            <div key={idx} className="grid grid-cols-1 gap-2 md:grid-cols-12 md:items-center">
+              <div className="md:col-span-7">
+                <select
+                  value={row.color ?? ""}
+                  onChange={(e) => updateColor("internal", idx, "color", e.target.value)}
+                  className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-brand-400/70"
+                >
+                  <option value="">Choose color...</option>
+                  {(allowedColorsInternal?.length ? allowedColorsInternal : DEFAULT_COLORS).map((c) => (
+                    <option key={c} value={c}>{c}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="md:col-span-3">
+                <select
+                  value={row.percent ?? ""}
+                  onChange={(e) => updateColor("internal", idx, "percent", e.target.value)}
+                  className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-brand-400/70"
+                >
+                  <option value="">%</option>
+                  {PERCENT_OPTIONS.map((p) => (
+                    <option key={p} value={p}>{p}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="md:col-span-2 md:flex md:justify-end">
+                <button
+                  type="button"
+                  onClick={() => removeColor("internal", idx)}
+                  className="h-10 w-full rounded-xl border border-red-200 bg-red-50 px-3 text-xs font-semibold text-red-700 hover:bg-red-100 md:w-auto"
+                >
+                  Remove
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  </div>
+</Card>
+
           )}
 
           {measureTab === MEASURE_TAB.CONSISTENCY && (

@@ -125,7 +125,25 @@ const MEASURE_TAB = {
   COLORATION: "coloration",
   CONSISTENCY: "consistency",
 };
+const QUALITY_OPTIONS = [
+  "7 - Good",
+  "6 - Fair",
+  "5 - Reasonable",
+  "4 - Moderate",
+  "3 - Less than moderate",
+  "2 - Poor",
+  "1 - Total Loss",
+];
 
+const STORAGE_OPTIONS = [
+  "7 - Good",
+  "6 - Normal",
+  "5 - Reduced",
+  "4 - Moderate",
+  "3 - Limited",
+  "2 - Poor",
+  "1 - No storage potential",
+];
 /* =========================
    Component
    ========================= */
@@ -846,32 +864,38 @@ export default function CreateSample() {
       )}
 
       {activeTab === TAB.SCORING && (
-        <Card title="Scoring">
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <Field label="Quality Score">
-              <Select name="quality_score" value={form.quality_score ?? ""} onChange={handleChange}>
-                <option value="">Choose...</option>
-                {["A", "B", "C", "D"].map((v) => (
-                  <option key={v} value={v}>
-                    {v}
-                  </option>
-                ))}
-              </Select>
-            </Field>
+  <div className="mx-4 md:mx-6 mt-6 rounded-2xl border shadow-sm p-4">
+    <h3 className="text-sm font-semibold text-gray-800 mb-4">Scoring</h3>
 
-            <Field label="Storage Score">
-              <Select name="storage_score" value={form.storage_score ?? ""} onChange={handleChange}>
-                <option value="">Choose...</option>
-                {["A", "B", "C", "D"].map((v) => (
-                  <option key={v} value={v}>
-                    {v}
-                  </option>
-                ))}
-              </Select>
-            </Field>
-          </div>
-        </Card>
-      )}
+    <div className="grid md:grid-cols-2 gap-4">
+      {[
+        { field: "quality_score", options: QUALITY_OPTIONS },
+        { field: "storage_score", options: STORAGE_OPTIONS },
+      ].map(({ field, options }) => (
+        <div key={field}>
+          <label className="block text-gray-700 mb-1 capitalize">
+            {field.replace(/_/g, " ")}
+          </label>
+
+          <select
+            name={field}
+            value={form[field] ?? ""}
+            onChange={handleChange}
+            className="p-2 border rounded w-full"
+          >
+            <option value="">Choose...</option>
+            {options.map((opt) => (
+              <option key={opt} value={opt}>
+                {opt}
+              </option>
+            ))}
+          </select>
+        </div>
+      ))}
+    </div>
+  </div>
+)}
+
     </div>
   );
 }

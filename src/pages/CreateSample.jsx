@@ -843,7 +843,7 @@ payload.major_defects = majorNames.length ? majorNames.join(", ") : null;
   step={majorMode === "pct" ? "0.1" : "1"}
   placeholder={majorMode === "pct" ? "%" : "Qty"}
   value={row.value ?? ""}
-  onChange={(e) => updateRow(setMinorRows, idx, "value", e.target.value)}
+  onChange={(e) => updateRow(setMajorRows, idx, "value", e.target.value)}
   className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-brand-400/70"
 />
                     </div>

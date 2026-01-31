@@ -94,21 +94,19 @@ function Select({ className, ...props }) {
   );
 }
 
-function SmallButton({ variant = "neutral", className, ...props }) {
-  const base = "rounded-xl px-3 py-2 text-xs font-semibold transition border";
-  const styles =
-    variant === "brand"
-      ? "bg-brand-50 text-brand-800 border-brand-200 hover:bg-brand-100"
-      : variant === "danger"
-      ? "bg-red-50 text-red-700 border-red-200 hover:bg-red-100"
-      : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50";
-  return <button {...props} className={cx(base, styles, className)} />;
-}
-
-function toDbNull(v) {
+/* =========================
+   Helpers
+   ========================= */
+const toDbNull = (v) => {
   if (v === "" || v === "Pasirinkti") return null;
   return v;
-}
+};
+
+const safeNumberOrNull = (v) => {
+  if (v === "" || v === null || v === undefined) return null;
+  const n = Number(v);
+  return Number.isFinite(n) ? n : null;
+};
 
 /* =========================
    Tabs
@@ -125,6 +123,10 @@ const MEASURE_TAB = {
   COLORATION: "coloration",
   CONSISTENCY: "consistency",
 };
+
+/* =========================
+   Scoring options (OLD)
+   ========================= */
 const QUALITY_OPTIONS = [
   "7 - Good",
   "6 - Fair",
@@ -144,6 +146,7 @@ const STORAGE_OPTIONS = [
   "2 - Poor",
   "1 - No storage potential",
 ];
+
 /* =========================
    Component
    ========================= */
@@ -153,30 +156,24 @@ export default function CreateSample() {
 
   const [activeTab, setActiveTab] = useState(TAB.PALLET);
   const [measureTab, setMeasureTab] = useState(MEASURE_TAB.MEASUREMENTS);
-
   const [saving, setSaving] = useState(false);
 
   // report type
   const [reportTypeId, setReportTypeId] = useState(null);
-  const [fieldRules, setFieldRules] = useState({}); // field_key -> {required}
+  const [fieldRules, setFieldRules] = useState({}); // field_key -> { required }
   const hasRules = useMemo(() => Object.keys(fieldRules).length > 0, [fieldRules]);
   const showField = (key) => (hasRules ? !!fieldRules[key] : true);
 
-  // defects
-  const [minorOptions, setMinorOptions] = useState([]);
+  // defects options (allowed by report type)
+  const [minorOptions, setMinorOptions] = useState([]); // [{id,name}]
   const [majorOptions, setMajorOptions] = useState([]);
-  const [minorRows, setMinorRows] = useState([]); // [{ id: "", qty: "" }]
-const [majorRows, setMajorRows] = useState([]); // [{ id: "", qty: "" }]
 
-  const defectNameById = useMemo(() => {
-    const map = new Map();
-    [...minorOptions, ...majorOptions].forEach((d) => map.set(d.id, d.name));
-    return map;
-  }, [minorOptions, majorOptions]);
+  // NEW defects rows (id + qty)
+  const [minorRows, setMinorRows] = useState([]); // [{ id:"", qty:"" }]
+  const [majorRows, setMajorRows] = useState([]);
 
-  // form
   const [form, setForm] = useState({
-    // pallet information
+    // pallet
     pallet_number: "",
     ggn_number: "",
     ggn_exp_date: "",
@@ -210,95 +207,44 @@ const [majorRows, setMajorRows] = useState([]); // [{ id: "", qty: "" }]
     rhizome_weight_min: "",
     rhizome_weight_max: "",
 
-    // scoring
+    // scoring (OLD)
     quality_score: "",
     storage_score: "",
   });
 
-  // coloration + consistency
-  const [externalColoration, setExternalColoration] = useState([]); // [{color, percent}]
+  // coloration + consistency (paliekam tavo funkcionalumą)
+  const [externalColoration, setExternalColoration] = useState([]);
   const [internalColoration, setInternalColoration] = useState([]);
   const [consistency, setConsistency] = useState({ hard: "", sensitive: "", soft: "" });
 
-  // extras arrays (paliekam, jei tavo DB turi šiuos jsonb stulpelius)
-  const [fruitWeightsExtra, setFruitWeightsExtra] = useState([]);
-  const [boxWeightExtra, setBoxWeightExtra] = useState([]);
+  const defectNameById = useMemo(() => {
+    const map = new Map();
+    [...minorOptions, ...majorOptions].forEach((d) => map.set(d.id, d.name));
+    return map;
+  }, [minorOptions, majorOptions]);
 
   /* =========================
-     Load sample (edit mode)
+     Load report type
      ========================= */
   useEffect(() => {
-    const loadSample = async () => {
-      if (!sampleId) return;
-
-      const { data, error } = await supabase.from("samples").select("*").eq("id", sampleId).single();
-      if (error) {
-        toast.error("Failed to load sample");
-        return;
-      }
-
-      // MERGE, not replace
-      setForm((prev) => ({ ...prev, ...(data || {}) }));
-
-      setExternalColoration(Array.isArray(data?.external_coloration) ? data.external_coloration : []);
-      setInternalColoration(Array.isArray(data?.internal_coloration) ? data.internal_coloration : []);
-      setConsistency(data?.consistency || { hard: "", sensitive: "", soft: "" });
-
-      setFruitWeightsExtra(Array.isArray(data?.fruit_weights_extra) ? data.fruit_weights_extra : []);
-      setBoxWeightExtra(Array.isArray(data?.box_weight_extra) ? data.box_weight_extra : []);
-
-      const safeRows = (v) =>
-  Array.isArray(v)
-    ? v
-        .map((x) => ({
-          id: typeof x === "string" ? x : (x?.id || ""),
-          qty: typeof x === "object" && x ? (x.qty ?? "") : "",
-        }))
-        .filter((x) => x.id || x.qty !== "")
-    : [];
-
-setMinorRows(safeRows(data?.minor_defects_selected));
-setMajorRows(safeRows(data?.major_defects_selected));
-    };
-
-    loadSample();
-  }, [sampleId]);
-const addMinorRow = () => setMinorRows((p) => [...p, { id: "", qty: "" }]);
-const addMajorRow = () => setMajorRows((p) => [...p, { id: "", qty: "" }]);
-
-const updateRow = (setter, index, key, value) => {
-  setter((prev) => {
-    const copy = [...prev];
-    copy[index] = { ...copy[index], [key]: value };
-    return copy;
-  });
-};
-
-const removeRow = (setter, index) => {
-  setter((prev) => prev.filter((_, i) => i !== index));
-};
-  /* =========================
-     Load report type id
-     ========================= */
-  useEffect(() => {
-    const loadReportTypeId = async () => {
-      if (!reportId) return;
+    const loadReportType = async () => {
       const { data, error } = await supabase
         .from("reports")
         .select("report_type_id")
         .eq("id", reportId)
         .single();
-      if (error) return;
-      setReportTypeId(data?.report_type_id || null);
+
+      if (!error) setReportTypeId(data?.report_type_id || null);
     };
-    loadReportTypeId();
+
+    if (reportId) loadReportType();
   }, [reportId]);
 
   /* =========================
      Load report_type_fields
      ========================= */
   useEffect(() => {
-    const loadRules = async () => {
+    const loadFields = async () => {
       if (!reportTypeId) {
         setFieldRules({});
         return;
@@ -317,13 +263,11 @@ const removeRow = (setter, index) => {
       }
 
       const map = {};
-      (data || []).forEach((r) => {
-        map[r.field_key] = { required: !!r.required };
-      });
+      (data || []).forEach((r) => (map[r.field_key] = { required: !!r.required }));
       setFieldRules(map);
     };
 
-    loadRules();
+    loadFields();
   }, [reportTypeId]);
 
   /* =========================
@@ -367,6 +311,42 @@ const removeRow = (setter, index) => {
   }, [reportTypeId]);
 
   /* =========================
+     Load existing sample (edit)
+     ========================= */
+  useEffect(() => {
+    const loadSample = async () => {
+      if (!sampleId) return;
+
+      const { data, error } = await supabase.from("samples").select("*").eq("id", sampleId).single();
+      if (error) {
+        toast.error("Failed to load sample");
+        return;
+      }
+
+      setForm((prev) => ({ ...prev, ...(data || {}) }));
+      setExternalColoration(Array.isArray(data?.external_coloration) ? data.external_coloration : []);
+      setInternalColoration(Array.isArray(data?.internal_coloration) ? data.internal_coloration : []);
+      setConsistency(data?.consistency || { hard: "", sensitive: "", soft: "" });
+
+      // supports both old format [id,id] and new [{id,qty}]
+      const safeRows = (v) =>
+        Array.isArray(v)
+          ? v
+              .map((x) => ({
+                id: typeof x === "string" ? x : (x?.id || ""),
+                qty: typeof x === "object" && x ? (x.qty ?? "") : "",
+              }))
+              .filter((x) => x.id || x.qty !== "")
+          : [];
+
+      setMinorRows(safeRows(data?.minor_defects_selected));
+      setMajorRows(safeRows(data?.major_defects_selected));
+    };
+
+    loadSample();
+  }, [sampleId]);
+
+  /* =========================
      Handlers
      ========================= */
   const handleChange = (e) => {
@@ -374,21 +354,20 @@ const removeRow = (setter, index) => {
     setForm((p) => ({ ...p, [name]: value }));
   };
 
-  const toggleSelected = (id, setter) => {
-    setter((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+  const addMinorRow = () => setMinorRows((p) => [...p, { id: "", qty: "" }]);
+  const addMajorRow = () => setMajorRows((p) => [...p, { id: "", qty: "" }]);
+
+  const updateRow = (setter, index, key, value) => {
+    setter((prev) => {
+      const copy = [...prev];
+      copy[index] = { ...copy[index], [key]: value };
+      return copy;
+    });
   };
 
-  const filteredMinor = useMemo(() => {
-    const q = minorSearch.trim().toLowerCase();
-    if (!q) return minorOptions;
-    return minorOptions.filter((d) => d.name.toLowerCase().includes(q));
-  }, [minorOptions, minorSearch]);
-
-  const filteredMajor = useMemo(() => {
-    const q = majorSearch.trim().toLowerCase();
-    if (!q) return majorOptions;
-    return majorOptions.filter((d) => d.name.toLowerCase().includes(q));
-  }, [majorOptions, majorSearch]);
+  const removeRow = (setter, index) => {
+    setter((prev) => prev.filter((_, i) => i !== index));
+  };
 
   const addColor = (kind) => {
     const setter = kind === "external" ? setExternalColoration : setInternalColoration;
@@ -409,43 +388,38 @@ const removeRow = (setter, index) => {
     setter((prev) => prev.filter((_, i) => i !== idx));
   };
 
+  /* =========================
+     Save
+     ========================= */
   const handleSave = async () => {
     setSaving(true);
     try {
       const payload = {};
+      Object.entries(form).forEach(([k, v]) => (payload[k] = toDbNull(v)));
 
-      // map form -> payload with nulls
-      Object.entries(form).forEach(([k, v]) => {
-        payload[k] = toDbNull(v);
-      });
-
-      // extras arrays (optional)
-      payload.fruit_weights_extra = Array.isArray(fruitWeightsExtra) && fruitWeightsExtra.length ? fruitWeightsExtra : null;
-      payload.box_weight_extra = Array.isArray(boxWeightExtra) && boxWeightExtra.length ? boxWeightExtra : null;
-
-      // coloration + consistency
       payload.external_coloration = externalColoration.length ? externalColoration : null;
       payload.internal_coloration = internalColoration.length ? internalColoration : null;
       payload.consistency = consistency;
 
-      // defects selected (jsonb arrays)
-      payload.minor_defects_selected = minorSelected.length ? minorSelected : null;
-      payload.major_defects_selected = majorSelected.length ? majorSelected : null;
-
-      // optional: keep legacy text fields if your system still reads them
       const normalizeRows = (rows) =>
-  rows
-    .filter((r) => r && r.id) // praleidžiam tuščias
-    .map((r) => ({
-      id: r.id,
-      qty: r.qty === "" ? null : Number(r.qty),
-    }));
+        rows
+          .filter((r) => r && r.id)
+          .map((r) => ({
+            id: r.id,
+            qty: safeNumberOrNull(r.qty),
+          }));
 
-const minorPayload = normalizeRows(minorRows);
-const majorPayload = normalizeRows(majorRows);
+      const minorPayload = normalizeRows(minorRows);
+      const majorPayload = normalizeRows(majorRows);
 
-payload.minor_defects_selected = minorPayload.length ? minorPayload : null;
-payload.major_defects_selected = majorPayload.length ? majorPayload : null;
+      payload.minor_defects_selected = minorPayload.length ? minorPayload : null;
+      payload.major_defects_selected = majorPayload.length ? majorPayload : null;
+
+      // legacy text (kad senos vietos nesulūžtų)
+      const minorNames = minorPayload.map((r) => defectNameById.get(r.id)).filter(Boolean);
+      const majorNames = majorPayload.map((r) => defectNameById.get(r.id)).filter(Boolean);
+      payload.minor_defects = minorNames.length ? minorNames.join(", ") : null;
+      payload.major_defects = majorNames.length ? majorNames.join(", ") : null;
 
       if (sampleId) {
         const { error } = await supabase.from("samples").update(payload).eq("id", sampleId);
@@ -458,7 +432,6 @@ payload.major_defects_selected = majorPayload.length ? majorPayload : null;
           .eq("report_id", reportId)
           .order("position", { ascending: false })
           .limit(1);
-
         if (lastErr) throw lastErr;
 
         const nextPosition = (last?.[0]?.position || 0) + 1;
@@ -468,7 +441,6 @@ payload.major_defects_selected = majorPayload.length ? majorPayload : null;
           position: nextPosition,
           ...payload,
         });
-
         if (error) throw error;
       }
 
@@ -492,9 +464,7 @@ payload.major_defects_selected = majorPayload.length ? majorPayload : null;
           <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
             CREATE SAMPLE
           </div>
-          <h2 className="text-xl font-bold text-slate-900">
-            {sampleId ? "Edit Sample" : "New Sample"}
-          </h2>
+          <h2 className="text-xl font-bold text-slate-900">{sampleId ? "Edit Sample" : "New Sample"}</h2>
         </div>
 
         <div className="flex items-center gap-2">
@@ -517,7 +487,7 @@ payload.major_defects_selected = majorPayload.length ? majorPayload : null;
         </div>
       </div>
 
-      {/* top tabs */}
+      {/* tabs */}
       <div className="mb-6 rounded-2xl border border-slate-200 bg-white shadow-sm">
         <div className="flex flex-wrap items-center gap-2 px-3 py-2">
           <TabButton label="Pallet information" active={activeTab === TAB.PALLET} onClick={() => setActiveTab(TAB.PALLET)} />
@@ -527,7 +497,7 @@ payload.major_defects_selected = majorPayload.length ? majorPayload : null;
         </div>
       </div>
 
-      {/* content */}
+      {/* PALLET */}
       {activeTab === TAB.PALLET && (
         <Card title="Pallet information">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -548,9 +518,9 @@ payload.major_defects_selected = majorPayload.length ? majorPayload : null;
         </Card>
       )}
 
+      {/* MEASUREMENTS */}
       {activeTab === TAB.MEASURE && (
         <div className="space-y-4">
-          {/* sub tabs */}
           <div className="rounded-2xl border border-slate-200 bg-white shadow-sm px-3 py-2 flex flex-wrap gap-2">
             <SubTabButton label="Measurements" active={measureTab === MEASURE_TAB.MEASUREMENTS} onClick={() => setMeasureTab(MEASURE_TAB.MEASUREMENTS)} />
             <SubTabButton label="Coloration" active={measureTab === MEASURE_TAB.COLORATION} onClick={() => setMeasureTab(MEASURE_TAB.COLORATION)} />
@@ -581,34 +551,6 @@ payload.major_defects_selected = majorPayload.length ? majorPayload : null;
                     <Field label="Box Weight Max">
                       <Input name="box_weight_max" value={form.box_weight_max ?? ""} onChange={handleChange} />
                     </Field>
-
-                    <div className="md:col-span-2">
-                      <SmallButton
-                        variant="brand"
-                        type="button"
-                        onClick={() => setBoxWeightExtra(Array(10).fill(""))}
-                      >
-                        Add box weight extra
-                      </SmallButton>
-
-                      {boxWeightExtra.length > 0 && (
-                        <div className="mt-2 flex flex-wrap gap-2">
-                          {boxWeightExtra.map((val, i) => (
-                            <Input
-                              key={i}
-                              value={val ?? ""}
-                              onChange={(e) => {
-                                const updated = [...boxWeightExtra];
-                                updated[i] = e.target.value;
-                                setBoxWeightExtra(updated);
-                              }}
-                              className="w-28"
-                              placeholder={`#${i + 1}`}
-                            />
-                          ))}
-                        </div>
-                      )}
-                    </div>
                   </>
                 )}
 
@@ -620,34 +562,6 @@ payload.major_defects_selected = majorPayload.length ? majorPayload : null;
                     <Field label="Fruit Weight Max">
                       <Input name="fruit_weight_max" value={form.fruit_weight_max ?? ""} onChange={handleChange} />
                     </Field>
-
-                    <div className="md:col-span-2">
-                      <SmallButton
-                        variant="brand"
-                        type="button"
-                        onClick={() => setFruitWeightsExtra(Array(10).fill(""))}
-                      >
-                        Add fruit weight extra
-                      </SmallButton>
-
-                      {fruitWeightsExtra.length > 0 && (
-                        <div className="mt-2 flex flex-wrap gap-2">
-                          {fruitWeightsExtra.map((val, i) => (
-                            <Input
-                              key={i}
-                              value={val ?? ""}
-                              onChange={(e) => {
-                                const updated = [...fruitWeightsExtra];
-                                updated[i] = e.target.value;
-                                setFruitWeightsExtra(updated);
-                              }}
-                              className="w-28"
-                              placeholder={`#${i + 1}`}
-                            />
-                          ))}
-                        </div>
-                      )}
-                    </div>
                   </>
                 )}
 
@@ -736,12 +650,12 @@ payload.major_defects_selected = majorPayload.length ? majorPayload : null;
               title="Coloration"
               right={
                 <div className="flex gap-2">
-                  <SmallButton variant="brand" type="button" onClick={() => addColor("external")}>
-                    Add external
-                  </SmallButton>
-                  <SmallButton variant="brand" type="button" onClick={() => addColor("internal")}>
-                    Add internal
-                  </SmallButton>
+                  <button type="button" onClick={() => addColor("external")} className="h-9 rounded-xl bg-brand-600 px-3 text-xs font-semibold text-white hover:bg-brand-500">
+                    + External
+                  </button>
+                  <button type="button" onClick={() => addColor("internal")} className="h-9 rounded-xl bg-brand-600 px-3 text-xs font-semibold text-white hover:bg-brand-500">
+                    + Internal
+                  </button>
                 </div>
               }
             >
@@ -754,20 +668,11 @@ payload.major_defects_selected = majorPayload.length ? majorPayload : null;
                     <div className="space-y-2">
                       {externalColoration.map((row, idx) => (
                         <div key={idx} className="flex items-center gap-2">
-                          <Input
-                            placeholder="Color"
-                            value={row.color ?? ""}
-                            onChange={(e) => updateColor("external", idx, "color", e.target.value)}
-                          />
-                          <Input
-                            placeholder="%"
-                            className="w-28"
-                            value={row.percent ?? ""}
-                            onChange={(e) => updateColor("external", idx, "percent", e.target.value)}
-                          />
-                          <SmallButton variant="danger" type="button" onClick={() => removeColor("external", idx)}>
-                            Delete
-                          </SmallButton>
+                          <Input placeholder="Color" value={row.color ?? ""} onChange={(e) => updateColor("external", idx, "color", e.target.value)} />
+                          <Input placeholder="%" className="w-28" value={row.percent ?? ""} onChange={(e) => updateColor("external", idx, "percent", e.target.value)} />
+                          <button type="button" onClick={() => removeColor("external", idx)} className="h-10 rounded-xl border border-red-200 bg-red-50 px-3 text-xs font-semibold text-red-700 hover:bg-red-100">
+                            Remove
+                          </button>
                         </div>
                       ))}
                     </div>
@@ -782,20 +687,11 @@ payload.major_defects_selected = majorPayload.length ? majorPayload : null;
                     <div className="space-y-2">
                       {internalColoration.map((row, idx) => (
                         <div key={idx} className="flex items-center gap-2">
-                          <Input
-                            placeholder="Color"
-                            value={row.color ?? ""}
-                            onChange={(e) => updateColor("internal", idx, "color", e.target.value)}
-                          />
-                          <Input
-                            placeholder="%"
-                            className="w-28"
-                            value={row.percent ?? ""}
-                            onChange={(e) => updateColor("internal", idx, "percent", e.target.value)}
-                          />
-                          <SmallButton variant="danger" type="button" onClick={() => removeColor("internal", idx)}>
-                            Delete
-                          </SmallButton>
+                          <Input placeholder="Color" value={row.color ?? ""} onChange={(e) => updateColor("internal", idx, "color", e.target.value)} />
+                          <Input placeholder="%" className="w-28" value={row.percent ?? ""} onChange={(e) => updateColor("internal", idx, "percent", e.target.value)} />
+                          <button type="button" onClick={() => removeColor("internal", idx)} className="h-10 rounded-xl border border-red-200 bg-red-50 px-3 text-xs font-semibold text-red-700 hover:bg-red-100">
+                            Remove
+                          </button>
                         </div>
                       ))}
                     </div>
@@ -810,18 +706,11 @@ payload.major_defects_selected = majorPayload.length ? majorPayload : null;
               <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                 {["hard", "sensitive", "soft"].map((type) => (
                   <Field key={type} label={type.toUpperCase()}>
-                    <Select
-                      value={consistency[type] ?? ""}
-                      onChange={(e) => setConsistency((p) => ({ ...p, [type]: e.target.value }))}
-                    >
+                    <Select value={consistency[type] ?? ""} onChange={(e) => setConsistency((p) => ({ ...p, [type]: e.target.value }))}>
                       <option value="">Choose...</option>
-                      {["0%", "5%", "10%", "15%", "20%", "25%", "30%", "40%", "50%", "60%", "70%", "80%", "90%", "100%"].map(
-                        (p) => (
-                          <option key={p} value={p}>
-                            {p}
-                          </option>
-                        )
-                      )}
+                      {["0%", "5%", "10%", "15%", "20%", "25%", "30%", "40%", "50%", "60%", "70%", "80%", "90%", "100%"].map((p) => (
+                        <option key={p} value={p}>{p}</option>
+                      ))}
                     </Select>
                   </Field>
                 ))}
@@ -831,164 +720,148 @@ payload.major_defects_selected = majorPayload.length ? majorPayload : null;
         </div>
       )}
 
+      {/* DEFECTS (NEW rows + qty) */}
       {activeTab === TAB.DEFECTS && (
-  <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-    {/* MINOR */}
-    <Card
-      title={`Minor defects (${minorRows.length})`}
-      right={
-        <button
-          type="button"
-          onClick={addMinorRow}
-          className="h-9 rounded-xl bg-brand-600 px-3 text-xs font-semibold text-white hover:bg-brand-500"
-        >
-          + Add minor defect
-        </button>
-      }
-    >
-      {minorRows.length === 0 ? (
-        <div className="text-sm text-slate-500">No minor defects added.</div>
-      ) : (
-        <div className="space-y-2">
-          {minorRows.map((row, idx) => (
-            <div key={idx} className="grid grid-cols-1 gap-2 md:grid-cols-12 md:items-center">
-              <div className="md:col-span-7">
-                <select
-                  value={row.id}
-                  onChange={(e) => updateRow(setMinorRows, idx, "id", e.target.value)}
-                  className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-brand-400/70"
-                >
-                  <option value="">Choose defect...</option>
-                  {minorOptions.map((d) => (
-                    <option key={d.id} value={d.id}>
-                      {d.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="md:col-span-3">
-                <input
-                  type="number"
-                  min="0"
-                  placeholder="Qty"
-                  value={row.qty}
-                  onChange={(e) => updateRow(setMinorRows, idx, "qty", e.target.value)}
-                  className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-brand-400/70"
-                />
-              </div>
-
-              <div className="md:col-span-2 md:flex md:justify-end">
-                <button
-                  type="button"
-                  onClick={() => removeRow(setMinorRows, idx)}
-                  className="h-10 w-full rounded-xl border border-red-200 bg-red-50 px-3 text-xs font-semibold text-red-700 hover:bg-red-100 md:w-auto"
-                >
-                  Remove
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-    </Card>
-
-    {/* MAJOR */}
-    <Card
-      title={`Major defects (${majorRows.length})`}
-      right={
-        <button
-          type="button"
-          onClick={addMajorRow}
-          className="h-9 rounded-xl bg-brand-600 px-3 text-xs font-semibold text-white hover:bg-brand-500"
-        >
-          + Add major defect
-        </button>
-      }
-    >
-      {majorRows.length === 0 ? (
-        <div className="text-sm text-slate-500">No major defects added.</div>
-      ) : (
-        <div className="space-y-2">
-          {majorRows.map((row, idx) => (
-            <div key={idx} className="grid grid-cols-1 gap-2 md:grid-cols-12 md:items-center">
-              <div className="md:col-span-7">
-                <select
-                  value={row.id}
-                  onChange={(e) => updateRow(setMajorRows, idx, "id", e.target.value)}
-                  className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-brand-400/70"
-                >
-                  <option value="">Choose defect...</option>
-                  {majorOptions.map((d) => (
-                    <option key={d.id} value={d.id}>
-                      {d.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="md:col-span-3">
-                <input
-                  type="number"
-                  min="0"
-                  placeholder="Qty"
-                  value={row.qty}
-                  onChange={(e) => updateRow(setMajorRows, idx, "qty", e.target.value)}
-                  className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-brand-400/70"
-                />
-              </div>
-
-              <div className="md:col-span-2 md:flex md:justify-end">
-                <button
-                  type="button"
-                  onClick={() => removeRow(setMajorRows, idx)}
-                  className="h-10 w-full rounded-xl border border-red-200 bg-red-50 px-3 text-xs font-semibold text-red-700 hover:bg-red-100 md:w-auto"
-                >
-                  Remove
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-    </Card>
-  </div>
-)}
-
-
-      {activeTab === TAB.SCORING && (
-  <div className="mx-4 md:mx-6 mt-6 rounded-2xl border shadow-sm p-4">
-    <h3 className="text-sm font-semibold text-gray-800 mb-4">Scoring</h3>
-
-    <div className="grid md:grid-cols-2 gap-4">
-      {[
-        { field: "quality_score", options: QUALITY_OPTIONS },
-        { field: "storage_score", options: STORAGE_OPTIONS },
-      ].map(({ field, options }) => (
-        <div key={field}>
-          <label className="block text-gray-700 mb-1 capitalize">
-            {field.replace(/_/g, " ")}
-          </label>
-
-          <select
-            name={field}
-            value={form[field] ?? ""}
-            onChange={handleChange}
-            className="p-2 border rounded w-full"
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+          <Card
+            title={`Minor defects (${minorRows.length})`}
+            right={
+              <button type="button" onClick={addMinorRow} className="h-9 rounded-xl bg-brand-600 px-3 text-xs font-semibold text-white hover:bg-brand-500">
+                + Add minor defect
+              </button>
+            }
           >
-            <option value="">Choose...</option>
-            {options.map((opt) => (
-              <option key={opt} value={opt}>
-                {opt}
-              </option>
-            ))}
-          </select>
-        </div>
-      ))}
-    </div>
-  </div>
-)}
+            {minorRows.length === 0 ? (
+              <div className="text-sm text-slate-500">No minor defects added.</div>
+            ) : (
+              <div className="space-y-2">
+                {minorRows.map((row, idx) => (
+                  <div key={idx} className="grid grid-cols-1 gap-2 md:grid-cols-12 md:items-center">
+                    <div className="md:col-span-7">
+                      <select
+                        value={row.id}
+                        onChange={(e) => updateRow(setMinorRows, idx, "id", e.target.value)}
+                        className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-brand-400/70"
+                      >
+                        <option value="">Choose defect...</option>
+                        {minorOptions.map((d) => (
+                          <option key={d.id} value={d.id}>{d.name}</option>
+                        ))}
+                      </select>
+                    </div>
 
+                    <div className="md:col-span-3">
+                      <input
+                        type="number"
+                        min="0"
+                        placeholder="Qty"
+                        value={row.qty ?? ""}
+                        onChange={(e) => updateRow(setMinorRows, idx, "qty", e.target.value)}
+                        className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-brand-400/70"
+                      />
+                    </div>
+
+                    <div className="md:col-span-2 md:flex md:justify-end">
+                      <button
+                        type="button"
+                        onClick={() => removeRow(setMinorRows, idx)}
+                        className="h-10 w-full rounded-xl border border-red-200 bg-red-50 px-3 text-xs font-semibold text-red-700 hover:bg-red-100 md:w-auto"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </Card>
+
+          <Card
+            title={`Major defects (${majorRows.length})`}
+            right={
+              <button type="button" onClick={addMajorRow} className="h-9 rounded-xl bg-brand-600 px-3 text-xs font-semibold text-white hover:bg-brand-500">
+                + Add major defect
+              </button>
+            }
+          >
+            {majorRows.length === 0 ? (
+              <div className="text-sm text-slate-500">No major defects added.</div>
+            ) : (
+              <div className="space-y-2">
+                {majorRows.map((row, idx) => (
+                  <div key={idx} className="grid grid-cols-1 gap-2 md:grid-cols-12 md:items-center">
+                    <div className="md:col-span-7">
+                      <select
+                        value={row.id}
+                        onChange={(e) => updateRow(setMajorRows, idx, "id", e.target.value)}
+                        className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-brand-400/70"
+                      >
+                        <option value="">Choose defect...</option>
+                        {majorOptions.map((d) => (
+                          <option key={d.id} value={d.id}>{d.name}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="md:col-span-3">
+                      <input
+                        type="number"
+                        min="0"
+                        placeholder="Qty"
+                        value={row.qty ?? ""}
+                        onChange={(e) => updateRow(setMajorRows, idx, "qty", e.target.value)}
+                        className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-brand-400/70"
+                      />
+                    </div>
+
+                    <div className="md:col-span-2 md:flex md:justify-end">
+                      <button
+                        type="button"
+                        onClick={() => removeRow(setMajorRows, idx)}
+                        className="h-10 w-full rounded-xl border border-red-200 bg-red-50 px-3 text-xs font-semibold text-red-700 hover:bg-red-100 md:w-auto"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </Card>
+        </div>
+      )}
+
+      {/* SCORING (OLD look + OLD options) */}
+      {activeTab === TAB.SCORING && (
+        <div className="mx-4 md:mx-6 mt-6 rounded-2xl border shadow-sm p-4">
+          <h3 className="text-sm font-semibold text-gray-800 mb-4">Scoring</h3>
+
+          <div className="grid md:grid-cols-2 gap-4">
+            {[
+              { field: "quality_score", options: QUALITY_OPTIONS },
+              { field: "storage_score", options: STORAGE_OPTIONS },
+            ].map(({ field, options }) => (
+              <div key={field}>
+                <label className="block text-gray-700 mb-1 capitalize">
+                  {field.replace(/_/g, " ")}
+                </label>
+
+                <select
+                  name={field}
+                  value={form[field] ?? ""}
+                  onChange={handleChange}
+                  className="p-2 border rounded w-full"
+                >
+                  <option value="">Choose...</option>
+                  {options.map((opt) => (
+                    <option key={opt} value={opt}>{opt}</option>
+                  ))}
+                </select>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

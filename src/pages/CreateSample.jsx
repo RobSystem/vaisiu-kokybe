@@ -165,10 +165,8 @@ export default function CreateSample() {
   // defects
   const [minorOptions, setMinorOptions] = useState([]);
   const [majorOptions, setMajorOptions] = useState([]);
-  const [minorSelected, setMinorSelected] = useState([]);
-  const [majorSelected, setMajorSelected] = useState([]);
-  const [minorSearch, setMinorSearch] = useState("");
-  const [majorSearch, setMajorSearch] = useState("");
+  const [minorRows, setMinorRows] = useState([]); // [{ id: "", qty: "" }]
+const [majorRows, setMajorRows] = useState([]); // [{ id: "", qty: "" }]
 
   const defectNameById = useMemo(() => {
     const map = new Map();
@@ -249,13 +247,36 @@ export default function CreateSample() {
       setFruitWeightsExtra(Array.isArray(data?.fruit_weights_extra) ? data.fruit_weights_extra : []);
       setBoxWeightExtra(Array.isArray(data?.box_weight_extra) ? data.box_weight_extra : []);
 
-      setMinorSelected(Array.isArray(data?.minor_defects_selected) ? data.minor_defects_selected : []);
-      setMajorSelected(Array.isArray(data?.major_defects_selected) ? data.major_defects_selected : []);
+      const safeRows = (v) =>
+  Array.isArray(v)
+    ? v
+        .map((x) => ({
+          id: typeof x === "string" ? x : (x?.id || ""),
+          qty: typeof x === "object" && x ? (x.qty ?? "") : "",
+        }))
+        .filter((x) => x.id || x.qty !== "")
+    : [];
+
+setMinorRows(safeRows(data?.minor_defects_selected));
+setMajorRows(safeRows(data?.major_defects_selected));
     };
 
     loadSample();
   }, [sampleId]);
+const addMinorRow = () => setMinorRows((p) => [...p, { id: "", qty: "" }]);
+const addMajorRow = () => setMajorRows((p) => [...p, { id: "", qty: "" }]);
 
+const updateRow = (setter, index, key, value) => {
+  setter((prev) => {
+    const copy = [...prev];
+    copy[index] = { ...copy[index], [key]: value };
+    return copy;
+  });
+};
+
+const removeRow = (setter, index) => {
+  setter((prev) => prev.filter((_, i) => i !== index));
+};
   /* =========================
      Load report type id
      ========================= */
@@ -412,10 +433,19 @@ export default function CreateSample() {
       payload.major_defects_selected = majorSelected.length ? majorSelected : null;
 
       // optional: keep legacy text fields if your system still reads them
-      const minorNames = minorSelected.map((id) => defectNameById.get(id)).filter(Boolean);
-      const majorNames = majorSelected.map((id) => defectNameById.get(id)).filter(Boolean);
-      payload.minor_defects = minorNames.length ? minorNames.join(", ") : null;
-      payload.major_defects = majorNames.length ? majorNames.join(", ") : null;
+      const normalizeRows = (rows) =>
+  rows
+    .filter((r) => r && r.id) // praleidžiam tuščias
+    .map((r) => ({
+      id: r.id,
+      qty: r.qty === "" ? null : Number(r.qty),
+    }));
+
+const minorPayload = normalizeRows(minorRows);
+const majorPayload = normalizeRows(majorRows);
+
+payload.minor_defects_selected = minorPayload.length ? minorPayload : null;
+payload.major_defects_selected = majorPayload.length ? majorPayload : null;
 
       if (sampleId) {
         const { error } = await supabase.from("samples").update(payload).eq("id", sampleId);
@@ -802,66 +832,129 @@ export default function CreateSample() {
       )}
 
       {activeTab === TAB.DEFECTS && (
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-          <Card title={`Minor defects (${minorSelected.length})`}>
-            <div className="mb-3">
-              <Input placeholder="Search minor defects..." value={minorSearch} onChange={(e) => setMinorSearch(e.target.value)} />
-            </div>
+  <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+    {/* MINOR */}
+    <Card
+      title={`Minor defects (${minorRows.length})`}
+      right={
+        <button
+          type="button"
+          onClick={addMinorRow}
+          className="h-9 rounded-xl bg-brand-600 px-3 text-xs font-semibold text-white hover:bg-brand-500"
+        >
+          + Add minor defect
+        </button>
+      }
+    >
+      {minorRows.length === 0 ? (
+        <div className="text-sm text-slate-500">No minor defects added.</div>
+      ) : (
+        <div className="space-y-2">
+          {minorRows.map((row, idx) => (
+            <div key={idx} className="grid grid-cols-1 gap-2 md:grid-cols-12 md:items-center">
+              <div className="md:col-span-7">
+                <select
+                  value={row.id}
+                  onChange={(e) => updateRow(setMinorRows, idx, "id", e.target.value)}
+                  className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-brand-400/70"
+                >
+                  <option value="">Choose defect...</option>
+                  {minorOptions.map((d) => (
+                    <option key={d.id} value={d.id}>
+                      {d.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-            <div className="max-h-[420px] overflow-auto rounded-xl border border-slate-200">
-              {filteredMinor.length === 0 ? (
-                <div className="p-4 text-sm text-slate-500">No minor defects for this report type.</div>
-              ) : (
-                <table className="w-full text-sm">
-                  <tbody>
-                    {filteredMinor.map((d) => (
-                      <tr key={d.id} className="hover:bg-slate-50">
-                        <td className="px-3 py-2 w-10">
-                          <input
-                            type="checkbox"
-                            checked={minorSelected.includes(d.id)}
-                            onChange={() => toggleSelected(d.id, setMinorSelected)}
-                          />
-                        </td>
-                        <td className="px-3 py-2 text-slate-900">{d.name}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              )}
-            </div>
-          </Card>
+              <div className="md:col-span-3">
+                <input
+                  type="number"
+                  min="0"
+                  placeholder="Qty"
+                  value={row.qty}
+                  onChange={(e) => updateRow(setMinorRows, idx, "qty", e.target.value)}
+                  className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-brand-400/70"
+                />
+              </div>
 
-          <Card title={`Major defects (${majorSelected.length})`}>
-            <div className="mb-3">
-              <Input placeholder="Search major defects..." value={majorSearch} onChange={(e) => setMajorSearch(e.target.value)} />
+              <div className="md:col-span-2 md:flex md:justify-end">
+                <button
+                  type="button"
+                  onClick={() => removeRow(setMinorRows, idx)}
+                  className="h-10 w-full rounded-xl border border-red-200 bg-red-50 px-3 text-xs font-semibold text-red-700 hover:bg-red-100 md:w-auto"
+                >
+                  Remove
+                </button>
+              </div>
             </div>
-
-            <div className="max-h-[420px] overflow-auto rounded-xl border border-slate-200">
-              {filteredMajor.length === 0 ? (
-                <div className="p-4 text-sm text-slate-500">No major defects for this report type.</div>
-              ) : (
-                <table className="w-full text-sm">
-                  <tbody>
-                    {filteredMajor.map((d) => (
-                      <tr key={d.id} className="hover:bg-slate-50">
-                        <td className="px-3 py-2 w-10">
-                          <input
-                            type="checkbox"
-                            checked={majorSelected.includes(d.id)}
-                            onChange={() => toggleSelected(d.id, setMajorSelected)}
-                          />
-                        </td>
-                        <td className="px-3 py-2 text-slate-900">{d.name}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              )}
-            </div>
-          </Card>
+          ))}
         </div>
       )}
+    </Card>
+
+    {/* MAJOR */}
+    <Card
+      title={`Major defects (${majorRows.length})`}
+      right={
+        <button
+          type="button"
+          onClick={addMajorRow}
+          className="h-9 rounded-xl bg-brand-600 px-3 text-xs font-semibold text-white hover:bg-brand-500"
+        >
+          + Add major defect
+        </button>
+      }
+    >
+      {majorRows.length === 0 ? (
+        <div className="text-sm text-slate-500">No major defects added.</div>
+      ) : (
+        <div className="space-y-2">
+          {majorRows.map((row, idx) => (
+            <div key={idx} className="grid grid-cols-1 gap-2 md:grid-cols-12 md:items-center">
+              <div className="md:col-span-7">
+                <select
+                  value={row.id}
+                  onChange={(e) => updateRow(setMajorRows, idx, "id", e.target.value)}
+                  className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-brand-400/70"
+                >
+                  <option value="">Choose defect...</option>
+                  {majorOptions.map((d) => (
+                    <option key={d.id} value={d.id}>
+                      {d.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="md:col-span-3">
+                <input
+                  type="number"
+                  min="0"
+                  placeholder="Qty"
+                  value={row.qty}
+                  onChange={(e) => updateRow(setMajorRows, idx, "qty", e.target.value)}
+                  className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-brand-400/70"
+                />
+              </div>
+
+              <div className="md:col-span-2 md:flex md:justify-end">
+                <button
+                  type="button"
+                  onClick={() => removeRow(setMajorRows, idx)}
+                  className="h-10 w-full rounded-xl border border-red-200 bg-red-50 px-3 text-xs font-semibold text-red-700 hover:bg-red-100 md:w-auto"
+                >
+                  Remove
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </Card>
+  </div>
+)}
+
 
       {activeTab === TAB.SCORING && (
   <div className="mx-4 md:mx-6 mt-6 rounded-2xl border shadow-sm p-4">

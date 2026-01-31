@@ -285,7 +285,7 @@ const [majorMode, setMajorMode] = useState("qty");
 
       const { data, error } = await supabase
         .from("report_type_defects")
-        .select("enabled, position, defect:defect_id ( id, name, severity )")
+.select("defect_id, input_mode, enabled, position, defect:defect_id ( id, name, severity )")
         .eq("report_type_id", reportTypeId)
         .eq("enabled", true)
         .order("position", { ascending: true });
@@ -296,38 +296,31 @@ const [majorMode, setMajorMode] = useState("qty");
         return;
       }
 
-      const minors = [];
-      const majors = [];
-      (data || []).forEach((row) => {
-        const d = row.defect;
-        if (!d?.id) return;
-        if (d.severity === "minor") minors.push({ id: d.id, name: d.name });
-        if (d.severity === "major") majors.push({ id: d.id, name: d.name });
-      });
-let minMode = "qty";
+     let minMode = "qty";
 let majMode = "qty";
+
+const minorsMap = new Map();
+const majorsMap = new Map();
 
 (data || []).forEach((row) => {
   const d = row.defect;
   if (!d?.id) return;
 
   if (d.severity === "minor") {
-    minors.push({ id: d.id, name: d.name });
     if (row.input_mode) minMode = row.input_mode;
+    if (!minorsMap.has(d.id)) minorsMap.set(d.id, { id: d.id, name: d.name });
   }
 
   if (d.severity === "major") {
-    majors.push({ id: d.id, name: d.name });
     if (row.input_mode) majMode = row.input_mode;
+    if (!majorsMap.has(d.id)) majorsMap.set(d.id, { id: d.id, name: d.name });
   }
 });
 
-setMinorOptions(minors);
-setMajorOptions(majors);
+setMinorOptions(Array.from(minorsMap.values()));
+setMajorOptions(Array.from(majorsMap.values()));
 setMinorMode(minMode);
 setMajorMode(majMode);
-      setMinorOptions(minors);
-      setMajorOptions(majors);
     };
 
     loadDefects();

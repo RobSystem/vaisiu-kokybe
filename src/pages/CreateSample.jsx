@@ -967,9 +967,11 @@ payload.major_defects = majorNames.length ? majorNames.join(", ") : null;
                   <Field key={type} label={type.toUpperCase()}>
                     <Select value={consistency[type] ?? ""} onChange={(e) => setConsistency((p) => ({ ...p, [type]: e.target.value }))}>
                       <option value="">Choose...</option>
-                      {["0%", "5%", "10%", "15%", "20%", "25%", "30%", "40%", "50%", "60%", "70%", "80%", "90%", "100%"].map((p) => (
-                        <option key={p} value={p}>{p}</option>
-                      ))}
+                      {PERCENT_OPTIONS.map((p) => (
+  <option key={p} value={`${p}%`}>
+    {p}%
+  </option>
+))}
                     </Select>
                   </Field>
                 ))}

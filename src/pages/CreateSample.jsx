@@ -234,6 +234,14 @@ fruits_amount: "",
     storage_score: "",
   });
 
+  const boxAmountNum = safeNumberOrNull(form.box_amount);
+const fruitsAmountNum = safeNumberOrNull(form.fruits_amount);
+const sizeNum = safeNumberOrNull(form.size);
+
+const fruitsPerBox = fruitsAmountNum ?? sizeNum; // jei įrašytas fruits_amount – jis svarbiau
+const totalFruits =
+  boxAmountNum && fruitsPerBox ? boxAmountNum * fruitsPerBox : null;
+  
   // coloration + consistency (paliekam tavo funkcionalumą)
   const [externalColoration, setExternalColoration] = useState([]);
   const [internalColoration, setInternalColoration] = useState([]);

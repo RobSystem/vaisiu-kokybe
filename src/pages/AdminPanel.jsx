@@ -56,6 +56,35 @@ function AdminPanel() {
   const [loadingConfig, setLoadingConfig] = useState(false);
   const [savingConfig, setSavingConfig] = useState(false);
 
+  // ===== Coloration state =====
+const [colorationCatalog, setColorationCatalog] = useState([]);
+const externalColors = useMemo(
+  () => colorationCatalog.filter((c) => c.scope === "external"),
+  [colorationCatalog]
+);
+const internalColors = useMemo(
+  () => colorationCatalog.filter((c) => c.scope === "internal"),
+  [colorationCatalog]
+);
+
+const [externalColorEnabled, setExternalColorEnabled] = useState({}); // coloration_id -> bool
+const [internalColorEnabled, setInternalColorEnabled] = useState({}); // coloration_id -> bool
+
+// ===== Add defect form =====
+const [newDefectName, setNewDefectName] = useState("");
+const [newDefectSeverity, setNewDefectSeverity] = useState("minor"); // minor|major
+const [addingDefect, setAddingDefect] = useState(false);
+
+// ===== Add coloration form =====
+const [newColorName, setNewColorName] = useState("");
+const [newColorScope, setNewColorScope] = useState("external"); // external|internal
+const [addingColor, setAddingColor] = useState(false);
+
+// ===== Report type edit/delete =====
+const [editTypeName, setEditTypeName] = useState("");
+const [editingType, setEditingType] = useState(false);
+const [deletingType, setDeletingType] = useState(false);
+
   // ===== Auth check =====
   useEffect(() => {
     const checkRole = async () => {
@@ -90,6 +119,57 @@ function AdminPanel() {
       }
     }
   };
+useEffect(() => {
+  const current = reportTypes.find((r) => r.id === selectedReportTypeId);
+  setEditTypeName(current?.name || "");
+}, [selectedReportTypeId, reportTypes]);
+
+const handleRenameReportType = async () => {
+  const name = editTypeName.trim();
+  if (!selectedReportTypeId) return;
+  if (!name) return alert("Name cannot be empty.");
+
+  setEditingType(true);
+  try {
+    const { error } = await supabase
+      .from("report_types")
+      .update({ name })
+      .eq("id", selectedReportTypeId);
+
+    if (error) throw error;
+    await loadReportTypes();
+    alert("Renamed!");
+  } catch (e) {
+    console.error(e);
+    alert("Rename failed (maybe duplicate name).");
+  } finally {
+    setEditingType(false);
+  }
+};
+const handleDeleteReportType = async () => {
+  if (!selectedReportTypeId) return;
+  const current = reportTypes.find((r) => r.id === selectedReportTypeId);
+  if (!window.confirm(`Delete report type "${current?.name}"? This will remove mappings.`)) return;
+
+  setDeletingType(true);
+  try {
+    const { error } = await supabase
+      .from("report_types")
+      .delete()
+      .eq("id", selectedReportTypeId);
+
+    if (error) throw error;
+
+    await loadReportTypes();
+    setSelectedReportTypeId(""); // loadReportTypes parinks pirmą
+    alert("Deleted!");
+  } catch (e) {
+    console.error(e);
+    alert("Delete failed.");
+  } finally {
+    setDeletingType(false);
+  }
+};
 
   // ===== Load defects catalog =====
   const loadDefectsCatalog = async () => {
@@ -101,14 +181,26 @@ function AdminPanel() {
 
     if (!error) setDefectsCatalog(data || []);
   };
+  const loadColorationCatalog = async () => {
+  const { data, error } = await supabase
+    .from("coloration_catalog")
+    .select("id, name, scope")
+    .order("scope", { ascending: true })
+    .order("name", { ascending: true });
+
+  if (!error) setColorationCatalog(data || []);
+};
+
 
   useEffect(() => {
     if (role === "admin") {
-      loadReportTypes();
-      loadDefectsCatalog();
-    }
+  loadReportTypes();
+  loadDefectsCatalog();
+  loadColorationCatalog();
+}
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [role]);
+  
 
   // ===== Load selected report type config =====
   useEffect(() => {
@@ -170,6 +262,32 @@ function AdminPanel() {
         (minorCatalog || []).forEach((d) => (minMap[d.id] = true));
         (majorCatalog || []).forEach((d) => (majMap[d.id] = true));
       }
+      // 3) coloration mapping
+const { data: colData, error: colErr } = await supabase
+  .from("report_type_coloration")
+  .select("coloration_id, enabled, coloration:coloration_id ( scope )")
+  .eq("report_type_id", selectedReportTypeId);
+
+const extMap = {};
+const intMap = {};
+(externalColors || []).forEach((c) => (extMap[c.id] = false));
+(internalColors || []).forEach((c) => (intMap[c.id] = false));
+
+if (!colErr && colData?.length) {
+  colData.forEach((row) => {
+    const scope = row.coloration?.scope;
+    if (scope === "external") extMap[row.coloration_id] = !!row.enabled;
+    if (scope === "internal") intMap[row.coloration_id] = !!row.enabled;
+  });
+} else {
+  // BASIC default: viskas on
+  (externalColors || []).forEach((c) => (extMap[c.id] = true));
+  (internalColors || []).forEach((c) => (intMap[c.id] = true));
+}
+
+setExternalColorEnabled(extMap);
+setInternalColorEnabled(intMap);
+
 
       setMinorEnabled(minMap);
       setMajorEnabled(majMap);
@@ -178,13 +296,15 @@ function AdminPanel() {
 
       setLoadingConfig(false);
     };
+    
 
     // katalogas užsikrauna async – palaukiam, kad būtų listai
     if (selectedReportTypeId && defectsCatalog.length >= 0) {
       loadConfig();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedReportTypeId, defectsCatalog.length]);
+  }, [selectedReportTypeId, defectsCatalog.length, colorationCatalog.length]);
+  
 
   // ===== Create new report type =====
   const handleCreateReportType = async () => {
@@ -253,6 +373,29 @@ function AdminPanel() {
     await loadReportTypes();
     setSelectedReportTypeId(created.id);
   };
+  const handleAddColoration = async () => {
+  const name = newColorName.trim();
+  if (!name) return alert("Enter color name.");
+
+  setAddingColor(true);
+  try {
+    const { error } = await supabase
+      .from("coloration_catalog")
+      .insert({ name, scope: newColorScope });
+
+    if (error) throw error;
+
+    setNewColorName("");
+    await loadColorationCatalog();
+    alert("Coloration added!");
+  } catch (e) {
+    console.error(e);
+    alert("Failed to add coloration (maybe duplicate).");
+  } finally {
+    setAddingColor(false);
+  }
+};
+
 
   // ===== Save config =====
   const handleSaveConfig = async () => {
@@ -307,6 +450,33 @@ function AdminPanel() {
         const { error: defInsErr } = await supabase.from("report_type_defects").insert(all);
         if (defInsErr) throw defInsErr;
       }
+      // 3) report_type_coloration: replace strategy
+await supabase.from("report_type_coloration").delete().eq("report_type_id", selectedReportTypeId);
+
+const extRows = externalColors
+  .filter((c) => externalColorEnabled[c.id])
+  .map((c, idx) => ({
+    report_type_id: selectedReportTypeId,
+    coloration_id: c.id,
+    enabled: true,
+    position: idx,
+  }));
+
+const intRows = internalColors
+  .filter((c) => internalColorEnabled[c.id])
+  .map((c, idx) => ({
+    report_type_id: selectedReportTypeId,
+    coloration_id: c.id,
+    enabled: true,
+    position: idx,
+  }));
+
+const colAll = [...extRows, ...intRows];
+if (colAll.length) {
+  const { error: colInsErr } = await supabase.from("report_type_coloration").insert(colAll);
+  if (colInsErr) throw colInsErr;
+}
+
 
       alert("Saved!");
     } catch (e) {
@@ -318,6 +488,28 @@ function AdminPanel() {
   };
 
   if (role !== "admin") return null;
+  const handleAddDefect = async () => {
+  const name = newDefectName.trim();
+  if (!name) return alert("Enter defect name.");
+
+  setAddingDefect(true);
+  try {
+    const { error } = await supabase
+      .from("defects_catalog")
+      .insert({ name, severity: newDefectSeverity });
+
+    if (error) throw error;
+
+    setNewDefectName("");
+    await loadDefectsCatalog();
+    alert("Defect added!");
+  } catch (e) {
+    console.error(e);
+    alert("Failed to add defect (maybe duplicate name).");
+  } finally {
+    setAddingDefect(false);
+  }
+};
 
   return (
     <div className="p-8">
@@ -339,6 +531,68 @@ function AdminPanel() {
           Add User
         </button>
       </div>
+      <div className="rounded-2xl border border-slate-200 bg-white shadow-sm p-6 mb-10">
+  <h2 className="text-lg font-semibold text-slate-900 mb-4">Catalog Manager</h2>
+
+  <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+    {/* Add Defect */}
+    <div className="rounded-xl border border-slate-200 p-4">
+      <div className="text-sm font-semibold text-slate-900 mb-3">Add Defect</div>
+      <div className="flex gap-2">
+        <input
+          value={newDefectName}
+          onChange={(e) => setNewDefectName(e.target.value)}
+          className="h-10 flex-1 rounded-xl border border-slate-200 px-3 text-sm outline-none"
+          placeholder="Mold"
+        />
+        <select
+          value={newDefectSeverity}
+          onChange={(e) => setNewDefectSeverity(e.target.value)}
+          className="h-10 rounded-xl border border-slate-200 px-3 text-sm"
+        >
+          <option value="minor">Minor</option>
+          <option value="major">Major</option>
+        </select>
+        <button
+          onClick={handleAddDefect}
+          disabled={addingDefect}
+          className="h-10 rounded-xl bg-slate-900 px-4 text-sm font-semibold text-white hover:bg-slate-800 disabled:opacity-60"
+        >
+          Save
+        </button>
+      </div>
+    </div>
+
+    {/* Add Coloration */}
+    <div className="rounded-xl border border-slate-200 p-4">
+      <div className="text-sm font-semibold text-slate-900 mb-3">Add Coloration</div>
+      <div className="flex gap-2">
+        <input
+          value={newColorName}
+          onChange={(e) => setNewColorName(e.target.value)}
+          className="h-10 flex-1 rounded-xl border border-slate-200 px-3 text-sm outline-none"
+          placeholder="Orange"
+        />
+        <select
+          value={newColorScope}
+          onChange={(e) => setNewColorScope(e.target.value)}
+          className="h-10 rounded-xl border border-slate-200 px-3 text-sm"
+        >
+          <option value="external">External</option>
+          <option value="internal">Internal</option>
+        </select>
+        <button
+          onClick={handleAddColoration}
+          disabled={addingColor}
+          className="h-10 rounded-xl bg-slate-900 px-4 text-sm font-semibold text-white hover:bg-slate-800 disabled:opacity-60"
+        >
+          Save
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
 
       {/* Report Types Manager */}
       <div className="rounded-2xl border border-slate-200 bg-white shadow-sm p-6">
@@ -411,6 +665,32 @@ function AdminPanel() {
               {savingConfig ? "Saving..." : "Save configuration"}
             </button>
           </div>
+          <div className="mt-4 rounded-xl border border-slate-200 p-3">
+  <div className="text-xs font-semibold text-slate-600 mb-1">Edit report type name</div>
+  <div className="flex gap-2">
+    <input
+      value={editTypeName}
+      onChange={(e) => setEditTypeName(e.target.value)}
+      className="h-10 flex-1 rounded-xl border border-slate-200 px-3 text-sm outline-none"
+    />
+    <button
+      onClick={handleRenameReportType}
+      disabled={editingType || loadingConfig}
+      className="h-10 rounded-xl bg-slate-900 px-4 text-sm font-semibold text-white hover:bg-slate-800 disabled:opacity-60"
+    >
+      Rename
+    </button>
+  </div>
+
+  <button
+    onClick={handleDeleteReportType}
+    disabled={deletingType || loadingConfig}
+    className="mt-3 h-10 w-full rounded-xl border border-red-200 bg-red-50 px-4 text-sm font-semibold text-red-700 hover:bg-red-100 disabled:opacity-60"
+  >
+    Delete report type
+  </button>
+</div>
+
 
           {/* Fields */}
           <div className="lg:col-span-1">
@@ -493,6 +773,46 @@ function AdminPanel() {
                 ))}
               </div>
             </div>
+            <div className="mt-6">
+  <h3 className="text-sm font-semibold text-slate-900 mb-3">Coloration</h3>
+
+  <div className="rounded-xl border border-slate-200 p-3 mb-4">
+    <div className="text-sm font-semibold text-slate-800 mb-2">External colors</div>
+    <div className="max-h-40 overflow-auto pr-2">
+      {externalColors.map((c) => (
+        <label key={c.id} className="flex items-center gap-2 text-sm text-slate-700 py-1">
+          <input
+            type="checkbox"
+            checked={!!externalColorEnabled[c.id]}
+            onChange={(e) =>
+              setExternalColorEnabled((p) => ({ ...p, [c.id]: e.target.checked }))
+            }
+          />
+          {c.name}
+        </label>
+      ))}
+    </div>
+  </div>
+
+  <div className="rounded-xl border border-slate-200 p-3">
+    <div className="text-sm font-semibold text-slate-800 mb-2">Internal colors</div>
+    <div className="max-h-40 overflow-auto pr-2">
+      {internalColors.map((c) => (
+        <label key={c.id} className="flex items-center gap-2 text-sm text-slate-700 py-1">
+          <input
+            type="checkbox"
+            checked={!!internalColorEnabled[c.id]}
+            onChange={(e) =>
+              setInternalColorEnabled((p) => ({ ...p, [c.id]: e.target.checked }))
+            }
+          />
+          {c.name}
+        </label>
+      ))}
+    </div>
+  </div>
+</div>
+
 
             <p className="mt-3 text-xs text-slate-500">
               Later we will make CreateSample show Qty or % based on this setting.

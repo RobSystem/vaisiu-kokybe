@@ -206,6 +206,7 @@ const handleDeleteReportType = async () => {
   useEffect(() => {
     const loadConfig = async () => {
       if (!selectedReportTypeId) return;
+      
 
       setLoadingConfig(true);
 
@@ -279,10 +280,10 @@ if (!colErr && colData?.length) {
     if (scope === "external") extMap[row.coloration_id] = !!row.enabled;
     if (scope === "internal") intMap[row.coloration_id] = !!row.enabled;
   });
-} else {
-  // BASIC default: viskas on
-  (externalColors || []).forEach((c) => (extMap[c.id] = true));
-  (internalColors || []).forEach((c) => (intMap[c.id] = true));
+} if (!colData || colData.length === 0) {
+  // default tik naujam report type
+  externalColors.forEach((c) => (extMap[c.id] = true));
+  internalColors.forEach((c) => (intMap[c.id] = true));
 }
 
 setExternalColorEnabled(extMap);

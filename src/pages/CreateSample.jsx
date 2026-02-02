@@ -201,6 +201,8 @@ const [uploadProgress, setUploadProgress] = useState(0);
     packing_code: "",
     variety: "",
     brand: "",
+    box_amount: "",
+fruits_amount: "",
 
     // measurements
     packing_type: "",
@@ -561,6 +563,12 @@ const handleDeletePhoto = async (photoId, url) => {
     try {
       const payload = {};
       Object.entries(form).forEach(([k, v]) => (payload[k] = toDbNull(v)));
+      payload.box_amount = safeNumberOrNull(form.box_amount);
+payload.fruits_amount = safeNumberOrNull(form.fruits_amount);
+
+const sizeNum = safeNumberOrNull(form.size);
+const fruitsPerBox = payload.fruits_amount ?? sizeNum;
+const totalFruits = payload.box_amount && fruitsPerBox ? payload.box_amount * fruitsPerBox : null;
 
       payload.external_coloration = externalColoration.length ? externalColoration : null;
       payload.internal_coloration = internalColoration.length ? internalColoration : null;
@@ -574,11 +582,23 @@ payload.fruit_weights_extra = fwExtra.length ? fwExtra : null;
       const normalizeRows = (rows, mode) =>
   rows
     .filter((r) => r && r.id)
-    .map((r) => ({
-      id: r.id,
-      value: r.value === "" || r.value === null || r.value === undefined ? null : Number(r.value),
-      unit: mode, // 'qty' | 'pct'
-    }));
+    .map((r) => {
+      const val =
+        r.value === "" || r.value === null || r.value === undefined ? null : Number(r.value);
+
+      // pct skaičiuojam tik kai mode=qty ir turim totalFruits
+      const pct =
+        mode === "qty" && totalFruits && val !== null && Number.isFinite(val)
+          ? Number(((val / totalFruits) * 100).toFixed(2))
+          : null;
+
+      return {
+        id: r.id,
+        value: val,
+        unit: mode,     // 'qty' | 'pct'
+        pct,            // jei qty -> auto, jei pct -> null (arba galim palikti value kaip pct)
+      };
+    });
 
       const minorPayload = normalizeRows(minorRows, minorMode);
 const majorPayload = normalizeRows(majorRows, majorMode);
@@ -694,6 +714,8 @@ navigate(`/create-sample/${reportId}/${inserted.id}`, { replace: true });
               ["Packing Code", "packing_code"],
               ["Variety", "variety"],
               ["Brand", "brand"],
+              ["Box Amount", "box_amount"],
+["Fruits Amount (per box)", "fruits_amount"],
             ].map(([label, key]) => (
               <Field key={key} label={label}>
                 <Input name={key} value={form[key] ?? ""} onChange={handleChange} />
@@ -1136,7 +1158,11 @@ navigate(`/create-sample/${reportId}/${inserted.id}`, { replace: true });
     className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-brand-400/70"
   />
 )}
-
+{(minorMode === "qty" && totalFruits && row.value) && (
+  <div className="mt-1 text-xs text-slate-500">
+    {(Number(row.value) / totalFruits * 100).toFixed(2)}%
+  </div>
+)}
                     </div>
 
                     <div className="md:col-span-2 md:flex md:justify-end">
@@ -1206,7 +1232,11 @@ navigate(`/create-sample/${reportId}/${inserted.id}`, { replace: true });
     className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-brand-400/70"
   />
 )}
-
+{(majorMode === "qty" && totalFruits && row.value) && (
+  <div className="mt-1 text-xs text-slate-500">
+    {(Number(row.value) / totalFruits * 100).toFixed(2)}%
+  </div>
+)}
                     </div>
 
                     <div className="md:col-span-2 md:flex md:justify-end">

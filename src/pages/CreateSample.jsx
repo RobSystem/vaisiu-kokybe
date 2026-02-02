@@ -241,7 +241,7 @@ const sizeNum = safeNumberOrNull(form.size);
 const fruitsPerBox = fruitsAmountNum ?? sizeNum; // jei įrašytas fruits_amount – jis svarbiau
 const totalFruits =
   boxAmountNum && fruitsPerBox ? boxAmountNum * fruitsPerBox : null;
-  
+
   // coloration + consistency (paliekam tavo funkcionalumą)
   const [externalColoration, setExternalColoration] = useState([]);
   const [internalColoration, setInternalColoration] = useState([]);
@@ -250,6 +250,7 @@ const totalFruits =
 const [fruitWeightExtra, setFruitWeightExtra] = useState([]); // 10 small inputs
 const [allowedColorsExternal, setAllowedColorsExternal] = useState([]);
 const [allowedColorsInternal, setAllowedColorsInternal] = useState([]);
+
 
   const defectNameById = useMemo(() => {
     const map = new Map();
@@ -416,6 +417,55 @@ if (Array.isArray(data?.fruit_weights_extra) && data.fruit_weights_extra.length)
 
     loadSample();
   }, [sampleId]);
+  const loadAllowedColoration = async () => {
+  // reikia report_type_id
+  const { data: rep, error: repErr } = await supabase
+    .from("reports")
+    .select("report_type_id")
+    .eq("id", reportId)
+    .single();
+
+  if (repErr) {
+    console.error("Failed to load report_type_id:", repErr);
+    return;
+  }
+
+  const reportTypeId = rep?.report_type_id;
+  if (!reportTypeId) {
+    // jei report neturi report_type_id – fallback į default list
+    setAllowedColorsExternal([]);
+    setAllowedColorsInternal([]);
+    return;
+  }
+
+  const { data, error } = await supabase
+    .from("report_type_coloration")
+    .select("enabled, coloration:coloration_id ( name, scope )")
+    .eq("report_type_id", reportTypeId)
+    .eq("enabled", true);
+
+  if (error) {
+    console.error("Failed to load allowed coloration:", error);
+    return;
+  }
+
+  const ext = [];
+  const intl = [];
+
+  (data || []).forEach((row) => {
+    const c = row.coloration;
+    if (!c?.name) return;
+    if (c.scope === "external") ext.push(c.name);
+    if (c.scope === "internal") intl.push(c.name);
+  });
+
+  setAllowedColorsExternal(ext);
+  setAllowedColorsInternal(intl);
+};
+useEffect(() => {
+  loadAllowedColoration();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, [reportId]);
 
   /* =========================
      Handlers

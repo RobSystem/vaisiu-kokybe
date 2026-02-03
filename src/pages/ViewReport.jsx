@@ -12,6 +12,7 @@ function ViewReport() {
   const [attachments, setAttachments] = useState([])
   const [previewUrl, setPreviewUrl] = useState(null)
   const reportRef = useRef()
+  const [defectNameById, setDefectNameById] = useState(new Map());
 
   useEffect(() => {
     const fetchData = async () => {
@@ -25,8 +26,30 @@ function ViewReport() {
       setReport(reportData)
       setSamples(sampleData)
       setPhotos(photoData)
+      // Surenkam visus defect id iš samples (minor/major selected)
+const ids = new Set();
+(sampleData || []).forEach((s) => {
+  const a = s?.minor_defects_selected;
+  const b = s?.major_defects_selected;
+
+  if (Array.isArray(a)) a.forEach((x) => x?.id && ids.add(x.id));
+  if (Array.isArray(b)) b.forEach((x) => x?.id && ids.add(x.id));
+});
+
+if (ids.size > 0) {
+  const { data: defs, error: defsErr } = await supabase
+    .from("defects_catalog")
+    .select("id, name")
+    .in("id", Array.from(ids));
+
+  if (!defsErr && defs) {
+    setDefectNameById(new Map(defs.map((d) => [d.id, d.name])));
+  }
+}
+
     }
     fetchData()
+    
 
    const fetchAttachments = async () => {
   try {
@@ -112,6 +135,47 @@ function ViewReport() {
       </div>
     </div>
   )
+  const renderDefectsSelected = (label, arr) => {
+  if (!Array.isArray(arr) || arr.length === 0) return null;
+
+  return (
+    <div>
+      <p className="font-semibold">{label}:</p>
+      <ul className="list-disc ml-5">
+        {arr.map((d, i) => {
+          const name = defectNameById.get(d.id) || d.id; // fallback
+          const unit = d.unit || "qty";
+          const value = d.value ?? "";
+
+          // Jei qty -> rodom value + (pct) jei yra
+          if (unit === "qty") {
+            const pct = d.pct ?? null;
+            return (
+              <li key={d.id || i}>
+                {name}
+                {value !== "" && value !== null ? ` — ${value}` : ""}
+                {pct !== null && pct !== undefined ? ` (${pct}%)` : ""}
+              </li>
+            );
+          }
+
+          // Jei pct -> rodom value%
+          if (unit === "pct") {
+            return (
+              <li key={d.id || i}>
+                {name}
+                {value !== "" && value !== null ? ` — ${value}%` : ""}
+              </li>
+            );
+          }
+
+          return <li key={d.id || i}>{name}</li>;
+        })}
+      </ul>
+    </div>
+  );
+};
+
   function getColor(score, type) {
   const n = typeof score === 'number'
     ? score
@@ -353,8 +417,9 @@ function ViewReport() {
           {renderList('External Coloration', sample.external_coloration)}
           {renderList('Internal Coloration', sample.internal_coloration)}
           {renderConsistency(sample.consistency)}
-          {renderMultiLine('Minor Defects', sample.minor_defects)}
-          {renderMultiLine('Major Defects', sample.major_defects)}
+          {renderDefectsSelected("Minor Defects", sample.minor_defects_selected) || renderMultiLine("Minor Defects", sample.minor_defects)}
+{renderDefectsSelected("Major Defects", sample.major_defects_selected) || renderMultiLine("Major Defects", sample.major_defects)}
+
         </div>
       </div>
 

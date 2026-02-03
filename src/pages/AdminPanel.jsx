@@ -87,6 +87,7 @@ const [deletingType, setDeletingType] = useState(false);
 const [deletingDefectId, setDeletingDefectId] = useState(null);
 const [deletingColorId, setDeletingColorId] = useState(null);
 
+
   // ===== Auth check =====
   useEffect(() => {
     const checkRole = async () => {
@@ -564,45 +565,40 @@ const handleDeleteColoration = async (color) => {
   if (!ok) return;
 
   setDeletingColorId(color.id);
-
-  // 1) Delete from catalog
-  const { error: delErr } = await supabase
-    .from("coloration_catalog")
-    .delete()
-    .eq("id", color.id);
-
-  if (delErr) {
-    console.error("Delete coloration error:", delErr);
-    alert(`Delete failed: ${delErr.message}`);
-    setDeletingColorId(null);
-    return;
-  }
-
-  // 2) Optimistic UI update (iš karto dingsta iš sąrašo)
-  setExternalColors((prev) => prev.filter((c) => c.id !== color.id));
-  setInternalColors((prev) => prev.filter((c) => c.id !== color.id));
-
-  setExternalColorEnabled((p) => {
-    const next = { ...p };
-    delete next[color.id];
-    return next;
-  });
-  setInternalColorEnabled((p) => {
-    const next = { ...p };
-    delete next[color.id];
-    return next;
-  });
-
-  // 3) Refresh (jei nulūžta – nerodom “Delete failed”, nes delete jau įvyko)
   try {
-    await loadColorationCatalog();
+    const { error } = await supabase
+      .from("coloration_catalog")
+      .delete()
+      .eq("id", color.id);
+
+    if (error) throw error;
+
+    // ✅ UI update be refresh
+    setExternalColors((prev) => prev.filter((c) => c.id !== color.id));
+    setInternalColors((prev) => prev.filter((c) => c.id !== color.id));
+
+    // optional: nuimti iš enabled map’ų
+    setExternalColorEnabled((p) => {
+      const next = { ...p };
+      delete next[color.id];
+      return next;
+    });
+    setInternalColorEnabled((p) => {
+      const next = { ...p };
+      delete next[color.id];
+      return next;
+    });
+
+    // optional: papildomas “truth refresh”
+    // await loadColorationCatalog();
   } catch (e) {
-    console.error("Reload coloration catalog failed (delete succeeded):", e);
-    // optionally: alert("Deleted, but refresh failed. Reload page if needed.");
+    console.error(e);
+    alert(`Delete failed: ${e.message ?? "Unknown error"}`);
   } finally {
     setDeletingColorId(null);
   }
 };
+
 
 
 

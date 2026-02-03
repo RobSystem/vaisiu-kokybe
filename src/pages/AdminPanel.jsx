@@ -568,7 +568,7 @@ const handleDeleteColoration = async (color) => {
     // 1) remove mappings first (safe if FK constraints exist)
     // !!! Jei tavo mapping lentelė vadinasi kitaip – pakeisk čia pavadinimą.
     const { error: mapErr } = await supabase
-      .from("report_type_colorations")
+      .from("report_type_coloration")
       .delete()
       .eq("coloration_id", color.id);
 
@@ -580,7 +580,7 @@ const handleDeleteColoration = async (color) => {
 
     // 2) delete from catalog
     const { error: catErr } = await supabase
-      .from("colorations_catalog")
+      .from("coloration_catalog")
       .delete()
       .eq("id", color.id);
 

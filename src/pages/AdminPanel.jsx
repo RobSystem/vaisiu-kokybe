@@ -514,7 +514,7 @@ if (colAll.length) {
 
   return (
   <div className="min-h-screen bg-slate-50">
-    <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <div className="w-full px-6 py-8 sm:px-8 lg:px-10">
       {/* Header */}
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>

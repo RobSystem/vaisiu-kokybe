@@ -241,366 +241,379 @@ const handleSend = async () => {
   }
 };
 
-  return (
-    <div className="w-full px-4 py-6 text-xs">
-<div className="sticky top-0 z-20 bg-white/90 backdrop-blur border-b">
-  <div className="mx-4 md:mx-6 py-3 flex flex-wrap items-center gap-3">
-    <div className="flex-1 min-w-[260px]">
-      <p className="text-xs text-gray-500 uppercase tracking-wide">Edit Report</p>
-      <h2 className="text-lg font-semibold text-gray-800">
-        {report
-          ? `Container: ${report.container_number || '—'} • ${report.variety || '—'} • ${report.origin || '—'}`
-          : 'Loading...'}
-      </h2>
-    </div>
+  
+  // ===== UI presets (visual only) =====
+  const cardClass = "rounded-2xl border border-slate-200 bg-white p-4 md:p-6 shadow-sm";
+  const labelClass = "block text-xs font-semibold text-slate-600 mb-1";
+  const inputClass = "h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-brand-400/70";
+  const selectClass = inputClass;
+  const textareaClass = "w-full rounded-xl border border-slate-200 bg-white p-3 text-sm outline-none focus:border-brand-400/70";
 
-    {/* Status chip */}
-    <span
-      className={`px-2.5 py-1 rounded-full text-xs font-medium ${
-        report?.sent ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'
-      }`}
-    >
-      {report?.sent ? 'Sent' : 'Not sent'}
-    </span>
+  const btnPrimary = "h-10 rounded-xl bg-brand-600 px-4 text-sm font-semibold text-white hover:bg-brand-500 disabled:opacity-60";
+  const btnSecondary = "h-10 rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-60";
+  const btnDark = "h-10 rounded-xl bg-slate-900 px-4 text-sm font-semibold text-white hover:bg-slate-800 disabled:opacity-60";
+  const btnDanger = "h-10 rounded-xl border border-red-200 bg-red-50 px-4 text-sm font-semibold text-red-700 hover:bg-red-100 disabled:opacity-60";
 
-    <div className="flex items-center gap-2">
-      <button
-        onClick={() => report && window.open(`/viewreport/${report.id}`, '_blank')}
-        className="px-3 py-2 rounded-lg border text-gray-700 hover:bg-gray-50"
-      >
-        View report
-      </button>
+return (
+    <div className="w-full px-4 py-6">
+      {/* UI presets (visual only) */}
+      {/*
+        cardClass / inputClass etc are defined above return. 
+        Keeping markup consistent with the rest of the app.
+      */}
 
-      <button
-        onClick={handleSend}
-        className="px-3 py-2 rounded-lg bg-yellow-500 text-white hover:bg-yellow-600"
-      >
-        Send report
-      </button>
+      <div className="sticky top-0 z-20 bg-white/90 backdrop-blur border-b border-slate-200">
+        <div className="mx-4 md:mx-6 py-3 flex flex-wrap items-center gap-3">
+          <div className="flex-1 min-w-[260px]">
+            <p className="text-xs text-slate-500 uppercase tracking-wide">Edit report</p>
+            <h2 className="text-lg font-semibold text-slate-900">
+              {report
+                ? `Container: ${report.container_number || '—'} • ${report.variety || '—'} • ${report.origin || '—'}`
+                : 'Loading...'}
+            </h2>
+          </div>
 
-      <button
-        onClick={handleOpenEditModal}
-        className="px-3 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
-      >
-        Edit report Info
-      </button>
-    </div>
-  </div>
-</div>
+          {/* Status chip */}
+          <span
+            className={`px-2.5 py-1 rounded-full text-xs font-semibold ${
+              report?.sent ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-600'
+            }`}
+          >
+            {report?.sent ? 'Sent' : 'Not sent'}
+          </span>
 
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => report && window.open(`/viewreport/${report.id}`, '_blank')}
+              className={btnSecondary}
+            >
+              View report
+            </button>
 
-        <div className="mx-4 md:mx-6 mt-6">
-  <div className="rounded-2xl border p-4 md:p-6 shadow-sm">
-    <h3 className="font-semibold text-gray-800 mb-4">Basic Info</h3>
+            <button onClick={handleSend} className={btnPrimary}>
+              Send report
+            </button>
 
-    <div className="grid md:grid-cols-3 gap-4">
-      <div>
-        <label className="block text-gray-700 mb-1">Brand</label>
-        <input
-          name="brand"
-          value={form.brand}
-          onChange={handleFormChange}
-          className="p-2 border rounded w-full"
-        />
+            <button onClick={handleOpenEditModal} className={btnDark}>
+              Edit report info
+            </button>
+          </div>
+        </div>
       </div>
 
-      <div>
-        <label className="block text-gray-700 mb-1">Temperature</label>
-        <input
-          name="temperature"
-          value={form.temperature}
-          onChange={handleFormChange}
-          className="p-2 border rounded w-full"
-        />
+      {/* Basic info */}
+      <div className="mx-4 md:mx-6 mt-6">
+        <div className={cardClass}>
+          <h3 className="text-sm font-semibold text-slate-900 mb-4">Basic info</h3>
+
+          <div className="grid md:grid-cols-3 gap-4">
+            <div>
+              <label className={labelClass}>Brand</label>
+              <input name="brand" value={form.brand} onChange={handleFormChange} className={inputClass} />
+            </div>
+
+            <div>
+              <label className={labelClass}>Temperature</label>
+              <input
+                name="temperature"
+                value={form.temperature}
+                onChange={handleFormChange}
+                className={inputClass}
+              />
+            </div>
+
+            <div>
+              <label className={labelClass}>Category</label>
+              <select name="category" value={form.category} onChange={handleFormChange} className={selectClass}>
+                <option value="">Choose category...</option>
+                <option value="CLASS I">Class I</option>
+                <option value="CLASS II">Class II</option>
+                <option value="INDUSTRY CLASS">Industry Class</option>
+                <option value="CLASS I & CLASS II">Class I & Class II</option>
+              </select>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div>
-        <label className="block text-gray-700 mb-1">Category</label>
-        <select
-          name="category"
-          value={form.category}
-          onChange={handleFormChange}
-          className="p-2 border rounded w-full"
-        >
-          <option value="">Choose category...</option>
-          <option value="Class I">Class I</option>
-          <option value="Class II">Class II</option>
-          <option value="Industry Class">Industry Class</option>
-          <option value="Class I & Class II">Class I & Class II</option>
-        </select>
+      {/* Scores */}
+      <div className="mx-4 md:mx-6 mt-6">
+        <div className={cardClass}>
+          <h3 className="text-sm font-semibold text-slate-900 mb-4">Scores</h3>
+
+          <div className="grid md:grid-cols-2 gap-4">
+            <div>
+              <label className={labelClass}>Quality score</label>
+              <select name="qualityScore" value={form.qualityScore} onChange={handleFormChange} className={selectClass}>
+                <option value="">Choose quality score...</option>
+                <option>7 - Good</option>
+                <option>6 - Fair</option>
+                <option>5 - Reasonable</option>
+                <option>4 - Moderate</option>
+                <option>3 - Less than moderate</option>
+                <option>2 - Poor</option>
+                <option>1 - Total loss</option>
+              </select>
+            </div>
+
+            <div>
+              <label className={labelClass}>Storage score</label>
+              <select name="storageScore" value={form.storageScore} onChange={handleFormChange} className={selectClass}>
+                <option value="">Choose storage score...</option>
+                <option>7 - Good</option>
+                <option>6 - Normal</option>
+                <option>5 - Reduced</option>
+                <option>4 - Moderate</option>
+                <option>3 - Limited</option>
+                <option>2 - Poor</option>
+                <option>1 - No storage potential</option>
+              </select>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-</div>
-<div className="mx-4 md:mx-6 mt-6">
-  <div className="rounded-2xl border p-4 md:p-6 shadow-sm">
-    <h3 className="font-semibold text-gray-800 mb-4">Scores</h3>
 
-    <div className="grid md:grid-cols-2 gap-4">
-      <div>
-        <label className="block text-gray-700 mb-1">Quality Score</label>
-        <select
-          name="qualityScore"
-          value={form.qualityScore}
-          onChange={handleFormChange}
-          className="p-2 border rounded w-full"
-        >
-          <option value="">Choose quality score...</option>
-          <option>7 - Good</option><option>6 - Fair</option><option>5 - Reasonable</option>
-          <option>4 - Moderate</option><option>3 - Less than moderate</option><option>2 - Poor</option><option>1 - Total loss</option>
-        </select>
+      {/* Conclusion */}
+      <div className="mx-4 md:mx-6 mt-6">
+        <div className={cardClass}>
+          <h3 className="text-sm font-semibold text-slate-900 mb-2">Conclusion</h3>
+          <textarea name="conclusion" value={form.conclusion} onChange={handleFormChange} className={textareaClass} rows={4} />
+        </div>
       </div>
 
-      <div>
-        <label className="block text-gray-700 mb-1">Storage Score</label>
-        <select
-          name="storageScore"
-          value={form.storageScore}
-          onChange={handleFormChange}
-          className="p-2 border rounded w-full"
-        >
-          <option value="">Choose storage score...</option>
-          <option>7 - Good</option><option>6 - Normal</option><option>5 - Reduced</option>
-          <option>4 - Moderate</option><option>3 - Limited</option><option>2 - Poor</option><option>1 - No storage potential</option>
-        </select>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div className="mx-4 md:mx-6 mt-6">
-  <div className="rounded-2xl border p-4 md:p-6 shadow-sm">
-    <h3 className="font-semibold text-gray-800 mb-2">Conclusion</h3>
-    <textarea
-      name="conclusion"
-      value={form.conclusion}
-      onChange={handleFormChange}
-      className="w-full p-2 border rounded h-24"
-    />
-  </div>
-</div>
-
+      {/* Tabs */}
       <div className="mx-4 md:mx-6 mt-8">
-  {/* Tabs header */}
-  <div className="flex gap-2 border-b">
-    {['samples', 'files'].map((t) => (
-      <button
-        key={t}
-        onClick={() => setTab(t)}
-        className={`px-3 py-2 text-sm font-medium border-b-2 -mb-px transition-colors
-          ${
-            tab === t
-              ? 'border-blue-600 text-blue-700'
-              : 'border-transparent text-gray-500 hover:text-gray-700'
-          }`}
-      >
-        {t === 'samples' ? 'Samples' : 'Files'}
-      </button>
-    ))}
-  </div>
-
-  {/* Tabs content */}
-  <div className="rounded-2xl border p-4 md:p-6 shadow-sm mt-4">
-    {tab === 'samples' ? (
-      <>
-        {/* ======== SAMPLES TAB ======== */}
-        <div className="flex gap-4 mb-4">
-          <button
-            onClick={handleSave}
-            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
-          >
-            Save
-          </button>
-          <button
-            onClick={handleAddSample}
-            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
-          >
-            Add Sample
-          </button>
+        <div className="flex gap-2 border-b border-slate-200">
+          {['samples', 'files'].map((t) => (
+            <button
+              key={t}
+              onClick={() => setTab(t)}
+              className={`px-3 py-2 text-sm font-semibold border-b-2 -mb-px transition-colors ${
+                tab === t ? 'border-brand-600 text-slate-900' : 'border-transparent text-slate-500 hover:text-slate-700'
+              }`}
+            >
+              {t === 'samples' ? 'Samples' : 'Files'}
+            </button>
+          ))}
         </div>
 
-        {samples.length > 0 ? (
-          <table className="w-full text-xs border rounded-lg overflow-hidden">
-            <thead className="bg-gray-50 text-gray-600">
-              <tr>
-                {['#', 'Pallet number', 'Quality score', 'Storage score', 'Action'].map((h) => (
-                  <th key={h} className="px-2 py-2 text-left">{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="divide-y">
-              {samples.map((s, i) => (
-                <tr key={s.id} className="odd:bg-white even:bg-gray-50">
-                  <td className="px-2 py-2">{i + 1}</td>
-                  <td className="px-2 py-2">{s.pallet_number}</td>
-                  <td className="px-2 py-2">{s.quality_score}</td>
-                  <td className="px-2 py-2">{s.storage_score}</td>
-                  <td className="px-2 py-2">
-                    <div className="flex gap-1">
+        <div className={`${cardClass} mt-4`}>
+          {tab === 'samples' ? (
+            <>
+              <div className="flex flex-wrap gap-3 mb-4">
+                <button onClick={handleSave} className={btnDark}>
+                  Save
+                </button>
+                <button onClick={handleAddSample} className={btnPrimary}>
+                  Add sample
+                </button>
+              </div>
+
+              {samples.length > 0 ? (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm border border-slate-200 rounded-xl overflow-hidden">
+                    <thead className="bg-slate-50 text-slate-600">
+                      <tr>
+                        {['#', 'Pallet number', 'Quality score', 'Storage score', 'Action'].map((h) => (
+                          <th key={h} className="px-3 py-2 text-left text-xs font-semibold">
+                            {h}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-200">
+                      {samples.map((s, i) => (
+                        <tr key={s.id} className="odd:bg-white even:bg-slate-50">
+                          <td className="px-3 py-2">{i + 1}</td>
+                          <td className="px-3 py-2">{s.pallet_number}</td>
+                          <td className="px-3 py-2">{s.quality_score}</td>
+                          <td className="px-3 py-2">{s.storage_score}</td>
+                          <td className="px-3 py-2">
+                            <div className="flex flex-wrap gap-2">
+                              <button
+                                onClick={() => handleEditSample(s.id)}
+                                className="h-9 rounded-xl border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+                              >
+                                Edit
+                              </button>
+                              <button
+                                onClick={() => handleCopySample(s.id)}
+                                className="h-9 rounded-xl border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+                              >
+                                Copy
+                              </button>
+                              <button
+                                onClick={() => handleDeleteSample(s.id)}
+                                className="h-9 rounded-xl border border-red-200 bg-red-50 px-3 text-xs font-semibold text-red-700 hover:bg-red-100"
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <p className="text-sm text-slate-500">No samples.</p>
+              )}
+            </>
+          ) : (
+            <>
+              <h4 className="text-sm font-semibold text-slate-900 mb-3">Temperature recorders</h4>
+
+              <div className="space-y-3">
+                {[0, 1, 2].map((i) => (
+                  <div key={i} className="flex flex-col md:flex-row md:items-center gap-3 p-3 border border-slate-200 rounded-xl">
+                    <input
+                      type="file"
+                      accept="application/pdf"
+                      onChange={(e) => {
+                        const file = e.target.files[0];
+                        setPdfFiles((prev) => {
+                          const updated = [...prev];
+                          updated[i] = file;
+                          return updated;
+                        });
+                      }}
+                      className="w-full md:flex-1 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm"
+                    />
+
+                    <div className="flex gap-2">
                       <button
-                        onClick={() => handleEditSample(s.id)}
-                        className="px-2 py-1 rounded border hover:bg-gray-50"
+                        onClick={async () => {
+                          if (!pdfFiles[i] || pdfFiles[i]?.url) {
+                            toast.error('Please select a file first!');
+                            return;
+                          }
+                          setUploading(true);
+                          try {
+                            await supabase.storage.from('report-files').upload(`${reportId}/file${i + 1}.pdf`, pdfFiles[i], {
+                              cacheControl: '3600',
+                              upsert: true,
+                              contentType: 'application/pdf',
+                            });
+                            toast.success('File uploaded successfully!');
+                            if (typeof fetchPdfFiles === 'function') {
+                              await fetchPdfFiles();
+                            }
+                          } catch (err) {
+                            console.error(err);
+                            toast.error('Upload failed');
+                          } finally {
+                            setUploading(false);
+                          }
+                        }}
+                        className={btnPrimary}
+                        disabled={uploading}
                       >
-                        Edit
+                        Upload
                       </button>
+
                       <button
-                        onClick={() => handleCopySample(s.id)}
-                        className="px-2 py-1 rounded border hover:bg-gray-50"
-                      >
-                        Copy
-                      </button>
-                      <button
-                        onClick={() => handleDeleteSample(s.id)}
-                        className="px-2 py-1 rounded bg-red-500 text-white hover:bg-red-600"
+                        onClick={async () => {
+                          setUploading(true);
+                          try {
+                            await supabase.storage.from('report-files').remove([`${reportId}/file${i + 1}.pdf`]);
+                            toast.success('File deleted!');
+                            if (typeof fetchPdfFiles === 'function') {
+                              await fetchPdfFiles();
+                            }
+                          } catch (err) {
+                            console.error(err);
+                            toast.error('Delete failed');
+                          } finally {
+                            setUploading(false);
+                          }
+                        }}
+                        className={btnDanger}
+                        disabled={uploading}
                       >
                         Delete
                       </button>
                     </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        ) : (
-          <p className="italic text-gray-400">No samples.</p>
-        )}
-      </>
-    ) : (
-      <>
-        {/* ======== FILES TAB ======== */}
-        <h4 className="font-semibold mb-3">Temperature recorders</h4>
-        <div className="space-y-3">
-          {[0, 1, 2].map((i) => (
-            <div key={i} className="flex flex-col md:flex-row md:items-center gap-2 p-3 border rounded-lg">
-              <input
-                type="file"
-                accept="application/pdf"
-                onChange={(e) => {
-                  const file = e.target.files[0];
-                  setPdfFiles((prev) => {
-                    const updated = [...prev];
-                    updated[i] = file;
-                    return updated;
-                  });
-                }}
-                className="border p-2 rounded w-full md:flex-1"
-              />
 
-              <div className="flex gap-2">
-                <button
-                  onClick={async () => {
-                    if (!pdfFiles[i] || pdfFiles[i]?.url) {
-                      toast.error('Please select a file first!');
-                      return;
-                    }
-                    setUploading(true);
-                    try {
-                      await supabase.storage.from('report-files').upload(
-                        `${reportId}/file${i + 1}.pdf`,
-                        pdfFiles[i],
-                        { cacheControl: '3600', upsert: true, contentType: 'application/pdf' }
-                      );
-                      toast.success('File uploaded successfully!');
-                      // jei turi iškeltą funkciją fetchPdfFiles – naudok ją:
-                      if (typeof fetchPdfFiles === 'function') {
-                        await fetchPdfFiles();
-                      }
-                    } catch (err) {
-                      console.error(err);
-                      toast.error('Upload failed');
-                    } finally {
-                      setUploading(false);
-                    }
-                  }}
-                  className="px-3 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
-                >
-                  Upload
-                </button>
-
-                <button
-                  onClick={async () => {
-                    setUploading(true);
-                    try {
-                      await supabase.storage.from('report-files').remove([`${reportId}/file${i + 1}.pdf`]);
-                      toast.success('File deleted!');
-                      if (typeof fetchPdfFiles === 'function') {
-                        await fetchPdfFiles();
-                      }
-                    } catch (err) {
-                      console.error(err);
-                      toast.error('Delete failed');
-                    } finally {
-                      setUploading(false);
-                    }
-                  }}
-                  className="px-3 py-2 rounded bg-red-500 text-white hover:bg-red-600"
-                >
-                  Delete
-                </button>
+                    {pdfFiles[i] && pdfFiles[i]?.url && (
+                      <a
+                        href={pdfFiles[i].url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-brand-700 hover:text-brand-800 underline text-sm"
+                      >
+                        Preview PDF
+                      </a>
+                    )}
+                  </div>
+                ))}
               </div>
-
-              {pdfFiles[i] && pdfFiles[i]?.url && (
-                <a
-                  href={pdfFiles[i].url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-600 underline text-sm"
-                >
-                  Preview PDF
-                </a>
-              )}
-            </div>
-          ))}
+            </>
+          )}
         </div>
-      </>
-    )}
-  </div>
-</div>
+      </div>
 
+      {/* Edit report modal */}
       {showEditModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-lg w-full max-w-md">
-            <h3 className="text-lg font-semibold mb-4">Edit Report Info</h3>
-            {Object.entries({
-              client_ref: 'Client Ref', container_number: 'Container Number', rochecks_ref: 'ROCHECKS Ref',
-              variety: 'Variety', origin: 'Origin', location: 'Location', total_pallets: 'Total Pallets'
-            }).map(([k, label]) => (
-              <div key={k} className="mb-4">
-                <label>{label}</label>
-                <input name={k} value={editInfo[k]} onChange={handleEditInfoChange} className="w-full p-2 border rounded" />
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center z-50 p-4">
+          <div className="bg-white w-full max-w-xl rounded-2xl border border-slate-200 shadow-xl p-6">
+            <h3 className="text-lg font-semibold text-slate-900 mb-4">Edit report info</h3>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {Object.entries({
+                client_ref: 'Client Ref',
+                container_number: 'Container Number',
+                rochecks_ref: 'ROCHECKS Ref',
+                variety: 'Variety',
+                origin: 'Origin',
+                location: 'Location',
+                total_pallets: 'Total Pallets',
+              }).map(([k, label]) => (
+                <div key={k}>
+                  <label className={labelClass}>{label}</label>
+                  <input name={k} value={editInfo[k]} onChange={handleEditInfoChange} className={inputClass} />
+                </div>
+              ))}
+
+              <div>
+                <label className={labelClass}>Type</label>
+                <select name="type" value={editInfo.type} onChange={handleEditInfoChange} className={selectClass}>
+                  <option value="Conventional">Conventional</option>
+                  <option value="Organic">Organic</option>
+                </select>
               </div>
-            ))}
-            <div className="mb-4">
-              <label>Type</label>
-              <select name="type" value={editInfo.type} onChange={handleEditInfoChange} className="w-full p-2 border rounded">
-                <option value="Conventional">Conventional</option>
-                <option value="Organic">Organic</option>
-              </select>
+
+              <div>
+                <label className={labelClass}>Supplier</label>
+                <input name="supplier" value={editInfo.supplier} onChange={handleEditInfoChange} className={inputClass} />
+              </div>
+
+              <div>
+                <label className={labelClass}>Surveyor</label>
+                <select name="surveyor" value={editInfo.surveyor} onChange={handleEditInfoChange} className={selectClass}>
+                  <option value="">-- Select surveyor --</option>
+                  {userProfile?.role === 'admin'
+                    ? users.map((u) => (
+                        <option key={u.name} value={u.name}>
+                          {u.name}
+                        </option>
+                      ))
+                    : userProfile?.name && <option value={userProfile?.name}>{userProfile?.name}</option>}
+                </select>
+              </div>
+
+              <div>
+                <label className={labelClass}>Date</label>
+                <input type="date" name="date" value={editInfo.date} onChange={handleEditInfoChange} className={inputClass} />
+              </div>
             </div>
-            <div className="mb-4">
-              <label>Supplier</label>
-              <input name="supplier" value={editInfo.supplier} onChange={handleEditInfoChange} className="w-full p-2 border rounded" />
-            </div>
-            <div className="mb-4">
-              <label>Surveyor</label>
-              <select name="surveyor" value={editInfo.surveyor} onChange={handleEditInfoChange} className="w-full p-2 border rounded">
-                <option value="">-- Pasirinkti surveyor --</option>
-                {userProfile?.role === 'admin' ? users.map(u => <option key={u.name}>{u.name}</option>) : <option>{userProfile?.name}</option>}
-              </select>
-            </div>
-            <div className="mb-4">
-  <label>Date</label>
-  <input
-    type="date"
-    name="date"
-    value={editInfo.date}
-    onChange={handleEditInfoChange}
-    className="w-full p-2 border rounded"
-  />
-</div>
-            <div className="flex justify-end gap-2">
-              <button onClick={() => setShowEditModal(false)} className="bg-gray-400 text-white px-4 py-2 rounded">Cancel</button>
-              <button onClick={handleSaveEditedInfo} className="bg-green-500 text-white px-4 py-2 rounded">Save</button>
+
+            <div className="flex justify-end gap-2 mt-6">
+              <button onClick={() => setShowEditModal(false)} className={btnSecondary}>
+                Cancel
+              </button>
+              <button onClick={handleSaveEditedInfo} className={btnPrimary}>
+                Save
+              </button>
             </div>
           </div>
         </div>

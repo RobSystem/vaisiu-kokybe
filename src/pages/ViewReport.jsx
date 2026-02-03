@@ -224,8 +224,7 @@ if (ids.size > 0) {
   }
   const card = "mt-8 overflow-hidden rounded-2xl bg-white ring-1 ring-slate-200/70 shadow-sm";
 const cardHeader = "flex items-center justify-between border-b border-slate-200/70 bg-slate-50/60 px-6 py-3";
-const cardTitle = "text-xl md:text-2xl font-semibold text-slate-900";
-
+const cardTitle = "text-lg md:text-xl font-semibold text-slate-900";
 
   return (
     <div ref={reportRef} className="min-h-screen bg-slate-50">
@@ -332,27 +331,27 @@ const cardTitle = "text-xl md:text-2xl font-semibold text-slate-900";
   {/* 3 column layout */}
    <div className="grid md:grid-cols-3 gap-x-10 gap-y-4 px-6 md:px-8 py-6 text-base leading-relaxed text-slate-700">
     <div>
-      <p><span className="font-medium text-slate-800">Date:</span> {report?.date ? new Date(report.date).toLocaleDateString() : '—'}</p>
-      <p><span className="font-medium text-slate-800">Client:</span> {report?.client || '—'}</p>
-      <p><span className="font-medium text-slate-800">Ref:</span> {report?.client_ref || '—'}</p>
-      <p><span className="font-medium text-slate-800">Container #:</span> {report?.container_number || '—'}</p>
-      <p><span className="font-medium text-slate-800">RoChecks Ref:</span> {report?.rochecks_ref || '—'}</p>
+      <p><span className="font-medium text-slate-1000">Date:</span> {report?.date ? new Date(report.date).toLocaleDateString() : '—'}</p>
+      <p><span className="font-medium text-slate-1000">Client:</span> {report?.client || '—'}</p>
+      <p><span className="font-medium text-slate-1000">Ref:</span> {report?.client_ref || '—'}</p>
+      <p><span className="font-medium text-slate-1000">Container #:</span> {report?.container_number || '—'}</p>
+      <p><span className="font-medium text-slate-1000">RoChecks Ref:</span> {report?.rochecks_ref || '—'}</p>
     </div>
 
     <div>
-      <p><span className="font-medium text-slate-800">Supplier:</span> {report?.supplier || '—'}</p>
-      <p><span className="font-medium text-slate-800">Variety:</span> {report?.variety || '—'}</p>
-      <p><span className="font-medium text-slate-800">Origin:</span> {report?.origin || '—'}</p>
-      <p><span className="font-medium text-slate-800">Location:</span> {report?.location || '—'}</p>
-      <p><span className="font-medium text-slate-800">Total Pallets:</span> {report?.total_pallets || '—'}</p>
+      <p><span className="font-medium text-slate-1000">Supplier:</span> {report?.supplier || '—'}</p>
+      <p><span className="font-medium text-slate-1000">Variety:</span> {report?.variety || '—'}</p>
+      <p><span className="font-medium text-slate-1000">Origin:</span> {report?.origin || '—'}</p>
+      <p><span className="font-medium text-slate-1000">Location:</span> {report?.location || '—'}</p>
+      <p><span className="font-medium text-slate-1000">Total Pallets:</span> {report?.total_pallets || '—'}</p>
     </div>
 
     <div>
-      <p><span className="font-medium text-slate-800">Type:</span> {report?.type || '—'}</p>
-      <p><span className="font-medium text-slate-800">Surveyor:</span> {report?.surveyor || '—'}</p>
-      <p><span className="font-medium text-slate-800">Brand:</span> {report?.brand || '—'}</p>
-      <p><span className="font-medium text-slate-800">Temperature:</span> {report?.temperature || '—'}</p>
-      <p><span className="font-medium text-slate-800">Category:</span> {report?.category || '—'}</p>
+      <p><span className="font-medium text-slate-1000">Type:</span> {report?.type || '—'}</p>
+      <p><span className="font-medium text-slate-1000">Surveyor:</span> {report?.surveyor || '—'}</p>
+      <p><span className="font-medium text-slate-1000">Brand:</span> {report?.brand || '—'}</p>
+      <p><span className="font-medium text-slate-1000">Temperature:</span> {report?.temperature || '—'}</p>
+      <p><span className="font-medium text-slate-1000">Category:</span> {report?.category || '—'}</p>
     </div>
   </div>
 </div>

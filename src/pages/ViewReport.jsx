@@ -16,40 +16,70 @@ function ViewReport() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const { data: reportData } = await supabase.from('reports').select('*').eq('id', reportId).single()
-      const { data: sampleData } = await supabase.from('samples').select('*').eq('report_id', reportId).order('position')
-      const { data: photoData } = await supabase
+  try {
+    const { data: reportData, error: repErr } = await supabase
+      .from('reports')
+      .select('*')
+      .eq('id', reportId)
+      .single();
+
+    if (repErr) throw repErr;
+
+    const { data: sampleData, error: sampErr } = await supabase
+      .from('samples')
+      .select('*')
+      .eq('report_id', reportId)
+      .order('position');
+
+    if (sampErr) throw sampErr;
+
+    const safeSamples = sampleData || [];
+    const sampleIds = safeSamples.map((s) => s.id).filter(Boolean);
+
+    // Photos – tik jei yra sample IDs
+    let photoData = [];
+    if (sampleIds.length > 0) {
+      const { data: pData, error: photoErr } = await supabase
         .from('sample_photos')
         .select('*')
-        .in('sample_id', sampleData.map(s => s.id))
-        .order('created_at', { ascending: true })
-      setReport(reportData)
-      setSamples(sampleData)
-      setPhotos(photoData)
-      // Surenkam visus defect id iš samples (minor/major selected)
-const ids = new Set();
-(sampleData || []).forEach((s) => {
-  const a = s?.minor_defects_selected;
-  const b = s?.major_defects_selected;
+        .in('sample_id', sampleIds)
+        .order('created_at', { ascending: true });
 
-  if (Array.isArray(a)) a.forEach((x) => x?.id && ids.add(x.id));
-  if (Array.isArray(b)) b.forEach((x) => x?.id && ids.add(x.id));
-});
-
-if (ids.size > 0) {
-  const { data: defs, error: defsErr } = await supabase
-    .from("defects_catalog")
-    .select("id, name")
-    .in("id", Array.from(ids));
-
-  if (!defsErr && defs) {
-    setDefectNameById(new Map(defs.map((d) => [d.id, d.name])));
-  }
-}
-
+      if (photoErr) throw photoErr;
+      photoData = pData || [];
     }
-    fetchData()
-    
+
+    setReport(reportData);
+    setSamples(safeSamples);
+    setPhotos(photoData);
+
+    // ===== Defect name mapping (safe) =====
+    const ids = new Set();
+    safeSamples.forEach((s) => {
+      const a = s?.minor_defects_selected;
+      const b = s?.major_defects_selected;
+      if (Array.isArray(a)) a.forEach((x) => x?.id && ids.add(x.id));
+      if (Array.isArray(b)) b.forEach((x) => x?.id && ids.add(x.id));
+    });
+
+    if (ids.size > 0) {
+      const { data: defs, error: defsErr } = await supabase
+        .from('defects_catalog')
+        .select('id, name')
+        .in('id', Array.from(ids));
+
+      if (!defsErr && defs) {
+        setDefectNameById(new Map(defs.map((d) => [d.id, d.name])));
+      }
+    }
+  } catch (e) {
+    console.error('ViewReport fetchData failed:', e);
+    // Kad nematytum "balto", gali rodyti bent minimalų tekstą:
+    setReport({}); 
+    setSamples([]);
+    setPhotos([]);
+  }
+};
 
    const fetchAttachments = async () => {
   try {

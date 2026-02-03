@@ -226,6 +226,31 @@ if (ids.size > 0) {
 const cardHeader = "flex items-center justify-between border-b border-slate-200/70 bg-slate-50/60 px-6 py-3";
 const cardTitle = "text-lg md:text-xl font-semibold text-slate-900";
 
+const chipScoreClass = (score) => {
+  // score gali būti "2 - Poor" arba "2" ir pan.
+  const s = String(score || "");
+  if (s.includes("1")) return "bg-emerald-50 text-emerald-700 border-emerald-200";
+  if (s.includes("2")) return "bg-rose-50 text-rose-700 border-rose-200";
+  if (s.includes("3")) return "bg-amber-50 text-amber-700 border-amber-200";
+  if (s.includes("4")) return "bg-amber-50 text-amber-700 border-amber-200";
+  if (s.includes("5")) return "bg-slate-50 text-slate-700 border-slate-200";
+  return "bg-slate-50 text-slate-700 border-slate-200";
+};
+
+const Pill = ({ children }) => (
+  <span className="inline-flex items-center rounded-md bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-800">
+    {children}
+  </span>
+);
+
+const KV = ({ label, value }) => (
+  <div className="flex items-center gap-2">
+    <span className="text-xs font-semibold text-slate-600">{label}:</span>
+    {value ? <Pill>{value}</Pill> : <span className="text-xs text-slate-400">—</span>}
+  </div>
+);
+
+
   return (
     <div ref={reportRef} className="min-h-screen bg-slate-50">
   <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
@@ -425,91 +450,119 @@ const cardTitle = "text-lg md:text-xl font-semibold text-slate-900";
   </div>
 </div>
 
-      {/* Each Sample */}
-     {samples.map((sample, idx) => {
-  const photosForSample = getPhotosForSample(sample.id);
-  const groups = [];
-  for (let i = 0; i < photosForSample.length; i += 28) {
-    groups.push(photosForSample.slice(i, i + 28));
-  }
-
-  return (
-    <section key={sample.id || idx} className="mt-8 border rounded-2xl shadow-sm overflow-hidden break-before-page">
-      {/* Header */}
-      <div className="flex items-center justify-between bg-gray-50 px-6 py-3">
-        <h3 className="text-xl md:text-2xl font-semibold text-gray-900">
-          Pallet: {sample.pallet_number ?? idx + 1}
-        </h3>
-        <div className="flex flex-wrap gap-2 text-sm md:text-base">
-  <span className={'px-3 py-1.5 rounded-full font-semibold shadow-sm ' + getColor(sample.quality_score, 'quality')}>
-    Quality Score: {sample.quality_score ?? '—'}
-  </span>
-  <span className={'px-3 py-1.5 rounded-full font-semibold ' + getColor(sample.storage_score, 'storage')}>
-    Storage Score: {sample.storage_score ?? '—'}
-  </span>
-</div>
-      </div>
-
-      {/* Info – 3 stulpeliai, didesnis/paryškintas tekstas */}
-      <div className="grid md:grid-cols-3 gap-8 px-6 py-6 text-[16px] leading-relaxed">
-        <div className="space-y-1">
-          {renderField('GGN #', sample.ggn_number)}
-          {renderField('GGN Exp', sample.ggn_exp_date || sample.ggn_exp)}
-          {renderField('Grower Code', sample.grower_code)}
-          {renderField('Packing Code', sample.packing_code)}
-          {renderField('Variety', sample.variety)}
-          {renderField('Brand', sample.brand)}
+     {samples.map((sample, idx) => (
+  <div
+    key={sample.id || idx}
+    className="mt-6 rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden"
+  >
+    {/* HEADER */}
+    <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between border-b border-slate-200 bg-white px-6 py-4">
+      <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+        <div className="text-lg font-bold text-slate-900">
+          Pallet: {sample.position ?? idx + 1}
         </div>
 
-        <div className="space-y-1">
-          {renderField('Packing Type', sample.packing_type)}
-          {renderField('Size', sample.size)}
-          {(sample.box_weight_min || sample.box_weight_max) &&
-            renderInlineList('Box Weight', [`${sample.box_weight_min || ''} – ${sample.box_weight_max || ''}`], 'kg')}
-          {sample.box_weight_extra?.length > 0 &&
-            renderInlineList('Extra Box Weights', sample.box_weight_extra, 'kg')}
-          {(sample.fruit_weight_min || sample.fruit_weight_max) &&
-            renderInlineList('Fruit Weight', [`${sample.fruit_weight_min || ''} – ${sample.fruit_weight_max || ''}`], 'g')}
-          {sample.fruit_weights_extra?.length > 0 &&
-            renderInlineList('Extra Fruit Weights', sample.fruit_weights_extra, 'g')}
-            {(sample.punnet_weight_min || sample.punnet_weight_max) &&
-  renderInlineList('Punnet Weight', [`${sample.punnet_weight_min || ''} – ${sample.punnet_weight_max || ''}`], 'g')}
-
-{(sample.bag_weight_min || sample.bag_weight_max) &&
-  renderInlineList('Bag Weight', [`${sample.bag_weight_min || ''} – ${sample.bag_weight_max || ''}`], 'g')}
-
-{(sample.calibration_min || sample.calibration_max) &&
-  renderInlineList('Calibration', [`${sample.calibration_min || ''} – ${sample.calibration_max || ''}`])}
-
-{(sample.rhizome_weight_min || sample.rhizome_weight_max) &&
-  renderInlineList('Rhizome Weight', [`${sample.rhizome_weight_min || ''} – ${sample.rhizome_weight_max || ''}`], 'g')}
-
-          {(sample.pressures_min || sample.pressures_max) &&
-            renderInlineList('Pressures', [`${sample.pressures_min || ''} – ${sample.pressures_max || ''}`], 'kg')}
-          {sample.pressures_extra?.length > 0 &&
-            renderInlineList('Extra Pressures', sample.pressures_extra, 'kg')}
-          {(sample.brix_min || sample.brix_max) &&
-            renderInlineList('Brix', [`${sample.brix_min || ''} – ${sample.brix_max || ''}`], '°')}
-          {sample.brix_extra?.length > 0 &&
-            renderInlineList('Extra Brix', sample.brix_extra, '°')}
-          {(sample.fruit_diameter_min || sample.fruit_diameter_max) &&
-            renderInlineList('Diameter', [`${sample.fruit_diameter_min || ''} – ${sample.fruit_diameter_max || ''}`], 'mm')}
-          {sample.diameter_extra?.length > 0 &&
-            renderInlineList('Extra Diameters', sample.diameter_extra, 'mm')}
-        </div>
-
-        <div className="space-y-2">
-          {renderList('External Coloration', sample.external_coloration)}
-          {renderList('Internal Coloration', sample.internal_coloration)}
-          {renderConsistency(sample.consistency)}
-          {renderDefectsSelected("Minor Defects", sample.minor_defects_selected) || renderMultiLine("Minor Defects", sample.minor_defects)}
-{renderDefectsSelected("Major Defects", sample.major_defects_selected) || renderMultiLine("Major Defects", sample.major_defects)}
-
+        <div className="flex flex-wrap gap-x-5 gap-y-2 text-sm">
+          <span className="text-slate-700"><span className="font-semibold">Variety:</span> {sample.variety || "—"}</span>
+          <span className="text-slate-700"><span className="font-semibold">Brand:</span> {sample.brand || "—"}</span>
+          <span className="text-slate-700"><span className="font-semibold">Packing Code:</span> {sample.packing_code || "—"}</span>
+          <span className="text-slate-700"><span className="font-semibold">Grower Code:</span> {sample.grower_code || "—"}</span>
+          <span className="text-slate-700"><span className="font-semibold">GGN #:</span> {sample.ggn_number || "—"}</span>
+          <span className="text-slate-700"><span className="font-semibold">GGN Exp:</span> {sample.ggn_exp_date || "—"}</span>
         </div>
       </div>
 
-      {/* Photos – toje pačioje kortelėje */}
-     {photosForSample.length > 0 && (
+      <div className="flex flex-wrap items-center gap-2 md:justify-end">
+        <span className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold ${chipScoreClass(sample.quality_score)}`}>
+          Quality Score: {sample.quality_score || "—"}
+        </span>
+        <span className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold ${chipScoreClass(sample.storage_score)}`}>
+          Storage Score: {sample.storage_score || "—"}
+        </span>
+      </div>
+    </div>
+
+    {/* BODY */}
+    <div className="px-6 py-5">
+      {/* TOP ROW: Measurements + Defects columns */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* LEFT (2 cols): measurements */}
+        <div className="lg:col-span-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <KV label="Packing Type" value={sample.packing_type} />
+            <KV label="Size" value={sample.size} />
+            <KV label="Box Weight" value={sample.box_weight_min || sample.box_weight_max ? `${sample.box_weight_min || ""}–${sample.box_weight_max || ""} kg` : ""} />
+            <KV label="Fruit Weight" value={sample.fruit_weight_min || sample.fruit_weight_max ? `${sample.fruit_weight_min || ""}–${sample.fruit_weight_max || ""} g` : ""} />
+
+            <KV label="Punnet Weight" value={sample.punnet_weight_min || sample.punnet_weight_max ? `${sample.punnet_weight_min || ""}–${sample.punnet_weight_max || ""} g` : ""} />
+            <KV label="Bag Weight" value={sample.bag_weight_min || sample.bag_weight_max ? `${sample.bag_weight_min || ""}–${sample.bag_weight_max || ""} g` : ""} />
+            <KV label="Calibration" value={sample.calibration_min || sample.calibration_max ? `${sample.calibration_min || ""}–${sample.calibration_max || ""}` : ""} />
+            <KV label="Rhizome Weight" value={sample.rhizome_weight_min || sample.rhizome_weight_max ? `${sample.rhizome_weight_min || ""}–${sample.rhizome_weight_max || ""} g` : ""} />
+
+            <KV label="Pressures" value={sample.pressures_min || sample.pressures_max ? `${sample.pressures_min || ""}–${sample.pressures_max || ""} kg` : ""} />
+            <KV label="Brix" value={sample.brix_min || sample.brix_max ? `${sample.brix_min || ""}–${sample.brix_max || ""}°` : ""} />
+            <KV label="Diameter" value={sample.fruit_diameter_min || sample.fruit_diameter_max ? `${sample.fruit_diameter_min || ""}–${sample.fruit_diameter_max || ""} mm` : ""} />
+          </div>
+
+          {/* EXTRA WEIGHTS */}
+          {(Array.isArray(sample.box_weight_extra) && sample.box_weight_extra.length > 0) && (
+            <div className="mt-4">
+              <div className="text-xs font-semibold text-slate-700 mb-2">Extra Box Weights</div>
+              <div className="flex flex-wrap gap-2">
+                {sample.box_weight_extra.filter(Boolean).map((v, i) => <Pill key={i}>{v} kg</Pill>)}
+              </div>
+            </div>
+          )}
+
+          {(Array.isArray(sample.fruit_weights_extra) && sample.fruit_weights_extra.length > 0) && (
+            <div className="mt-4">
+              <div className="text-xs font-semibold text-slate-700 mb-2">Extra Fruit Weights</div>
+              <div className="flex flex-wrap gap-2">
+                {sample.fruit_weights_extra.filter(Boolean).map((v, i) => <Pill key={i}>{v} g</Pill>)}
+              </div>
+            </div>
+          )}
+
+          {/* COLORATION + CONSISTENCY */}
+          <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div>
+              <div className="text-sm font-bold text-slate-900 mb-2">External Coloration</div>
+              {renderList("", sample.external_coloration) || <div className="text-sm text-slate-400">—</div>}
+            </div>
+
+            <div>
+              <div className="text-sm font-bold text-slate-900 mb-2">Internal Coloration</div>
+              {renderList("", sample.internal_coloration) || <div className="text-sm text-slate-400">—</div>}
+            </div>
+
+            <div>
+              <div className="text-sm font-bold text-slate-900 mb-2">Consistency</div>
+              {renderList("", sample.consistency) || <div className="text-sm text-slate-400">—</div>}
+            </div>
+          </div>
+        </div>
+
+        {/* RIGHT: defects columns */}
+        <div className="lg:col-span-1">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-6">
+            <div>
+              <div className="text-sm font-bold text-slate-900 mb-2">Minor Defects</div>
+              {renderDefectsSelected("", sample.minor_defects_selected) || renderMultiLine("", sample.minor_defects) || (
+                <div className="text-sm text-slate-400">—</div>
+              )}
+            </div>
+
+            <div>
+              <div className="text-sm font-bold text-slate-900 mb-2">Major Defects</div>
+              {renderDefectsSelected("", sample.major_defects_selected) || renderMultiLine("", sample.major_defects) || (
+                <div className="text-sm text-slate-400">—</div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {photosForSample.length > 0 && (
   <>
     <div className="border-t bg-gray-50 px-6 py-3">
       <h4 className="text-base md:text-lg font-semibold text-gray-800">Photos</h4>
@@ -544,10 +597,9 @@ const cardTitle = "text-lg md:text-xl font-semibold text-slate-900";
     </div>
   </>
 )}
-    </section>
-  );
-})}
-
+    </div>
+  </div>
+))}
 
       {/* Final Summary */}
       {(report.qualityScore || report.storageScore || report.conclusion) && (

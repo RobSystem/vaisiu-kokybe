@@ -513,122 +513,156 @@ if (colAll.length) {
 };
 
   return (
-    <div className="p-8">
-      <h1 className="text-2xl font-semibold mb-8">Admin Panel</h1>
+  <div className="min-h-screen bg-slate-50">
+    <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      {/* Header */}
+      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
+            Admin Panel
+          </h1>
+          <p className="mt-1 text-sm text-slate-600">
+            Manage catalogs and report type configurations.
+          </p>
+        </div>
 
-      {/* Existing buttons */}
-      <div className="flex gap-4 mb-10">
-        <button
-          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded"
-          onClick={() => navigate("/admin/clients")}
-        >
-          Add Client
-        </button>
+        <div className="flex flex-col gap-3 sm:flex-row">
+          <button
+            className="inline-flex items-center justify-center rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-700"
+            onClick={() => navigate("/admin/clients")}
+          >
+            Add Client
+          </button>
 
-        <button
-          className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded"
-          onClick={() => navigate("/admin/add-user")}
-        >
-          Add User
-        </button>
+          <button
+            className="inline-flex items-center justify-center rounded-xl bg-green-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-green-700"
+            onClick={() => navigate("/admin/add-user")}
+          >
+            Add User
+          </button>
+        </div>
       </div>
-      <div className="rounded-2xl border border-slate-200 bg-white shadow-sm p-6 mb-10">
-  <h2 className="text-lg font-semibold text-slate-900 mb-4">Catalog Manager</h2>
 
-  <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-    {/* Add Defect */}
-    <div className="rounded-xl border border-slate-200 p-4">
-      <div className="text-sm font-semibold text-slate-900 mb-3">Add Defect</div>
-      <div className="flex gap-2">
-        <input
-          value={newDefectName}
-          onChange={(e) => setNewDefectName(e.target.value)}
-          className="h-10 flex-1 rounded-xl border border-slate-200 px-3 text-sm outline-none"
-          placeholder="Mold"
-        />
-        <select
-          value={newDefectSeverity}
-          onChange={(e) => setNewDefectSeverity(e.target.value)}
-          className="h-10 rounded-xl border border-slate-200 px-3 text-sm"
-        >
-          <option value="minor">Minor</option>
-          <option value="major">Major</option>
-        </select>
-        <button
-          onClick={handleAddDefect}
-          disabled={addingDefect}
-          className="h-10 rounded-xl bg-slate-900 px-4 text-sm font-semibold text-white hover:bg-slate-800 disabled:opacity-60"
-        >
-          Save
-        </button>
+      {/* Catalog Manager */}
+      <div className="mb-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="mb-4 flex items-center justify-between">
+          <div>
+            <h2 className="text-base font-semibold text-slate-900">
+              Catalog Manager
+            </h2>
+            <p className="mt-1 text-sm text-slate-600">
+              Add defects and coloration options used across report types.
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          {/* Add Defect */}
+          <div className="rounded-2xl border border-slate-200 p-4">
+            <div className="mb-3 text-sm font-semibold text-slate-900">
+              Add Defect
+            </div>
+
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+              <input
+                value={newDefectName}
+                onChange={(e) => setNewDefectName(e.target.value)}
+                className="h-10 w-full flex-1 rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-slate-300 focus:ring-4 focus:ring-slate-100"
+                placeholder="Mold"
+              />
+
+              <select
+                value={newDefectSeverity}
+                onChange={(e) => setNewDefectSeverity(e.target.value)}
+                className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-slate-300 focus:ring-4 focus:ring-slate-100 sm:w-40"
+              >
+                <option value="minor">Minor</option>
+                <option value="major">Major</option>
+              </select>
+
+              <button
+                onClick={handleAddDefect}
+                disabled={addingDefect}
+                className="h-10 w-full rounded-xl bg-slate-900 px-4 text-sm font-semibold text-white hover:bg-slate-800 disabled:opacity-60 sm:w-auto"
+              >
+                {addingDefect ? "Saving..." : "Save"}
+              </button>
+            </div>
+          </div>
+
+          {/* Add Coloration */}
+          <div className="rounded-2xl border border-slate-200 p-4">
+            <div className="mb-3 text-sm font-semibold text-slate-900">
+              Add Coloration
+            </div>
+
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+              <input
+                value={newColorName}
+                onChange={(e) => setNewColorName(e.target.value)}
+                className="h-10 w-full flex-1 rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-slate-300 focus:ring-4 focus:ring-slate-100"
+                placeholder="Orange"
+              />
+
+              <select
+                value={newColorScope}
+                onChange={(e) => setNewColorScope(e.target.value)}
+                className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-slate-300 focus:ring-4 focus:ring-slate-100 sm:w-40"
+              >
+                <option value="external">External</option>
+                <option value="internal">Internal</option>
+              </select>
+
+              <button
+                onClick={handleAddColoration}
+                disabled={addingColor}
+                className="h-10 w-full rounded-xl bg-slate-900 px-4 text-sm font-semibold text-white hover:bg-slate-800 disabled:opacity-60 sm:w-auto"
+              >
+                {addingColor ? "Saving..." : "Save"}
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-
-    {/* Add Coloration */}
-    <div className="rounded-xl border border-slate-200 p-4">
-      <div className="text-sm font-semibold text-slate-900 mb-3">Add Coloration</div>
-      <div className="flex gap-2">
-        <input
-          value={newColorName}
-          onChange={(e) => setNewColorName(e.target.value)}
-          className="h-10 flex-1 rounded-xl border border-slate-200 px-3 text-sm outline-none"
-          placeholder="Orange"
-        />
-        <select
-          value={newColorScope}
-          onChange={(e) => setNewColorScope(e.target.value)}
-          className="h-10 rounded-xl border border-slate-200 px-3 text-sm"
-        >
-          <option value="external">External</option>
-          <option value="internal">Internal</option>
-        </select>
-        <button
-          onClick={handleAddColoration}
-          disabled={addingColor}
-          className="h-10 rounded-xl bg-slate-900 px-4 text-sm font-semibold text-white hover:bg-slate-800 disabled:opacity-60"
-        >
-          Save
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
-
 
       {/* Report Types Manager */}
-      <div className="rounded-2xl border border-slate-200 bg-white shadow-sm p-6">
+      <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <h2 className="text-lg font-semibold text-slate-900">Report Types Manager</h2>
-            <p className="text-sm text-slate-600">
+            <h2 className="text-base font-semibold text-slate-900">
+              Report Types Manager
+            </h2>
+            <p className="mt-1 text-sm text-slate-600">
               Create report types, enable fields, choose allowed defects, and set Qty/% mode.
             </p>
           </div>
 
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-end">
-            <div>
-              <label className="block text-xs font-semibold text-slate-600 mb-1">
+          {/* Create new type */}
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
+            <div className="w-full sm:w-72">
+              <label className="mb-1 block text-xs font-semibold text-slate-600">
                 New report type name
               </label>
               <input
                 value={newTypeName}
                 onChange={(e) => setNewTypeName(e.target.value)}
-                className="h-10 w-64 rounded-xl border border-slate-200 px-3 text-sm outline-none"
+                className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-slate-300 focus:ring-4 focus:ring-slate-100"
                 placeholder="PINEAPPLE"
               />
             </div>
 
-            <label className="flex items-center gap-2 text-sm text-slate-700 mb-1 sm:mb-0">
+            <label className="flex items-center gap-2 text-sm text-slate-700">
               <input
                 type="checkbox"
                 checked={cloneFromBasic}
                 onChange={(e) => setCloneFromBasic(e.target.checked)}
+                className="h-4 w-4"
               />
               Clone from BASIC
             </label>
 
             <button
-              className="h-10 rounded-xl bg-slate-900 px-4 text-sm font-semibold text-white hover:bg-slate-800"
+              className="h-10 rounded-xl bg-slate-900 px-5 text-sm font-semibold text-white hover:bg-slate-800"
               onClick={handleCreateReportType}
             >
               Create
@@ -636,193 +670,266 @@ if (colAll.length) {
           </div>
         </div>
 
-        <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
-          {/* Select report type */}
-          <div className="lg:col-span-1">
-            <label className="block text-xs font-semibold text-slate-600 mb-1">
-              Select Report Type
-            </label>
-            <select
-              value={selectedReportTypeId}
-              onChange={(e) => setSelectedReportTypeId(e.target.value)}
-              className="h-10 w-full rounded-xl border border-slate-200 px-3 text-sm outline-none"
-            >
-              {reportTypes.map((rt) => (
-                <option key={rt.id} value={rt.id}>
-                  {rt.name}
-                </option>
-              ))}
-            </select>
+        {/* Main layout: left sidebar + right content */}
+        <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-12">
+          {/* Left / Sidebar */}
+          <div className="lg:col-span-4">
+            <div className="rounded-2xl border border-slate-200 p-4">
+              <label className="mb-1 block text-xs font-semibold text-slate-600">
+                Select Report Type
+              </label>
+              <select
+                value={selectedReportTypeId}
+                onChange={(e) => setSelectedReportTypeId(e.target.value)}
+                className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-slate-300 focus:ring-4 focus:ring-slate-100"
+              >
+                {reportTypes.map((rt) => (
+                  <option key={rt.id} value={rt.id}>
+                    {rt.name}
+                  </option>
+                ))}
+              </select>
 
-            {loadingConfig && (
-              <div className="mt-3 text-sm text-slate-500">Loading config...</div>
-            )}
+              {loadingConfig && (
+                <div className="mt-3 rounded-xl bg-slate-50 px-3 py-2 text-sm text-slate-600">
+                  Loading config...
+                </div>
+              )}
 
-            <button
-              disabled={savingConfig || loadingConfig}
-              onClick={handleSaveConfig}
-              className="mt-4 h-10 w-full rounded-xl bg-brand-600 px-4 text-sm font-semibold text-white hover:bg-brand-500 disabled:opacity-60"
-            >
-              {savingConfig ? "Saving..." : "Save configuration"}
-            </button>
-          </div>
-          <div className="mt-4 rounded-xl border border-slate-200 p-3">
-  <div className="text-xs font-semibold text-slate-600 mb-1">Edit report type name</div>
-  <div className="flex gap-2">
-    <input
-      value={editTypeName}
-      onChange={(e) => setEditTypeName(e.target.value)}
-      className="h-10 flex-1 rounded-xl border border-slate-200 px-3 text-sm outline-none"
-    />
-    <button
-      onClick={handleRenameReportType}
-      disabled={editingType || loadingConfig}
-      className="h-10 rounded-xl bg-slate-900 px-4 text-sm font-semibold text-white hover:bg-slate-800 disabled:opacity-60"
-    >
-      Rename
-    </button>
-  </div>
+              <button
+                disabled={savingConfig || loadingConfig}
+                onClick={handleSaveConfig}
+                className="mt-4 h-10 w-full rounded-xl bg-slate-900 px-4 text-sm font-semibold text-white hover:bg-slate-800 disabled:opacity-60"
+              >
+                {savingConfig ? "Saving..." : "Save configuration"}
+              </button>
 
-  <button
-    onClick={handleDeleteReportType}
-    disabled={deletingType || loadingConfig}
-    className="mt-3 h-10 w-full rounded-xl border border-red-200 bg-red-50 px-4 text-sm font-semibold text-red-700 hover:bg-red-100 disabled:opacity-60"
-  >
-    Delete report type
-  </button>
-</div>
+              {/* Edit / Rename / Delete (sutvarkyta: nebe “išmesta” grid’e) */}
+              <div className="mt-6 border-t border-slate-200 pt-4">
+                <div className="mb-2 text-xs font-semibold text-slate-600">
+                  Edit report type name
+                </div>
 
-
-          {/* Fields */}
-          <div className="lg:col-span-1">
-            <h3 className="text-sm font-semibold text-slate-900 mb-3">Measurements fields</h3>
-            <div className="space-y-2">
-              {FIELD_KEYS.map((f) => (
-                <label key={f.key} className="flex items-center gap-2 text-sm text-slate-700">
+                <div className="flex gap-2">
                   <input
-                    type="checkbox"
-                    checked={!!fieldsEnabled[f.key]}
-                    onChange={(e) =>
-                      setFieldsEnabled((p) => ({ ...p, [f.key]: e.target.checked }))
-                    }
+                    value={editTypeName}
+                    onChange={(e) => setEditTypeName(e.target.value)}
+                    className="h-10 flex-1 rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-slate-300 focus:ring-4 focus:ring-slate-100"
                   />
-                  {f.label}
-                </label>
-              ))}
+                  <button
+                    onClick={handleRenameReportType}
+                    disabled={editingType || loadingConfig}
+                    className="h-10 rounded-xl bg-slate-900 px-4 text-sm font-semibold text-white hover:bg-slate-800 disabled:opacity-60"
+                  >
+                    {editingType ? "Renaming..." : "Rename"}
+                  </button>
+                </div>
+
+                <button
+                  onClick={handleDeleteReportType}
+                  disabled={deletingType || loadingConfig}
+                  className="mt-3 h-10 w-full rounded-xl border border-red-200 bg-red-50 px-4 text-sm font-semibold text-red-700 hover:bg-red-100 disabled:opacity-60"
+                >
+                  {deletingType ? "Deleting..." : "Delete report type"}
+                </button>
+              </div>
             </div>
-            <p className="mt-3 text-xs text-slate-500">
-              These control what appears in CreateSample → Measurements.
-            </p>
           </div>
 
-          {/* Defects */}
-          <div className="lg:col-span-1">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="text-sm font-semibold text-slate-900">Defects</h3>
+          {/* Right / Content */}
+          <div className="lg:col-span-8">
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+              {/* Fields */}
+              <div className="rounded-2xl border border-slate-200 p-4">
+                <h3 className="mb-3 text-sm font-semibold text-slate-900">
+                  Measurements fields
+                </h3>
+
+                <div className="space-y-2">
+                  {FIELD_KEYS.map((f) => (
+                    <label
+                      key={f.key}
+                      className="flex items-center gap-2 text-sm text-slate-700"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={!!fieldsEnabled[f.key]}
+                        onChange={(e) =>
+                          setFieldsEnabled((p) => ({
+                            ...p,
+                            [f.key]: e.target.checked,
+                          }))
+                        }
+                        className="h-4 w-4"
+                      />
+                      {f.label}
+                    </label>
+                  ))}
+                </div>
+
+                <p className="mt-3 text-xs text-slate-500">
+                  These control what appears in CreateSample → Measurements.
+                </p>
+              </div>
+
+              {/* Defects */}
+              <div className="rounded-2xl border border-slate-200 p-4">
+                <h3 className="mb-3 text-sm font-semibold text-slate-900">
+                  Defects
+                </h3>
+
+                <div className="rounded-xl border border-slate-200 p-3">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="text-sm font-semibold text-slate-800">
+                      Minor input mode
+                    </div>
+                    <select
+                      value={minorInputMode}
+                      onChange={(e) => setMinorInputMode(e.target.value)}
+                      className="h-9 rounded-lg border border-slate-200 bg-white px-2 text-sm outline-none focus:border-slate-300 focus:ring-4 focus:ring-slate-100"
+                    >
+                      <option value="qty">Qty</option>
+                      <option value="pct">%</option>
+                    </select>
+                  </div>
+
+                  <div className="mt-2 max-h-48 overflow-auto pr-2">
+                    {minorCatalog.map((d) => (
+                      <label
+                        key={d.id}
+                        className="flex items-center gap-2 py-1 text-sm text-slate-700"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={!!minorEnabled[d.id]}
+                          onChange={(e) =>
+                            setMinorEnabled((p) => ({
+                              ...p,
+                              [d.id]: e.target.checked,
+                            }))
+                          }
+                          className="h-4 w-4"
+                        />
+                        {d.name}
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="mt-4 rounded-xl border border-slate-200 p-3">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="text-sm font-semibold text-slate-800">
+                      Major input mode
+                    </div>
+                    <select
+                      value={majorInputMode}
+                      onChange={(e) => setMajorInputMode(e.target.value)}
+                      className="h-9 rounded-lg border border-slate-200 bg-white px-2 text-sm outline-none focus:border-slate-300 focus:ring-4 focus:ring-slate-100"
+                    >
+                      <option value="qty">Qty</option>
+                      <option value="pct">%</option>
+                    </select>
+                  </div>
+
+                  <div className="mt-2 max-h-48 overflow-auto pr-2">
+                    {majorCatalog.map((d) => (
+                      <label
+                        key={d.id}
+                        className="flex items-center gap-2 py-1 text-sm text-slate-700"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={!!majorEnabled[d.id]}
+                          onChange={(e) =>
+                            setMajorEnabled((p) => ({
+                              ...p,
+                              [d.id]: e.target.checked,
+                            }))
+                          }
+                          className="h-4 w-4"
+                        />
+                        {d.name}
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                <p className="mt-3 text-xs text-slate-500">
+                  Later we will make CreateSample show Qty or % based on this setting.
+                </p>
+              </div>
             </div>
 
-            <div className="rounded-xl border border-slate-200 p-3 mb-4">
-              <div className="flex items-center justify-between">
-                <div className="text-sm font-semibold text-slate-800">Minor defects input mode</div>
-                <select
-                  value={minorInputMode}
-                  onChange={(e) => setMinorInputMode(e.target.value)}
-                  className="h-9 rounded-lg border border-slate-200 px-2 text-sm"
-                >
-                  <option value="qty">Qty</option>
-                  <option value="pct">%</option>
-                </select>
-              </div>
+            {/* Coloration full width under */}
+            <div className="mt-6 rounded-2xl border border-slate-200 p-4">
+              <h3 className="mb-3 text-sm font-semibold text-slate-900">
+                Coloration
+              </h3>
 
-              <div className="mt-2 max-h-40 overflow-auto pr-2">
-                {minorCatalog.map((d) => (
-                  <label key={d.id} className="flex items-center gap-2 text-sm text-slate-700 py-1">
-                    <input
-                      type="checkbox"
-                      checked={!!minorEnabled[d.id]}
-                      onChange={(e) => setMinorEnabled((p) => ({ ...p, [d.id]: e.target.checked }))}
-                    />
-                    {d.name}
-                  </label>
-                ))}
+              <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                <div className="rounded-xl border border-slate-200 p-3">
+                  <div className="mb-2 text-sm font-semibold text-slate-800">
+                    External colors
+                  </div>
+                  <div className="max-h-48 overflow-auto pr-2">
+                    {externalColors.map((c) => (
+                      <label
+                        key={c.id}
+                        className="flex items-center gap-2 py-1 text-sm text-slate-700"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={!!externalColorEnabled[c.id]}
+                          onChange={(e) =>
+                            setExternalColorEnabled((p) => ({
+                              ...p,
+                              [c.id]: e.target.checked,
+                            }))
+                          }
+                          className="h-4 w-4"
+                        />
+                        {c.name}
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="rounded-xl border border-slate-200 p-3">
+                  <div className="mb-2 text-sm font-semibold text-slate-800">
+                    Internal colors
+                  </div>
+                  <div className="max-h-48 overflow-auto pr-2">
+                    {internalColors.map((c) => (
+                      <label
+                        key={c.id}
+                        className="flex items-center gap-2 py-1 text-sm text-slate-700"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={!!internalColorEnabled[c.id]}
+                          onChange={(e) =>
+                            setInternalColorEnabled((p) => ({
+                              ...p,
+                              [c.id]: e.target.checked,
+                            }))
+                          }
+                          className="h-4 w-4"
+                        />
+                        {c.name}
+                      </label>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
 
-            <div className="rounded-xl border border-slate-200 p-3">
-              <div className="flex items-center justify-between">
-                <div className="text-sm font-semibold text-slate-800">Major defects input mode</div>
-                <select
-                  value={majorInputMode}
-                  onChange={(e) => setMajorInputMode(e.target.value)}
-                  className="h-9 rounded-lg border border-slate-200 px-2 text-sm"
-                >
-                  <option value="qty">Qty</option>
-                  <option value="pct">%</option>
-                </select>
-              </div>
-
-              <div className="mt-2 max-h-40 overflow-auto pr-2">
-                {majorCatalog.map((d) => (
-                  <label key={d.id} className="flex items-center gap-2 text-sm text-slate-700 py-1">
-                    <input
-                      type="checkbox"
-                      checked={!!majorEnabled[d.id]}
-                      onChange={(e) => setMajorEnabled((p) => ({ ...p, [d.id]: e.target.checked }))}
-                    />
-                    {d.name}
-                  </label>
-                ))}
-              </div>
-            </div>
-            <div className="mt-6">
-  <h3 className="text-sm font-semibold text-slate-900 mb-3">Coloration</h3>
-
-  <div className="rounded-xl border border-slate-200 p-3 mb-4">
-    <div className="text-sm font-semibold text-slate-800 mb-2">External colors</div>
-    <div className="max-h-40 overflow-auto pr-2">
-      {externalColors.map((c) => (
-        <label key={c.id} className="flex items-center gap-2 text-sm text-slate-700 py-1">
-          <input
-            type="checkbox"
-            checked={!!externalColorEnabled[c.id]}
-            onChange={(e) =>
-              setExternalColorEnabled((p) => ({ ...p, [c.id]: e.target.checked }))
-            }
-          />
-          {c.name}
-        </label>
-      ))}
-    </div>
-  </div>
-
-  <div className="rounded-xl border border-slate-200 p-3">
-    <div className="text-sm font-semibold text-slate-800 mb-2">Internal colors</div>
-    <div className="max-h-40 overflow-auto pr-2">
-      {internalColors.map((c) => (
-        <label key={c.id} className="flex items-center gap-2 text-sm text-slate-700 py-1">
-          <input
-            type="checkbox"
-            checked={!!internalColorEnabled[c.id]}
-            onChange={(e) =>
-              setInternalColorEnabled((p) => ({ ...p, [c.id]: e.target.checked }))
-            }
-          />
-          {c.name}
-        </label>
-      ))}
-    </div>
-  </div>
-</div>
-
-
-            <p className="mt-3 text-xs text-slate-500">
-              Later we will make CreateSample show Qty or % based on this setting.
-            </p>
           </div>
         </div>
       </div>
     </div>
-  );
+  </div>
+);
+
 }
 
 export default AdminPanel;

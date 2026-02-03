@@ -329,7 +329,7 @@ const cardTitle = "text-lg md:text-xl font-semibold text-slate-900";
   </div>
 
   {/* 3 column layout */}
-   <div className="grid md:grid-cols-3 gap-x-10 gap-y-3 px-6 md:px-8 py-6 text-[15px] leading-relaxed text-slate-700">
+   <div className="grid md:grid-cols-3 gap-x-10 gap-y-4 px-6 md:px-8 py-6 text-base leading-relaxed text-slate-700">
     <div>
       <p><span className="font-medium text-slate-600">Date:</span> {report?.date ? new Date(report.date).toLocaleDateString() : '—'}</p>
       <p><span className="font-medium text-slate-600">Client:</span> {report?.client || '—'}</p>

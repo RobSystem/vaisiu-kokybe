@@ -481,7 +481,10 @@ const KV = ({ label, value }) => (
   </div>
 </div>
 
-     {samples.map((sample, idx) => (
+     {samples.map((sample, idx) => {
+  const photosForSample = getPhotosForSample(sample.id)
+
+  return (
   <div
     key={sample.id || idx}
     className="mt-6 rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden"
@@ -607,30 +610,30 @@ const KV = ({ label, value }) => (
         const printBreakClass = i > 0 && i % 28 === 0 ? 'print:break-before-page' : '';
 
         return (
-          <button
-            key={photo.id || url || i}
-            onClick={() => setPreviewUrl(url)}
-            title="Open photo"
-            className={`group block focus:outline-none ${printBreakClass}`}
-          >
-            {/* Vienodas rėmelis, bet be kirpimo: object-contain + fiksuotas santykis */}
-            <div className="aspect-[4/3] w-full overflow-hidden rounded-md border bg-white">
-              <img
-                src={url}
-                alt=""
-                loading="lazy"
-                className="w-full h-full object-contain group-hover:opacity-90"
-              />
+                  <button
+                    key={photo.id || url || i}
+                    onClick={() => setPreviewUrl(url)}
+                    title="Open photo"
+                    className={`group block focus:outline-none ${printBreakClass}`}
+                  >
+                    <div className="aspect-[4/3] w-full overflow-hidden rounded-md border bg-white">
+                      <img
+                        src={url}
+                        alt=""
+                        loading="lazy"
+                        className="w-full h-full object-contain group-hover:opacity-90"
+                      />
+                    </div>
+                  </button>
+                )
+              })}
             </div>
-          </button>
-        );
-      })}
+          </>
+        )}
+      </div>
     </div>
-  </>
-)}
-    </div>
-  </div>
-))}
+  )
+})}
 
       {/* Final Summary */}
       {(report.qualityScore || report.storageScore || report.conclusion) && (

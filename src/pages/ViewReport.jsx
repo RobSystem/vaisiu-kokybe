@@ -323,35 +323,104 @@ const cardTitle = "text-lg md:text-xl font-semibold text-slate-900";
 </div>
 
       {/* General Info */}
-     <div className={card}>
-  <div className={cardHeader}>
-    <h2 className={cardTitle}>General Information</h2>
+<div className="mt-8 rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+  <div className="bg-slate-50 border-b border-slate-200 px-6 py-3">
+    <h2 className="text-lg md:text-xl font-bold text-slate-900 uppercase tracking-wide">
+      General Information
+    </h2>
   </div>
 
-  {/* 3 column layout */}
-   <div className="grid md:grid-cols-3 gap-x-10 gap-y-4 px-6 md:px-8 py-6 text-base leading-relaxed text-slate-700">
-    <div>
-      <p><span className="font-medium text-slate-1000">Date:</span> {report?.date ? new Date(report.date).toLocaleDateString() : '—'}</p>
-      <p><span className="font-medium text-slate-1000">Client:</span> {report?.client || '—'}</p>
-      <p><span className="font-medium text-slate-1000">Ref:</span> {report?.client_ref || '—'}</p>
-      <p><span className="font-medium text-slate-1000">Container #:</span> {report?.container_number || '—'}</p>
-      <p><span className="font-medium text-slate-1000">RoChecks Ref:</span> {report?.rochecks_ref || '—'}</p>
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 px-6 py-6">
+    {/* Column 1 */}
+    <div className="rounded-xl border border-slate-200 bg-white">
+      <dl className="divide-y divide-slate-200">
+        <div className="flex items-center justify-between gap-4 px-4 py-3">
+          <dt className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Date</dt>
+          <dd className="text-sm font-medium text-slate-900">
+            {report?.date ? new Date(report.date).toLocaleDateString() : '—'}
+          </dd>
+        </div>
+
+        <div className="flex items-center justify-between gap-4 px-4 py-3">
+          <dt className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Client</dt>
+          <dd className="text-sm font-medium text-slate-900">{report?.client || '—'}</dd>
+        </div>
+
+        <div className="flex items-center justify-between gap-4 px-4 py-3">
+          <dt className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Ref</dt>
+          <dd className="text-sm font-medium text-slate-900">{report?.client_ref || '—'}</dd>
+        </div>
+
+        <div className="flex items-center justify-between gap-4 px-4 py-3">
+          <dt className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Container #</dt>
+          <dd className="text-sm font-medium text-slate-900">{report?.container_number || '—'}</dd>
+        </div>
+
+        <div className="flex items-center justify-between gap-4 px-4 py-3">
+          <dt className="text-xs font-semibold text-slate-600 uppercase tracking-wide">RoChecks Ref</dt>
+          <dd className="text-sm font-medium text-slate-900">{report?.rochecks_ref || '—'}</dd>
+        </div>
+      </dl>
     </div>
 
-    <div>
-      <p><span className="font-medium text-slate-1000">Supplier:</span> {report?.supplier || '—'}</p>
-      <p><span className="font-medium text-slate-1000">Variety:</span> {report?.variety || '—'}</p>
-      <p><span className="font-medium text-slate-1000">Origin:</span> {report?.origin || '—'}</p>
-      <p><span className="font-medium text-slate-1000">Location:</span> {report?.location || '—'}</p>
-      <p><span className="font-medium text-slate-1000">Total Pallets:</span> {report?.total_pallets || '—'}</p>
+    {/* Column 2 */}
+    <div className="rounded-xl border border-slate-200 bg-white">
+      <dl className="divide-y divide-slate-200">
+        <div className="flex items-center justify-between gap-4 px-4 py-3">
+          <dt className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Supplier</dt>
+          <dd className="text-sm font-medium text-slate-900">{report?.supplier || '—'}</dd>
+        </div>
+
+        <div className="flex items-center justify-between gap-4 px-4 py-3">
+          <dt className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Variety</dt>
+          <dd className="text-sm font-medium text-slate-900">{report?.variety || '—'}</dd>
+        </div>
+
+        <div className="flex items-center justify-between gap-4 px-4 py-3">
+          <dt className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Origin</dt>
+          <dd className="text-sm font-medium text-slate-900">{report?.origin || '—'}</dd>
+        </div>
+
+        <div className="flex items-center justify-between gap-4 px-4 py-3">
+          <dt className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Location</dt>
+          <dd className="text-sm font-medium text-slate-900">{report?.location || '—'}</dd>
+        </div>
+
+        <div className="flex items-center justify-between gap-4 px-4 py-3">
+          <dt className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Total Pallets</dt>
+          <dd className="text-sm font-medium text-slate-900">{report?.total_pallets || '—'}</dd>
+        </div>
+      </dl>
     </div>
 
-    <div>
-      <p><span className="font-medium text-slate-1000">Type:</span> {report?.type || '—'}</p>
-      <p><span className="font-medium text-slate-1000">Surveyor:</span> {report?.surveyor || '—'}</p>
-      <p><span className="font-medium text-slate-1000">Brand:</span> {report?.brand || '—'}</p>
-      <p><span className="font-medium text-slate-1000">Temperature:</span> {report?.temperature || '—'}</p>
-      <p><span className="font-medium text-slate-1000">Category:</span> {report?.category || '—'}</p>
+    {/* Column 3 */}
+    <div className="rounded-xl border border-slate-200 bg-white">
+      <dl className="divide-y divide-slate-200">
+        <div className="flex items-center justify-between gap-4 px-4 py-3">
+          <dt className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Type</dt>
+          <dd className="text-sm font-medium text-slate-900">{report?.type || '—'}</dd>
+        </div>
+
+        <div className="flex items-center justify-between gap-4 px-4 py-3">
+          <dt className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Surveyor</dt>
+          <dd className="text-sm font-medium text-slate-900">{report?.surveyor || '—'}</dd>
+        </div>
+
+        <div className="flex items-center justify-between gap-4 px-4 py-3">
+          <dt className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Brand</dt>
+          <dd className="text-sm font-medium text-slate-900">{report?.brand || '—'}</dd>
+        </div>
+
+        <div className="flex items-center justify-between gap-4 px-4 py-3">
+          <dt className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Temperature</dt>
+          <dd className="text-sm font-medium text-slate-900">{report?.temperature || '—'}</dd>
+        </div>
+
+        <div className="flex items-center justify-between gap-4 px-4 py-3">
+          <dt className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Category</dt>
+          <dd className="text-sm font-medium text-slate-900">{report?.category || '—'}</dd>
+        </div>
+      </dl>
     </div>
   </div>
 </div>

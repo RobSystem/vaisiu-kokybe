@@ -84,6 +84,7 @@ const [addingColor, setAddingColor] = useState(false);
 const [editTypeName, setEditTypeName] = useState("");
 const [editingType, setEditingType] = useState(false);
 const [deletingType, setDeletingType] = useState(false);
+const [deletingDefectId, setDeletingDefectId] = useState(null);
 
   // ===== Auth check =====
   useEffect(() => {
@@ -511,6 +512,51 @@ if (colAll.length) {
     setAddingDefect(false);
   }
 };
+const handleDeleteDefect = async (defect) => {
+  if (!defect?.id) return;
+
+  const ok = window.confirm(`Delete defect "${defect.name}"?`);
+  if (!ok) return;
+
+  setDeletingDefectId(defect.id);
+  try {
+    // 1) remove mappings first (safe if you have FK constraints)
+    const { error: mapErr } = await supabase
+      .from("report_type_defects")
+      .delete()
+      .eq("defect_id", defect.id);
+
+    if (mapErr) throw mapErr;
+
+    // 2) delete from catalog
+    const { error: catErr } = await supabase
+      .from("defects_catalog")
+      .delete()
+      .eq("id", defect.id);
+
+    if (catErr) throw catErr;
+
+    // 3) refresh catalog + clean local enabled maps (optional but nice)
+    await loadDefectsCatalog();
+
+    setMinorEnabled((p) => {
+      const next = { ...p };
+      delete next[defect.id];
+      return next;
+    });
+    setMajorEnabled((p) => {
+      const next = { ...p };
+      delete next[defect.id];
+      return next;
+    });
+  } catch (e) {
+    console.error(e);
+    alert("Delete failed. Check console / FK rules.");
+  } finally {
+    setDeletingDefectId(null);
+  }
+};
+
 
   return (
   <div className="min-h-screen bg-slate-50">
@@ -795,24 +841,41 @@ if (colAll.length) {
 
                   <div className="mt-2 max-h-48 overflow-auto pr-2">
                     {minorCatalog.map((d) => (
-                      <label
-                        key={d.id}
-                        className="flex items-center gap-2 py-1 text-sm text-slate-700"
-                      >
-                        <input
-                          type="checkbox"
-                          checked={!!minorEnabled[d.id]}
-                          onChange={(e) =>
-                            setMinorEnabled((p) => ({
-                              ...p,
-                              [d.id]: e.target.checked,
-                            }))
-                          }
-                          className="h-4 w-4"
-                        />
-                        {d.name}
-                      </label>
-                    ))}
+  <div
+    key={d.id}
+    className="group flex items-center justify-between gap-3 py-1 text-sm text-slate-700"
+  >
+    <label className="flex items-center gap-2">
+      <input
+        type="checkbox"
+        checked={!!minorEnabled[d.id]}
+        onChange={(e) =>
+          setMinorEnabled((p) => ({ ...p, [d.id]: e.target.checked }))
+        }
+      />
+      {d.name}
+    </label>
+
+    <button
+      type="button"
+      onClick={() => handleDeleteDefect(d)}
+      disabled={deletingDefectId === d.id}
+      className="rounded-lg p-1 text-slate-400 hover:text-red-600 disabled:opacity-50"
+      title="Delete defect"
+    >
+      {/* Trash icon */}
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+        className="h-4 w-4"
+      >
+        <path d="M9 3a1 1 0 0 0-1 1v1H5.75a.75.75 0 0 0 0 1.5h.62l.86 13.02A2 2 0 0 0 9.23 22h5.54a2 2 0 0 0 2-1.48l.86-13.02h.62a.75.75 0 0 0 0-1.5H16V4a1 1 0 0 0-1-1H9Zm1.5 2.5h3V5h-3v.5ZM9.5 9a.75.75 0 0 1 .75.75v8a.75.75 0 0 1-1.5 0v-8A.75.75 0 0 1 9.5 9Zm5 0a.75.75 0 0 1 .75.75v8a.75.75 0 0 1-1.5 0v-8A.75.75 0 0 1 14.5 9Z" />
+      </svg>
+    </button>
+  </div>
+))}
+
                   </div>
                 </div>
 
@@ -832,25 +895,42 @@ if (colAll.length) {
                   </div>
 
                   <div className="mt-2 max-h-48 overflow-auto pr-2">
-                    {majorCatalog.map((d) => (
-                      <label
-                        key={d.id}
-                        className="flex items-center gap-2 py-1 text-sm text-slate-700"
-                      >
-                        <input
-                          type="checkbox"
-                          checked={!!majorEnabled[d.id]}
-                          onChange={(e) =>
-                            setMajorEnabled((p) => ({
-                              ...p,
-                              [d.id]: e.target.checked,
-                            }))
-                          }
-                          className="h-4 w-4"
-                        />
-                        {d.name}
-                      </label>
-                    ))}
+                   {majorCatalog.map((d) => (
+  <div
+    key={d.id}
+    className="group flex items-center justify-between gap-3 py-1 text-sm text-slate-700"
+  >
+    <label className="flex items-center gap-2">
+      <input
+        type="checkbox"
+        checked={!!majorEnabled[d.id]}
+        onChange={(e) =>
+          setMajorEnabled((p) => ({ ...p, [d.id]: e.target.checked }))
+        }
+      />
+      {d.name}
+    </label>
+
+    <button
+      type="button"
+      onClick={() => handleDeleteDefect(d)}
+      disabled={deletingDefectId === d.id}
+      className="rounded-lg p-1 text-slate-400 hover:text-red-600 disabled:opacity-50"
+      title="Delete defect"
+    >
+      {/* Trash icon */}
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+        className="h-4 w-4"
+      >
+        <path d="M9 3a1 1 0 0 0-1 1v1H5.75a.75.75 0 0 0 0 1.5h.62l.86 13.02A2 2 0 0 0 9.23 22h5.54a2 2 0 0 0 2-1.48l.86-13.02h.62a.75.75 0 0 0 0-1.5H16V4a1 1 0 0 0-1-1H9Zm1.5 2.5h3V5h-3v.5ZM9.5 9a.75.75 0 0 1 .75.75v8a.75.75 0 0 1-1.5 0v-8A.75.75 0 0 1 9.5 9Zm5 0a.75.75 0 0 1 .75.75v8a.75.75 0 0 1-1.5 0v-8A.75.75 0 0 1 14.5 9Z" />
+      </svg>
+    </button>
+  </div>
+))}
+
                   </div>
                 </div>
 

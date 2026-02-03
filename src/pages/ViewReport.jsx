@@ -399,6 +399,18 @@ if (ids.size > 0) {
             renderInlineList('Fruit Weight', [`${sample.fruit_weight_min || ''} – ${sample.fruit_weight_max || ''}`], 'g')}
           {sample.fruit_weights_extra?.length > 0 &&
             renderInlineList('Extra Fruit Weights', sample.fruit_weights_extra, 'g')}
+            {(sample.punnet_weight_min || sample.punnet_weight_max) &&
+  renderInlineList('Punnet Weight', [`${sample.punnet_weight_min || ''} – ${sample.punnet_weight_max || ''}`], 'g')}
+
+{(sample.bag_weight_min || sample.bag_weight_max) &&
+  renderInlineList('Bag Weight', [`${sample.bag_weight_min || ''} – ${sample.bag_weight_max || ''}`], 'g')}
+
+{(sample.calibration_min || sample.calibration_max) &&
+  renderInlineList('Calibration', [`${sample.calibration_min || ''} – ${sample.calibration_max || ''}`])}
+
+{(sample.rhizome_weight_min || sample.rhizome_weight_max) &&
+  renderInlineList('Rhizome Weight', [`${sample.rhizome_weight_min || ''} – ${sample.rhizome_weight_max || ''}`], 'g')}
+
           {(sample.pressures_min || sample.pressures_max) &&
             renderInlineList('Pressures', [`${sample.pressures_min || ''} – ${sample.pressures_max || ''}`], 'kg')}
           {sample.pressures_extra?.length > 0 &&

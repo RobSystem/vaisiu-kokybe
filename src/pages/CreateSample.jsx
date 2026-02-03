@@ -548,6 +548,7 @@ const addMajorRow = () => setMajorRows((p) => [...p, { id: "", value: "", unit: 
   }
 };
 
+
 useEffect(() => {
   // kraunam kai sampleId atsiranda arba kai pereini į PHOTOS tab
   if (activeTab === TAB.PHOTOS) fetchPhotos();
@@ -710,7 +711,14 @@ navigate(`/create-sample/${reportId}/${inserted.id}`, { replace: true });
       setSaving(false);
     }
   };
-
+const handleSaveAndBackToReport = async () => {
+  try {
+    await handleSave(); // <-- kviečia esamą save logiką
+    navigate(`/edit-report/${reportId}`); // kelias į EditReport.jsx
+  } catch (error) {
+    console.error("Save failed", error);
+  }
+};
   /* =========================
      Render
      ========================= */
@@ -736,12 +744,13 @@ navigate(`/create-sample/${reportId}/${inserted.id}`, { replace: true });
           </button>
 
           <button
-            type="button"
-            onClick={() => navigate(`/edit/${reportId}`)}
-            className="h-10 rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 hover:bg-slate-50"
-          >
-            Back to Report
-          </button>
+  type="button"
+  onClick={handleSaveAndBackToReport}
+  disabled={saving}
+  className="h-10 rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-60"
+>
+  {saving ? "Saving..." : "Save and Back to Report"}
+</button>
         </div>
       </div>
 

@@ -573,11 +573,10 @@ const handleDeleteColoration = async (color) => {
 
     if (error) throw error;
 
-    // ✅ UI update be refresh
-    setExternalColors((prev) => prev.filter((c) => c.id !== color.id));
-    setInternalColors((prev) => prev.filter((c) => c.id !== color.id));
+    // ✅ svarbiausia – atnaujinti UI iš DB
+    await loadColorationCatalog();
 
-    // optional: nuimti iš enabled map’ų
+    // optional: nuimti iš enabled map’ų (jei naudoji)
     setExternalColorEnabled((p) => {
       const next = { ...p };
       delete next[color.id];
@@ -588,16 +587,14 @@ const handleDeleteColoration = async (color) => {
       delete next[color.id];
       return next;
     });
-
-    // optional: papildomas “truth refresh”
-    // await loadColorationCatalog();
   } catch (e) {
-    console.error(e);
+    console.error("Delete coloration error:", e);
     alert(`Delete failed: ${e.message ?? "Unknown error"}`);
   } finally {
     setDeletingColorId(null);
   }
 };
+
 
 
 

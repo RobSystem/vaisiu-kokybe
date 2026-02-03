@@ -85,6 +85,7 @@ const [editTypeName, setEditTypeName] = useState("");
 const [editingType, setEditingType] = useState(false);
 const [deletingType, setDeletingType] = useState(false);
 const [deletingDefectId, setDeletingDefectId] = useState(null);
+const [deletingColorId, setDeletingColorId] = useState(null);
 
   // ===== Auth check =====
   useEffect(() => {
@@ -556,6 +557,57 @@ const handleDeleteDefect = async (defect) => {
     setDeletingDefectId(null);
   }
 };
+const handleDeleteColoration = async (color) => {
+  if (!color?.id) return;
+
+  const ok = window.confirm(`Delete color "${color.name}"?`);
+  if (!ok) return;
+
+  setDeletingColorId(color.id);
+  try {
+    // 1) remove mappings first (safe if FK constraints exist)
+    // !!! Jei tavo mapping lentelė vadinasi kitaip – pakeisk čia pavadinimą.
+    const { error: mapErr } = await supabase
+      .from("report_type_colorations")
+      .delete()
+      .eq("coloration_id", color.id);
+
+    // Jei tokios lentelės nėra pas tave, ištrink šitą bloką arba pritaikyk.
+    if (mapErr && mapErr.code !== "42P01") {
+      // 42P01 = undefined_table (Postgres) – palikau „safe“, kad nelūžtų, jei neturi šitos lentelės
+      throw mapErr;
+    }
+
+    // 2) delete from catalog
+    const { error: catErr } = await supabase
+      .from("colorations_catalog")
+      .delete()
+      .eq("id", color.id);
+
+    if (catErr) throw catErr;
+
+    // 3) refresh
+    await loadColorationsCatalog();
+
+    // 4) cleanup local enabled maps (optional)
+    setExternalColorEnabled((p) => {
+      const next = { ...p };
+      delete next[color.id];
+      return next;
+    });
+    setInternalColorEnabled((p) => {
+      const next = { ...p };
+      delete next[color.id];
+      return next;
+    });
+  } catch (e) {
+    console.error(e);
+    alert("Delete failed. Check console / FK rules / table names.");
+  } finally {
+    setDeletingColorId(null);
+  }
+};
+
 
 
   return (
@@ -953,24 +1005,41 @@ const handleDeleteDefect = async (defect) => {
                   </div>
                   <div className="max-h-48 overflow-auto pr-2">
                     {externalColors.map((c) => (
-                      <label
-                        key={c.id}
-                        className="flex items-center gap-2 py-1 text-sm text-slate-700"
-                      >
-                        <input
-                          type="checkbox"
-                          checked={!!externalColorEnabled[c.id]}
-                          onChange={(e) =>
-                            setExternalColorEnabled((p) => ({
-                              ...p,
-                              [c.id]: e.target.checked,
-                            }))
-                          }
-                          className="h-4 w-4"
-                        />
-                        {c.name}
-                      </label>
-                    ))}
+  <div
+    key={c.id}
+    className="group flex items-center justify-between gap-3 py-1 text-sm text-slate-700"
+  >
+    <label className="flex items-center gap-2">
+      <input
+        type="checkbox"
+        checked={!!externalColorEnabled[c.id]}
+        onChange={(e) =>
+          setExternalColorEnabled((p) => ({ ...p, [c.id]: e.target.checked }))
+        }
+        className="h-4 w-4"
+      />
+      {c.name}
+    </label>
+
+    <button
+      type="button"
+      onClick={() => handleDeleteColoration(c)}
+      disabled={deletingColorId === c.id}
+      className="rounded-lg p-1 text-slate-400 hover:text-red-600 disabled:opacity-50"
+      title="Delete color"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+        className="h-4 w-4"
+      >
+        <path d="M9 3a1 1 0 0 0-1 1v1H5.75a.75.75 0 0 0 0 1.5h.62l.86 13.02A2 2 0 0 0 9.23 22h5.54a2 2 0 0 0 2-1.48l.86-13.02h.62a.75.75 0 0 0 0-1.5H16V4a1 1 0 0 0-1-1H9Zm1.5 2.5h3V5h-3v.5ZM9.5 9a.75.75 0 0 1 .75.75v8a.75.75 0 0 1-1.5 0v-8A.75.75 0 0 1 9.5 9Zm5 0a.75.75 0 0 1 .75.75v8a.75.75 0 0 1-1.5 0v-8A.75.75 0 0 1 14.5 9Z" />
+      </svg>
+    </button>
+  </div>
+))}
+
                   </div>
                 </div>
 
@@ -980,24 +1049,41 @@ const handleDeleteDefect = async (defect) => {
                   </div>
                   <div className="max-h-48 overflow-auto pr-2">
                     {internalColors.map((c) => (
-                      <label
-                        key={c.id}
-                        className="flex items-center gap-2 py-1 text-sm text-slate-700"
-                      >
-                        <input
-                          type="checkbox"
-                          checked={!!internalColorEnabled[c.id]}
-                          onChange={(e) =>
-                            setInternalColorEnabled((p) => ({
-                              ...p,
-                              [c.id]: e.target.checked,
-                            }))
-                          }
-                          className="h-4 w-4"
-                        />
-                        {c.name}
-                      </label>
-                    ))}
+  <div
+    key={c.id}
+    className="group flex items-center justify-between gap-3 py-1 text-sm text-slate-700"
+  >
+    <label className="flex items-center gap-2">
+      <input
+        type="checkbox"
+        checked={!!internalColorEnabled[c.id]}
+        onChange={(e) =>
+          setInternalColorEnabled((p) => ({ ...p, [c.id]: e.target.checked }))
+        }
+        className="h-4 w-4"
+      />
+      {c.name}
+    </label>
+
+    <button
+      type="button"
+      onClick={() => handleDeleteColoration(c)}
+      disabled={deletingColorId === c.id}
+      className="rounded-lg p-1 text-slate-400 hover:text-red-600 disabled:opacity-50"
+      title="Delete color"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+        className="h-4 w-4"
+      >
+        <path d="M9 3a1 1 0 0 0-1 1v1H5.75a.75.75 0 0 0 0 1.5h.62l.86 13.02A2 2 0 0 0 9.23 22h5.54a2 2 0 0 0 2-1.48l.86-13.02h.62a.75.75 0 0 0 0-1.5H16V4a1 1 0 0 0-1-1H9Zm1.5 2.5h3V5h-3v.5ZM9.5 9a.75.75 0 0 1 .75.75v8a.75.75 0 0 1-1.5 0v-8A.75.75 0 0 1 9.5 9Zm5 0a.75.75 0 0 1 .75.75v8a.75.75 0 0 1-1.5 0v-8A.75.75 0 0 1 14.5 9Z" />
+      </svg>
+    </button>
+  </div>
+))}
+
                   </div>
                 </div>
               </div>

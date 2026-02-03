@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../supabaseClient";
 
@@ -23,6 +23,20 @@ const FIELD_KEYS = [
 function AdminPanel() {
   const navigate = useNavigate();
   const [role, setRole] = useState(null);
+  // ===== Toasts (non-blocking notifications) =====
+  const toastTimerRef = useRef(null);
+  const [toast, setToast] = useState(null); // { id, type: 'success'|'error'|'info', message }
+
+  const showToast = (message, type = "info") => {
+    const id = Date.now();
+    setToast({ id, type, message });
+
+    if (toastTimerRef.current) window.clearTimeout(toastTimerRef.current);
+    toastTimerRef.current = window.setTimeout(() => {
+      setToast((t) => (t?.id === id ? null : t));
+    }, 3000);
+  };
+
 
   // ===== Report Types state =====
   const [reportTypes, setReportTypes] = useState([]);
@@ -130,7 +144,7 @@ useEffect(() => {
 const handleRenameReportType = async () => {
   const name = editTypeName.trim();
   if (!selectedReportTypeId) return;
-  if (!name) return alert("Name cannot be empty.");
+  if (!name) return showToast("Name cannot be empty.", "error");
 
   setEditingType(true);
   try {
@@ -141,10 +155,10 @@ const handleRenameReportType = async () => {
 
     if (error) throw error;
     await loadReportTypes();
-    alert("Renamed!");
+    showToast("Renamed!", "success");
   } catch (e) {
     console.error(e);
-    alert("Rename failed (maybe duplicate name).");
+    showToast("Rename failed (maybe duplicate name).", "error");
   } finally {
     setEditingType(false);
   }
@@ -165,10 +179,10 @@ const handleDeleteReportType = async () => {
 
     await loadReportTypes();
     setSelectedReportTypeId(""); // loadReportTypes parinks pirmą
-    alert("Deleted!");
+    showToast("Deleted!", "success");
   } catch (e) {
     console.error(e);
-    alert("Delete failed.");
+    showToast("Delete failed.", "error");
   } finally {
     setDeletingType(false);
   }
@@ -313,7 +327,7 @@ setInternalColorEnabled(intMap);
   // ===== Create new report type =====
   const handleCreateReportType = async () => {
     const name = newTypeName.trim();
-    if (!name) return alert("Enter report type name.");
+    if (!name) return showToast("Enter report type name.", "error");
 
     // 1) create report type
     const { data: created, error } = await supabase
@@ -324,7 +338,7 @@ setInternalColorEnabled(intMap);
 
     if (error) {
       console.error(error);
-      return alert("Failed to create report type.");
+      return showToast("Failed to create report type.", "error");
     }
 
     // 2) optionally clone from BASIC
@@ -379,7 +393,7 @@ setInternalColorEnabled(intMap);
   };
   const handleAddColoration = async () => {
   const name = newColorName.trim();
-  if (!name) return alert("Enter color name.");
+  if (!name) return showToast("Enter color name.", "error");
 
   setAddingColor(true);
   try {
@@ -391,10 +405,10 @@ setInternalColorEnabled(intMap);
 
     setNewColorName("");
     await loadColorationCatalog();
-    alert("Coloration added!");
+    showToast("Coloration added!", "success");
   } catch (e) {
     console.error(e);
-    alert("Failed to add coloration (maybe duplicate).");
+    showToast("Failed to add coloration (maybe duplicate).", "error");
   } finally {
     setAddingColor(false);
   }
@@ -482,10 +496,10 @@ if (colAll.length) {
 }
 
 
-      alert("Saved!");
+      showToast("Saved!", "success");
     } catch (e) {
       console.error(e);
-      alert("Save failed. Check console.");
+      showToast("Save failed. Check console.", "error");
     } finally {
       setSavingConfig(false);
     }
@@ -494,7 +508,7 @@ if (colAll.length) {
   if (role !== "admin") return null;
   const handleAddDefect = async () => {
   const name = newDefectName.trim();
-  if (!name) return alert("Enter defect name.");
+  if (!name) return showToast("Enter defect name.", "error");
 
   setAddingDefect(true);
   try {
@@ -506,10 +520,10 @@ if (colAll.length) {
 
     setNewDefectName("");
     await loadDefectsCatalog();
-    alert("Defect added!");
+    showToast("Defect added!", "success");
   } catch (e) {
     console.error(e);
-    alert("Failed to add defect (maybe duplicate name).");
+    showToast("Failed to add defect (maybe duplicate name).", "error");
   } finally {
     setAddingDefect(false);
   }
@@ -553,7 +567,7 @@ const handleDeleteDefect = async (defect) => {
     });
   } catch (e) {
     console.error(e);
-    alert("Delete failed. Check console / FK rules.");
+    showToast("Delete failed. Check console / FK rules.", "error");
   } finally {
     setDeletingDefectId(null);
   }
@@ -589,7 +603,7 @@ const handleDeleteColoration = async (color) => {
     });
   } catch (e) {
     console.error("Delete coloration error:", e);
-    alert(`Delete failed: ${e.message ?? "Unknown error"}`);
+    showToast(`Delete failed: ${e.message ?? "Unknown error"}`, "error");
   } finally {
     setDeletingColorId(null);
   }
@@ -1083,6 +1097,41 @@ const handleDeleteColoration = async (color) => {
         </div>
       </div>
     </div>
+    {toast && (
+      <div className="fixed bottom-4 right-4 z-50">
+        <div
+          className={[
+            "flex max-w-sm items-start gap-3 rounded-2xl border bg-white px-4 py-3 shadow-lg",
+            toast.type === "success" ? "border-emerald-200" : "",
+            toast.type === "error" ? "border-red-200" : "",
+            toast.type === "info" ? "border-slate-200" : "",
+          ].join(" ")}
+          role="status"
+          aria-live="polite"
+        >
+          <span
+            className={[
+              "mt-1 inline-block h-2.5 w-2.5 shrink-0 rounded-full",
+              toast.type === "success" ? "bg-emerald-500" : "",
+              toast.type === "error" ? "bg-red-500" : "",
+              toast.type === "info" ? "bg-slate-500" : "",
+            ].join(" ")}
+          />
+          <div className="flex-1 text-sm text-slate-800">{toast.message}</div>
+          <button
+            type="button"
+            onClick={() => setToast(null)}
+            className="rounded-lg p-1 text-slate-400 hover:text-slate-700"
+            aria-label="Close notification"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4">
+              <path d="M6.225 4.811a.75.75 0 0 1 1.06 0L12 9.525l4.714-4.714a.75.75 0 1 1 1.06 1.06L13.06 10.586l4.714 4.714a.75.75 0 1 1-1.06 1.06L12 11.646l-4.714 4.714a.75.75 0 0 1-1.06-1.06l4.714-4.714-4.714-4.714a.75.75 0 0 1 0-1.06Z" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    )}
+
   </div>
 );
 

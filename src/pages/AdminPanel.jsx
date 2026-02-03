@@ -564,49 +564,46 @@ const handleDeleteColoration = async (color) => {
   if (!ok) return;
 
   setDeletingColorId(color.id);
+
+  // 1) Delete from catalog
+  const { error: delErr } = await supabase
+    .from("coloration_catalog")
+    .delete()
+    .eq("id", color.id);
+
+  if (delErr) {
+    console.error("Delete coloration error:", delErr);
+    alert(`Delete failed: ${delErr.message}`);
+    setDeletingColorId(null);
+    return;
+  }
+
+  // 2) Optimistic UI update (iš karto dingsta iš sąrašo)
+  setExternalColors((prev) => prev.filter((c) => c.id !== color.id));
+  setInternalColors((prev) => prev.filter((c) => c.id !== color.id));
+
+  setExternalColorEnabled((p) => {
+    const next = { ...p };
+    delete next[color.id];
+    return next;
+  });
+  setInternalColorEnabled((p) => {
+    const next = { ...p };
+    delete next[color.id];
+    return next;
+  });
+
+  // 3) Refresh (jei nulūžta – nerodom “Delete failed”, nes delete jau įvyko)
   try {
-    // 1) remove mappings first (safe if FK constraints exist)
-    // !!! Jei tavo mapping lentelė vadinasi kitaip – pakeisk čia pavadinimą.
-    const { error: mapErr } = await supabase
-      .from("report_type_coloration")
-      .delete()
-      .eq("coloration_id", color.id);
-
-    // Jei tokios lentelės nėra pas tave, ištrink šitą bloką arba pritaikyk.
-    if (mapErr && mapErr.code !== "42P01") {
-      // 42P01 = undefined_table (Postgres) – palikau „safe“, kad nelūžtų, jei neturi šitos lentelės
-      throw mapErr;
-    }
-
-    // 2) delete from catalog
-    const { error: catErr } = await supabase
-      .from("coloration_catalog")
-      .delete()
-      .eq("id", color.id);
-
-    if (catErr) throw catErr;
-
-    // 3) refresh
-    await loadColorationsCatalog();
-
-    // 4) cleanup local enabled maps (optional)
-    setExternalColorEnabled((p) => {
-      const next = { ...p };
-      delete next[color.id];
-      return next;
-    });
-    setInternalColorEnabled((p) => {
-      const next = { ...p };
-      delete next[color.id];
-      return next;
-    });
+    await loadColorationCatalog();
   } catch (e) {
-    console.error(e);
-    alert("Delete failed. Check console / FK rules / table names.");
+    console.error("Reload coloration catalog failed (delete succeeded):", e);
+    // optionally: alert("Deleted, but refresh failed. Reload page if needed.");
   } finally {
     setDeletingColorId(null);
   }
 };
+
 
 
 

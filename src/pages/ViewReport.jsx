@@ -117,8 +117,9 @@ function ViewReport() {
     setAttachments([]);
   }
 };
-    fetchAttachments()
-  }, [reportId])
+      fetchData()          // ✅ TRŪKO ŠITO
+  fetchAttachments()
+}, [reportId])
 
   if (!report) return null
 

@@ -190,20 +190,7 @@ if (ids.size > 0) {
       })();
 
   if (n == null) return 'bg-gradient-to-r from-gray-200 to-gray-300 text-gray-900';
-  function getHeaderBgByQuality(score) {
-  const n = typeof score === 'number'
-    ? score
-    : (() => {
-        const m = String(score || '').match(/^\s*(\d+)/);
-        return m ? parseInt(m[1], 10) : null;
-      })();
-
-  if (n == null) return 'from-slate-50 to-slate-50';
-  if (n >= 6 && n <= 7) return 'from-green-50 to-green-100';
-  if (n >= 4 && n <= 5) return 'from-yellow-50 to-yellow-100';
-  return 'from-red-50 to-red-100';
-}
-
+  
   // QUALITY SCORE
   if (type === 'quality') {
     if (n >= 6 && n <= 7)
@@ -226,6 +213,20 @@ if (ids.size > 0) {
 
   return 'bg-gradient-to-r from-gray-200 to-gray-300 text-gray-900';
 }
+function getHeaderBgByQuality(score) {
+  const n = typeof score === 'number'
+    ? score
+    : (() => {
+        const m = String(score || '').match(/^\s*(\d+)/);
+        return m ? parseInt(m[1], 10) : null;
+      })();
+
+  if (n == null) return 'from-slate-50 to-slate-50';
+  if (n >= 6 && n <= 7) return 'from-green-50 to-green-100';
+  if (n >= 4 && n <= 5) return 'from-yellow-50 to-yellow-100';
+  return 'from-red-50 to-red-100';
+}
+
 
   const handleDownloadPDF = () => {
     const el = reportRef.current

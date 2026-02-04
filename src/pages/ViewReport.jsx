@@ -566,9 +566,9 @@ const cardTitle = "text-lg md:text-xl font-semibold text-slate-900";
  
   {/* Pagrindiniai matavimai: horizontaliai (wrap) */}
   {/* Pagrindiniai matavimai: General Information stilius (be kortelių), rodome tik užpildytus */}
-<div className="grid lg:grid-cols-12 gap-6">
+<div className="grid md:grid-cols-12 gap-6">
   {/* Kairė: Measurements (siauriau) */}
-  <div className="lg:col-span-8">
+  <div className="md:col-span-8">
 
 
   {/* Main measurements grid */}
@@ -681,18 +681,15 @@ const cardTitle = "text-lg md:text-xl font-semibold text-slate-900";
   )}
 </div>
 </div>
-  <div className="lg:col-span-4">
+  <div className="md:col-span-4">
     {/* Defects (dešinėje): Minor + Major vienas šalia kito */}
-{/* Defects – vientisa sekcija, be kortelių */}
 <div className="bg-slate-50 border border-slate-200 rounded-xl overflow-hidden">
-  {/* Čia specialiai NĖRA title "Defects", nes tu nori be nereikalingų pavadinimų */}
   <div className="grid grid-cols-2 divide-x divide-slate-200">
     {/* Minor */}
     <div className="px-4 py-3">
       <div className="text-xs font-semibold text-slate-700 uppercase tracking-wide mb-2">
         Minor
       </div>
-
       <div className="text-sm leading-relaxed">
         {renderDefectsSelected("Minor Defects", sample.minor_defects_selected) ||
           renderMultiLine("Minor Defects", sample.minor_defects)}
@@ -704,7 +701,6 @@ const cardTitle = "text-lg md:text-xl font-semibold text-slate-900";
       <div className="text-xs font-semibold text-slate-700 uppercase tracking-wide mb-2">
         Major
       </div>
-
       <div className="text-sm leading-relaxed">
         {renderDefectsSelected("Major Defects", sample.major_defects_selected) ||
           renderMultiLine("Major Defects", sample.major_defects)}

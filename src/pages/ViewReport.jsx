@@ -679,46 +679,69 @@ const cardTitle = "text-lg md:text-xl font-semibold text-slate-900";
   </div>
 
   {/* Dešinė: Defects (Minor + Major šalia, be kortelių) */}
-  <div className="md:col-span-4">
-    <div className="bg-slate-50 border border-slate-200 rounded-xl overflow-hidden">
-      <div className="grid grid-cols-2 divide-x divide-slate-200">
-        <div className="px-4 py-3">
-          <div className="text-xs font-semibold text-slate-700 uppercase tracking-wide mb-2">
-            Minor
-          </div>
-          <div className="text-sm leading-relaxed">
-            {renderDefectsSelected("Minor Defects", sample.minor_defects_selected) ||
-              renderMultiLine("Minor Defects", sample.minor_defects)}
-          </div>
+  <div className="md:col-span-4 space-y-6">
+  {/* Defects – kaip dabar */}
+  <div className="bg-slate-50 border border-slate-200 rounded-xl overflow-hidden">
+    <div className="grid grid-cols-2 divide-x divide-slate-200">
+      <div className="px-4 py-3">
+        <div className="text-xs font-semibold text-slate-700 uppercase tracking-wide mb-2">
+          Minor
         </div>
+        <div className="text-sm leading-relaxed">
+          {renderDefectsSelected("Minor Defects", sample.minor_defects_selected) ||
+            renderMultiLine("Minor Defects", sample.minor_defects)}
+        </div>
+      </div>
 
-        <div className="px-4 py-3">
-          <div className="text-xs font-semibold text-slate-700 uppercase tracking-wide mb-2">
-            Major
-          </div>
-          <div className="text-sm leading-relaxed">
-            {renderDefectsSelected("Major Defects", sample.major_defects_selected) ||
-              renderMultiLine("Major Defects", sample.major_defects)}
-          </div>
+      <div className="px-4 py-3">
+        <div className="text-xs font-semibold text-slate-700 uppercase tracking-wide mb-2">
+          Major
+        </div>
+        <div className="text-sm leading-relaxed">
+          {renderDefectsSelected("Major Defects", sample.major_defects_selected) ||
+            renderMultiLine("Major Defects", sample.major_defects)}
         </div>
       </div>
     </div>
   </div>
-</div>
 
+  {/* Coloration + Consistency – 3 stulpeliai horizontaliai */}
+  {(sample.external_coloration || sample.internal_coloration || sample.consistency) && (
+    <div className="bg-slate-50 border border-slate-200 rounded-xl overflow-hidden">
+      <div className="grid grid-cols-3 divide-x divide-slate-200">
+        {/* External */}
+        <div className="px-4 py-3">
+          <div className="text-xs font-semibold text-slate-700 uppercase tracking-wide mb-2">
+            External
+          </div>
+          <div className="text-sm leading-relaxed">
+            {renderList("External Coloration", sample.external_coloration)}
+          </div>
+        </div>
 
-  {/* Apatinė dalis: coloration/consistency + defects atskirom sekcijom (kaip 2-oje nuotraukoje) */}
-  <div className="grid lg:grid-cols-3 gap-6">
-    <div className="rounded-xl border border-slate-200 bg-white overflow-hidden">
-      <div className="bg-slate-50 px-4 py-3 border-b border-slate-200">
-        <h4 className="text-sm font-semibold text-slate-900">Coloration & Consistency</h4>
-      </div>
-      <div className="p-4 space-y-4 text-sm leading-relaxed">
-        {renderList("External Coloration", sample.external_coloration)}
-        {renderList("Internal Coloration", sample.internal_coloration)}
-        {renderConsistency(sample.consistency)}
+        {/* Internal */}
+        <div className="px-4 py-3">
+          <div className="text-xs font-semibold text-slate-700 uppercase tracking-wide mb-2">
+            Internal
+          </div>
+          <div className="text-sm leading-relaxed">
+            {renderList("Internal Coloration", sample.internal_coloration)}
+          </div>
+        </div>
+
+        {/* Consistency */}
+        <div className="px-4 py-3">
+          <div className="text-xs font-semibold text-slate-700 uppercase tracking-wide mb-2">
+            Consistency
+          </div>
+          <div className="text-sm leading-relaxed">
+            {renderConsistency(sample.consistency)}
+          </div>
+        </div>
       </div>
     </div>
+  )}
+</div>
 
    
 

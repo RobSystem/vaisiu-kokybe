@@ -750,94 +750,95 @@ const cardTitle = "text-lg md:text-xl font-semibold text-slate-900";
 
 
       {/* Photos – toje pačioje kortelėje */}
-     {photosForSample.length > 0 && (
-  <>
-    <div className="border-t bg-gray-50 px-6 py-3">
-      <h4 className="text-base md:text-lg font-semibold text-gray-800">Photos</h4>
+     {/* Photos – pritaikyta prie Sample dizaino */}
+{samplePhotos?.[sample.id]?.length > 0 && (
+  <div className="bg-slate-50 border border-slate-200 rounded-xl overflow-hidden">
+    <div className="px-4 py-3 border-b border-slate-200">
+      <h4 className="text-sm font-semibold text-slate-900">Photos</h4>
     </div>
 
-    <div className="px-6 py-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
-      {photosForSample.map((photo, i) => {
-        const url = photo.url || photo.publicUrl || photo.path;
-
-        // print'e darysim puslapio lūžį kas 28 (tik spausdinant)
-        const printBreakClass = i > 0 && i % 28 === 0 ? 'print:break-before-page' : '';
-
-        return (
-          <button
-            key={photo.id || url || i}
-            onClick={() => setPreviewUrl(url)}
-            title="Open photo"
-            className={`group block focus:outline-none ${printBreakClass}`}
+    <div className="p-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+        {samplePhotos[sample.id].map((p) => (
+          <a
+            key={p.id || p.url}
+            href={p.url}
+            target="_blank"
+            rel="noreferrer"
+            className="block rounded-lg border border-slate-200 bg-white overflow-hidden"
           >
-            {/* Vienodas rėmelis, bet be kirpimo: object-contain + fiksuotas santykis */}
-            <div className="aspect-[4/3] w-full overflow-hidden rounded-md border bg-white">
-              <img
-                src={url}
-                alt=""
-                loading="lazy"
-                className="w-full h-full object-contain group-hover:opacity-90"
-              />
-            </div>
-          </button>
-        );
-      })}
+            <img
+              src={p.url}
+              alt={p.name || "Sample photo"}
+              className="w-full h-40 object-cover"
+              loading="lazy"
+            />
+          </a>
+        ))}
+      </div>
     </div>
-  </>
+  </div>
 )}
+
     </section>
   );
 })}
 
 
       {/* Final Summary */}
-      {(report.qualityScore || report.storageScore || report.conclusion) && (
-  <section className="mt-8 border rounded-2xl shadow-sm overflow-hidden print:break-inside-avoid">
-    {/* Header */}
-    <div className="bg-gray-50 border-b px-6 py-3">
-      <h2 className="text-2xl font-bold text-gray-900 uppercase tracking-wide">
-        Final Summary
-      </h2>
-    </div>
+{(report.qualityScore || report.storageScore || report.conclusion) && (
+  <section className="mt-8 rounded-2xl border border-slate-200 overflow-hidden print:break-inside-avoid">
+    {/* Header (spalva pagal Quality) */}
+    <div
+      className={
+        "px-6 py-3 border-b border-slate-200 " +
+        "bg-gradient-to-r " +
+        getHeaderBgByQuality(report.qualityScore)
+      }
+    >
+      <div className="flex items-center justify-between gap-4">
+        <h2 className="text-base md:text-lg font-semibold text-slate-900 uppercase tracking-wide">
+          Final Summary
+        </h2>
 
-    {/* Content */}
-    <div className="px-6 py-6 space-y-6 text-[17px] leading-relaxed">
-      {/* Scores as chips (naudoja tavo getColor su gradientais) */}
-      <div className="flex flex-wrap gap-2">
-        {report.qualityScore && (
-          <span
-            className={
-              "px-4 py-2 rounded-full font-semibold shadow-sm " +
-              getColor(report.qualityScore, "quality")
-            }
-          >
-            Quality Score: {report.qualityScore}
-          </span>
-        )}
+        {/* Scores */}
+        <div className="flex flex-wrap gap-2">
+          {report.qualityScore && (
+            <span
+              className={
+                "inline-flex items-center rounded-full " +
+                "px-4 py-2 text-sm md:text-base font-semibold " +
+                "shadow-md ring-1 ring-black/10 border border-white/70 " +
+                getColor(report.qualityScore, "quality")
+              }
+            >
+              Quality Score: {report.qualityScore}
+            </span>
+          )}
 
-        {report.storageScore && (
-          <span
-            className={
-              "px-4 py-2 rounded-full font-semibold shadow-sm " +
-              getColor(report.storageScore, "storage")
-            }
-          >
-            Storage Score: {report.storageScore}
-          </span>
-        )}
+          {report.storageScore && (
+            <span
+              className={
+                "inline-flex items-center rounded-full " +
+                "px-4 py-2 text-sm md:text-base font-semibold " +
+                "shadow-md ring-1 ring-black/10 border border-white/70 " +
+                getColor(report.storageScore, "storage")
+              }
+            >
+              Storage Score: {report.storageScore}
+            </span>
+          )}
+        </div>
       </div>
+    </div>
 
-      {/* Conclusion */}
-     {report.conclusion && (
-  <div className="rounded-xl border bg-white">
-    <div className="px-4 py-2 border-b bg-gray-50 text-base font-semibold text-gray-700">
-      Conclusion
-    </div>
-    <div className="p-5 text-gray-900 text-[18px] leading-relaxed whitespace-pre-wrap">
-      {report.conclusion}
-    </div>
-  </div>
-)}
+    {/* Body (be Conclusion kortelės) */}
+    <div className="bg-slate-50 px-6 py-5">
+      {report.conclusion && (
+        <div className="text-slate-900 text-sm md:text-base leading-relaxed whitespace-pre-wrap">
+          {report.conclusion}
+        </div>
+      )}
     </div>
   </section>
 )}

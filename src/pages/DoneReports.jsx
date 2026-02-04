@@ -136,7 +136,7 @@ useEffect(() => {
         <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
           Inspections
         </div>
-        <h2 className="text-xl font-bold text-slate-900">Done Reports</h2>
+        <h2 className="text-xl font-bold text-slate-900">Archive</h2>
       </div>
 
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center">

@@ -751,7 +751,8 @@ const cardTitle = "text-lg md:text-xl font-semibold text-slate-900";
 
       {/* Photos – toje pačioje kortelėje */}
      {/* Photos – pritaikyta prie Sample dizaino */}
-{samplePhotos?.[sample.id]?.length > 0 && (
+{/* Photos – pritaikyta prie Sample dizaino */}
+{photosForSample?.length > 0 && (
   <div className="bg-slate-50 border border-slate-200 rounded-xl overflow-hidden">
     <div className="px-4 py-3 border-b border-slate-200">
       <h4 className="text-sm font-semibold text-slate-900">Photos</h4>
@@ -759,7 +760,7 @@ const cardTitle = "text-lg md:text-xl font-semibold text-slate-900";
 
     <div className="p-4">
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-        {samplePhotos[sample.id].map((p) => (
+        {photosForSample.map((p) => (
           <a
             key={p.id || p.url}
             href={p.url}
@@ -779,6 +780,7 @@ const cardTitle = "text-lg md:text-xl font-semibold text-slate-900";
     </div>
   </div>
 )}
+
 
     </section>
   );

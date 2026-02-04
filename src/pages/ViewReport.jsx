@@ -683,37 +683,36 @@ const cardTitle = "text-lg md:text-xl font-semibold text-slate-900";
 </div>
   <div className="lg:col-span-4">
     {/* Defects (dešinėje): Minor + Major vienas šalia kito */}
-<div className="rounded-xl border border-slate-200 bg-white overflow-hidden">
-  <div className="bg-slate-50 px-4 py-3 border-b border-slate-200">
-    <h4 className="text-sm font-semibold text-slate-900">Defects</h4>
-  </div>
-
-  <div className="p-4">
-    <div className="grid grid-cols-2 gap-4">
-      {/* Minor */}
-      <div className="rounded-lg border border-slate-200 bg-slate-50 overflow-hidden">
-        <div className="px-3 py-2 border-b border-slate-200">
-          <h5 className="text-xs font-semibold text-slate-900">Minor</h5>
-        </div>
-        <div className="px-3 py-3 text-sm leading-relaxed">
-          {renderDefectsSelected("Minor Defects", sample.minor_defects_selected) ||
-            renderMultiLine("Minor Defects", sample.minor_defects)}
-        </div>
+{/* Defects – vientisa sekcija, be kortelių */}
+<div className="bg-slate-50 border border-slate-200 rounded-xl overflow-hidden">
+  {/* Čia specialiai NĖRA title "Defects", nes tu nori be nereikalingų pavadinimų */}
+  <div className="grid grid-cols-2 divide-x divide-slate-200">
+    {/* Minor */}
+    <div className="px-4 py-3">
+      <div className="text-xs font-semibold text-slate-700 uppercase tracking-wide mb-2">
+        Minor
       </div>
 
-      {/* Major */}
-      <div className="rounded-lg border border-slate-200 bg-slate-50 overflow-hidden">
-        <div className="px-3 py-2 border-b border-slate-200">
-          <h5 className="text-xs font-semibold text-slate-900">Major</h5>
-        </div>
-        <div className="px-3 py-3 text-sm leading-relaxed">
-          {renderDefectsSelected("Major Defects", sample.major_defects_selected) ||
-            renderMultiLine("Major Defects", sample.major_defects)}
-        </div>
+      <div className="text-sm leading-relaxed">
+        {renderDefectsSelected("Minor Defects", sample.minor_defects_selected) ||
+          renderMultiLine("Minor Defects", sample.minor_defects)}
+      </div>
+    </div>
+
+    {/* Major */}
+    <div className="px-4 py-3">
+      <div className="text-xs font-semibold text-slate-700 uppercase tracking-wide mb-2">
+        Major
+      </div>
+
+      <div className="text-sm leading-relaxed">
+        {renderDefectsSelected("Major Defects", sample.major_defects_selected) ||
+          renderMultiLine("Major Defects", sample.major_defects)}
       </div>
     </div>
   </div>
 </div>
+
 
   </div>
 

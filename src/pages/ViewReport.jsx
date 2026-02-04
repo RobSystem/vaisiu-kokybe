@@ -682,7 +682,39 @@ const cardTitle = "text-lg md:text-xl font-semibold text-slate-900";
 </div>
 </div>
   <div className="lg:col-span-4">
-    {/* placeholder kol kas */}
+    {/* Defects (dešinėje): Minor + Major vienas šalia kito */}
+<div className="rounded-xl border border-slate-200 bg-white overflow-hidden">
+  <div className="bg-slate-50 px-4 py-3 border-b border-slate-200">
+    <h4 className="text-sm font-semibold text-slate-900">Defects</h4>
+  </div>
+
+  <div className="p-4">
+    <div className="grid grid-cols-2 gap-4">
+      {/* Minor */}
+      <div className="rounded-lg border border-slate-200 bg-slate-50 overflow-hidden">
+        <div className="px-3 py-2 border-b border-slate-200">
+          <h5 className="text-xs font-semibold text-slate-900">Minor</h5>
+        </div>
+        <div className="px-3 py-3 text-sm leading-relaxed">
+          {renderDefectsSelected("Minor Defects", sample.minor_defects_selected) ||
+            renderMultiLine("Minor Defects", sample.minor_defects)}
+        </div>
+      </div>
+
+      {/* Major */}
+      <div className="rounded-lg border border-slate-200 bg-slate-50 overflow-hidden">
+        <div className="px-3 py-2 border-b border-slate-200">
+          <h5 className="text-xs font-semibold text-slate-900">Major</h5>
+        </div>
+        <div className="px-3 py-3 text-sm leading-relaxed">
+          {renderDefectsSelected("Major Defects", sample.major_defects_selected) ||
+            renderMultiLine("Major Defects", sample.major_defects)}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
   </div>
 
   {/* Apatinė dalis: coloration/consistency + defects atskirom sekcijom (kaip 2-oje nuotraukoje) */}

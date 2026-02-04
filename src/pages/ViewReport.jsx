@@ -761,20 +761,19 @@ const cardTitle = "text-lg md:text-xl font-semibold text-slate-900";
     <div className="p-4">
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
         {photosForSample.map((p) => (
-          <a
-            key={p.id || p.url}
-            href={p.url}
-            target="_blank"
-            rel="noreferrer"
-            className="block rounded-lg border border-slate-200 bg-white overflow-hidden"
-          >
-            <img
-              src={p.url}
-              alt={p.name || "Sample photo"}
-              className="w-full h-40 object-cover"
-              loading="lazy"
-            />
-          </a>
+          <button
+  key={p.id || p.url}
+  type="button"
+  onClick={() => setPreviewUrl(p.url)}
+  className="block w-full rounded-lg border border-slate-200 bg-white overflow-hidden"
+>
+  <img
+    src={p.url}
+    alt={p.name || "Sample photo"}
+    className="w-full aspect-square object-cover"
+    loading="lazy"
+  />
+</button>
         ))}
       </div>
     </div>

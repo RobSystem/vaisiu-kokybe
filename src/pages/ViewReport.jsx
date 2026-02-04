@@ -570,23 +570,23 @@ const cardTitle = "text-lg md:text-xl font-semibold text-slate-900";
   {/* Kairė: Measurements */}
   <div className="md:col-span-8">
     <div className="bg-slate-50 border border-slate-200 rounded-xl overflow-hidden">
-      <dl className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 divide-x divide-y divide-slate-200 text-sm">
+      <dl className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-px bg-slate-200 text-sm">
         {sample.packing_type && (
-          <div className="px-4 py-3">
+          <div className="bg-slate-50 px-4 py-3">
             <dt className="text-xs font-medium text-slate-600 uppercase">Packing Type</dt>
             <dd className="mt-1 font-medium text-slate-900">{sample.packing_type}</dd>
           </div>
         )}
 
         {sample.size && (
-          <div className="px-4 py-3">
+         <div className="bg-slate-50 px-4 py-3">
             <dt className="text-xs font-medium text-slate-600 uppercase">Size</dt>
             <dd className="mt-1 font-medium text-slate-900">{sample.size}</dd>
           </div>
         )}
 
         {(sample.box_weight_min || sample.box_weight_max) && (
-          <div className="px-4 py-3">
+          <div className="bg-slate-50 px-4 py-3">
             <dt className="text-xs font-medium text-slate-600 uppercase">Box Weight</dt>
             <dd className="mt-1 font-medium text-slate-900">
               {`${sample.box_weight_min || ""} – ${sample.box_weight_max || ""}`.trim()}kg
@@ -595,7 +595,7 @@ const cardTitle = "text-lg md:text-xl font-semibold text-slate-900";
         )}
 
         {(sample.fruit_weight_min || sample.fruit_weight_max) && (
-          <div className="px-4 py-3">
+          <div className="bg-slate-50 px-4 py-3">
             <dt className="text-xs font-medium text-slate-600 uppercase">Fruit Weight</dt>
             <dd className="mt-1 font-medium text-slate-900">
               {`${sample.fruit_weight_min || ""} – ${sample.fruit_weight_max || ""}`.trim()}g
@@ -604,7 +604,7 @@ const cardTitle = "text-lg md:text-xl font-semibold text-slate-900";
         )}
 
         {(sample.punnet_weight_min || sample.punnet_weight_max) && (
-          <div className="px-4 py-3">
+          <div className="bg-slate-50 px-4 py-3">
             <dt className="text-xs font-medium text-slate-600 uppercase">Punnet Weight</dt>
             <dd className="mt-1 font-medium text-slate-900">
               {`${sample.punnet_weight_min || ""} – ${sample.punnet_weight_max || ""}`.trim()}g
@@ -613,7 +613,7 @@ const cardTitle = "text-lg md:text-xl font-semibold text-slate-900";
         )}
 
         {(sample.bag_weight_min || sample.bag_weight_max) && (
-          <div className="px-4 py-3">
+          <div className="bg-slate-50 px-4 py-3">
             <dt className="text-xs font-medium text-slate-600 uppercase">Bag Weight</dt>
             <dd className="mt-1 font-medium text-slate-900">
               {`${sample.bag_weight_min || ""} – ${sample.bag_weight_max || ""}`.trim()}g
@@ -622,7 +622,7 @@ const cardTitle = "text-lg md:text-xl font-semibold text-slate-900";
         )}
 
         {(sample.calibration_min || sample.calibration_max) && (
-          <div className="px-4 py-3">
+          <div className="bg-slate-50 px-4 py-3">
             <dt className="text-xs font-medium text-slate-600 uppercase">Calibration</dt>
             <dd className="mt-1 font-medium text-slate-900">
               {`${sample.calibration_min || ""} – ${sample.calibration_max || ""}`.trim()}
@@ -631,7 +631,7 @@ const cardTitle = "text-lg md:text-xl font-semibold text-slate-900";
         )}
 
         {(sample.rhizome_weight_min || sample.rhizome_weight_max) && (
-          <div className="px-4 py-3">
+         <div className="bg-slate-50 px-4 py-3">
             <dt className="text-xs font-medium text-slate-600 uppercase">Rhizome Weight</dt>
             <dd className="mt-1 font-medium text-slate-900">
               {`${sample.rhizome_weight_min || ""} – ${sample.rhizome_weight_max || ""}`.trim()}g
@@ -640,7 +640,7 @@ const cardTitle = "text-lg md:text-xl font-semibold text-slate-900";
         )}
 
         {(sample.pressures_min || sample.pressures_max) && (
-          <div className="px-4 py-3">
+          <div className="bg-slate-50 px-4 py-3">
             <dt className="text-xs font-medium text-slate-600 uppercase">Pressures</dt>
             <dd className="mt-1 font-medium text-slate-900">
               {`${sample.pressures_min || ""} – ${sample.pressures_max || ""}`.trim()}kg
@@ -649,7 +649,7 @@ const cardTitle = "text-lg md:text-xl font-semibold text-slate-900";
         )}
 
         {(sample.brix_min || sample.brix_max) && (
-          <div className="px-4 py-3">
+          <div className="bg-slate-50 px-4 py-3">
             <dt className="text-xs font-medium text-slate-600 uppercase">Brix</dt>
             <dd className="mt-1 font-medium text-slate-900">
               {`${sample.brix_min || ""} – ${sample.brix_max || ""}`.trim()}°
@@ -658,7 +658,7 @@ const cardTitle = "text-lg md:text-xl font-semibold text-slate-900";
         )}
 
         {(sample.fruit_diameter_min || sample.fruit_diameter_max) && (
-          <div className="px-4 py-3">
+          <div className="bg-slate-50 px-4 py-3">
             <dt className="text-xs font-medium text-slate-600 uppercase">Diameter</dt>
             <dd className="mt-1 font-medium text-slate-900">
               {`${sample.fruit_diameter_min || ""} – ${sample.fruit_diameter_max || ""}`.trim()}mm
@@ -682,8 +682,8 @@ const cardTitle = "text-lg md:text-xl font-semibold text-slate-900";
   <div className="md:col-span-4 space-y-6">
   {/* Defects – kaip dabar */}
   <div className="bg-slate-50 border border-slate-200 rounded-xl overflow-hidden">
-    <div className="grid grid-cols-2 divide-x divide-slate-200">
-      <div className="px-4 py-3">
+    <div className="grid grid-cols-2 gap-px bg-slate-200">
+      <div className="bg-slate-50 px-4 py-3">
         <div className="text-xs font-semibold text-slate-700 uppercase tracking-wide mb-2">
           Minor
         </div>
@@ -693,7 +693,7 @@ const cardTitle = "text-lg md:text-xl font-semibold text-slate-900";
         </div>
       </div>
 
-      <div className="px-4 py-3">
+      <div className="bg-slate-50 px-4 py-3">
         <div className="text-xs font-semibold text-slate-700 uppercase tracking-wide mb-2">
           Major
         </div>
@@ -708,9 +708,9 @@ const cardTitle = "text-lg md:text-xl font-semibold text-slate-900";
   {/* Coloration + Consistency – 3 stulpeliai horizontaliai */}
   {(sample.external_coloration || sample.internal_coloration || sample.consistency) && (
     <div className="bg-slate-50 border border-slate-200 rounded-xl overflow-hidden">
-      <div className="grid grid-cols-3 divide-x divide-slate-200">
+      <div className="grid grid-cols-3 gap-px bg-slate-200">
         {/* External */}
-        <div className="px-4 py-3">
+        <div className="bg-slate-50 px-4 py-3">
           <div className="text-xs font-semibold text-slate-700 uppercase tracking-wide mb-2">
             External
           </div>
@@ -720,7 +720,7 @@ const cardTitle = "text-lg md:text-xl font-semibold text-slate-900";
         </div>
 
         {/* Internal */}
-        <div className="px-4 py-3">
+        <div className="bg-slate-50 px-4 py-3">
           <div className="text-xs font-semibold text-slate-700 uppercase tracking-wide mb-2">
             Internal
           </div>
@@ -730,7 +730,7 @@ const cardTitle = "text-lg md:text-xl font-semibold text-slate-900";
         </div>
 
         {/* Consistency */}
-        <div className="px-4 py-3">
+        <div className="bg-slate-50 px-4 py-3">
           <div className="text-xs font-semibold text-slate-700 uppercase tracking-wide mb-2">
             Consistency
           </div>

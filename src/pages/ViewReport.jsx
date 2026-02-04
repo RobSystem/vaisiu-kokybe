@@ -130,7 +130,12 @@ if (ids.size > 0) {
       <p className="font-semibold">{label}:</p>
       <div className="flex flex-wrap gap-2 mt-1">
         {arr.map((val, i) => (
-          <span key={i} className="bg-gray-200 px-2 py-1 rounded text-xs">{val}{unit}</span>
+          <span
+  key={i}
+  className="rounded-md border border-slate-200 bg-slate-100 px-2 py-1 text-xs font-medium text-slate-800"
+>
+  {val}{unit}
+</span>
         ))}
       </div>
     </div>
@@ -450,63 +455,199 @@ const cardTitle = "text-lg md:text-xl font-semibold text-slate-900";
 </div>
       </div>
 
-      {/* Info – 3 stulpeliai, didesnis/paryškintas tekstas */}
-      <div className="grid md:grid-cols-3 gap-8 px-6 py-6 text-[16px] leading-relaxed">
-        <div className="space-y-1">
-          {renderField('GGN #', sample.ggn_number)}
-          {renderField('GGN Exp', sample.ggn_exp_date || sample.ggn_exp)}
-          {renderField('Grower Code', sample.grower_code)}
-          {renderField('Packing Code', sample.packing_code)}
-          {renderField('Variety', sample.variety)}
-          {renderField('Brand', sample.brand)}
-        </div>
+      {/* Info – naujas išdėstymas (tik UI), rodome tik užpildytus laukus */}
+<div className="px-6 py-6 space-y-6">
+  {/* Viršutinė eilė: identifikaciniai laukai (kaip tavo 2-oje nuotraukoje) */}
+  <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm">
+    {sample.variety && (
+      <div className="flex items-center gap-2">
+        <span className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Variety:</span>
+        <span className="text-sm font-medium text-slate-900">{sample.variety}</span>
+      </div>
+    )}
+    {sample.brand && (
+      <div className="flex items-center gap-2">
+        <span className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Brand:</span>
+        <span className="text-sm font-medium text-slate-900">{sample.brand}</span>
+      </div>
+    )}
+    {sample.packing_code && (
+      <div className="flex items-center gap-2">
+        <span className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Packing Code:</span>
+        <span className="text-sm font-medium text-slate-900">{sample.packing_code}</span>
+      </div>
+    )}
+    {sample.grower_code && (
+      <div className="flex items-center gap-2">
+        <span className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Grower Code:</span>
+        <span className="text-sm font-medium text-slate-900">{sample.grower_code}</span>
+      </div>
+    )}
+    {sample.ggn_number && (
+      <div className="flex items-center gap-2">
+        <span className="text-xs font-semibold text-slate-600 uppercase tracking-wide">GGN #:</span>
+        <span className="text-sm font-medium text-slate-900">{sample.ggn_number}</span>
+      </div>
+    )}
+    {(sample.ggn_exp_date || sample.ggn_exp) && (
+      <div className="flex items-center gap-2">
+        <span className="text-xs font-semibold text-slate-600 uppercase tracking-wide">GGN Exp:</span>
+        <span className="text-sm font-medium text-slate-900">{sample.ggn_exp_date || sample.ggn_exp}</span>
+      </div>
+    )}
+  </div>
 
-        <div className="space-y-1">
-          {renderField('Packing Type', sample.packing_type)}
-          {renderField('Size', sample.size)}
-          {(sample.box_weight_min || sample.box_weight_max) &&
-            renderInlineList('Box Weight', [`${sample.box_weight_min || ''} – ${sample.box_weight_max || ''}`], 'kg')}
-          {sample.box_weight_extra?.length > 0 &&
-            renderInlineList('Extra Box Weights', sample.box_weight_extra, 'kg')}
-          {(sample.fruit_weight_min || sample.fruit_weight_max) &&
-            renderInlineList('Fruit Weight', [`${sample.fruit_weight_min || ''} – ${sample.fruit_weight_max || ''}`], 'g')}
-          {sample.fruit_weights_extra?.length > 0 &&
-            renderInlineList('Extra Fruit Weights', sample.fruit_weights_extra, 'g')}
-            {(sample.punnet_weight_min || sample.punnet_weight_max) &&
-  renderInlineList('Punnet Weight', [`${sample.punnet_weight_min || ''} – ${sample.punnet_weight_max || ''}`], 'g')}
-
-{(sample.bag_weight_min || sample.bag_weight_max) &&
-  renderInlineList('Bag Weight', [`${sample.bag_weight_min || ''} – ${sample.bag_weight_max || ''}`], 'g')}
-
-{(sample.calibration_min || sample.calibration_max) &&
-  renderInlineList('Calibration', [`${sample.calibration_min || ''} – ${sample.calibration_max || ''}`])}
-
-{(sample.rhizome_weight_min || sample.rhizome_weight_max) &&
-  renderInlineList('Rhizome Weight', [`${sample.rhizome_weight_min || ''} – ${sample.rhizome_weight_max || ''}`], 'g')}
-
-          {(sample.pressures_min || sample.pressures_max) &&
-            renderInlineList('Pressures', [`${sample.pressures_min || ''} – ${sample.pressures_max || ''}`], 'kg')}
-          {sample.pressures_extra?.length > 0 &&
-            renderInlineList('Extra Pressures', sample.pressures_extra, 'kg')}
-          {(sample.brix_min || sample.brix_max) &&
-            renderInlineList('Brix', [`${sample.brix_min || ''} – ${sample.brix_max || ''}`], '°')}
-          {sample.brix_extra?.length > 0 &&
-            renderInlineList('Extra Brix', sample.brix_extra, '°')}
-          {(sample.fruit_diameter_min || sample.fruit_diameter_max) &&
-            renderInlineList('Diameter', [`${sample.fruit_diameter_min || ''} – ${sample.fruit_diameter_max || ''}`], 'mm')}
-          {sample.diameter_extra?.length > 0 &&
-            renderInlineList('Extra Diameters', sample.diameter_extra, 'mm')}
-        </div>
-
-        <div className="space-y-2">
-          {renderList('External Coloration', sample.external_coloration)}
-          {renderList('Internal Coloration', sample.internal_coloration)}
-          {renderConsistency(sample.consistency)}
-          {renderDefectsSelected("Minor Defects", sample.minor_defects_selected) || renderMultiLine("Minor Defects", sample.minor_defects)}
-{renderDefectsSelected("Major Defects", sample.major_defects_selected) || renderMultiLine("Major Defects", sample.major_defects)}
-
+  {/* Pagrindiniai matavimai: horizontaliai (wrap) */}
+  <div className="flex flex-wrap gap-4">
+    {sample.packing_type && (
+      <div className="min-w-[150px] rounded-xl border border-slate-200 bg-white px-4 py-3">
+        <div className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Packing Type</div>
+        <div className="mt-1 inline-flex rounded-md border border-slate-200 bg-slate-100 px-2 py-1 text-sm font-medium text-slate-900">
+          {sample.packing_type}
         </div>
       </div>
+    )}
+
+    {sample.size && (
+      <div className="min-w-[120px] rounded-xl border border-slate-200 bg-white px-4 py-3">
+        <div className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Size</div>
+        <div className="mt-1 inline-flex rounded-md border border-slate-200 bg-slate-100 px-2 py-1 text-sm font-medium text-slate-900">
+          {sample.size}
+        </div>
+      </div>
+    )}
+
+    {(sample.box_weight_min || sample.box_weight_max) && (
+      <div className="min-w-[150px] rounded-xl border border-slate-200 bg-white px-4 py-3">
+        <div className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Box Weight</div>
+        <div className="mt-1 inline-flex rounded-md border border-slate-200 bg-slate-100 px-2 py-1 text-sm font-medium text-slate-900">
+          {`${sample.box_weight_min || ""} – ${sample.box_weight_max || ""}`.trim()}kg
+        </div>
+      </div>
+    )}
+
+    {(sample.fruit_weight_min || sample.fruit_weight_max) && (
+      <div className="min-w-[150px] rounded-xl border border-slate-200 bg-white px-4 py-3">
+        <div className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Fruit Weight</div>
+        <div className="mt-1 inline-flex rounded-md border border-slate-200 bg-slate-100 px-2 py-1 text-sm font-medium text-slate-900">
+          {`${sample.fruit_weight_min || ""} – ${sample.fruit_weight_max || ""}`.trim()}g
+        </div>
+      </div>
+    )}
+
+    {(sample.punnet_weight_min || sample.punnet_weight_max) && (
+      <div className="min-w-[150px] rounded-xl border border-slate-200 bg-white px-4 py-3">
+        <div className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Punnet Weight</div>
+        <div className="mt-1 inline-flex rounded-md border border-slate-200 bg-slate-100 px-2 py-1 text-sm font-medium text-slate-900">
+          {`${sample.punnet_weight_min || ""} – ${sample.punnet_weight_max || ""}`.trim()}g
+        </div>
+      </div>
+    )}
+
+    {(sample.bag_weight_min || sample.bag_weight_max) && (
+      <div className="min-w-[150px] rounded-xl border border-slate-200 bg-white px-4 py-3">
+        <div className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Bag Weight</div>
+        <div className="mt-1 inline-flex rounded-md border border-slate-200 bg-slate-100 px-2 py-1 text-sm font-medium text-slate-900">
+          {`${sample.bag_weight_min || ""} – ${sample.bag_weight_max || ""}`.trim()}g
+        </div>
+      </div>
+    )}
+
+    {(sample.calibration_min || sample.calibration_max) && (
+      <div className="min-w-[150px] rounded-xl border border-slate-200 bg-white px-4 py-3">
+        <div className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Calibration</div>
+        <div className="mt-1 inline-flex rounded-md border border-slate-200 bg-slate-100 px-2 py-1 text-sm font-medium text-slate-900">
+          {`${sample.calibration_min || ""} – ${sample.calibration_max || ""}`.trim()}
+        </div>
+      </div>
+    )}
+
+    {(sample.rhizome_weight_min || sample.rhizome_weight_max) && (
+      <div className="min-w-[170px] rounded-xl border border-slate-200 bg-white px-4 py-3">
+        <div className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Rhizome Weight</div>
+        <div className="mt-1 inline-flex rounded-md border border-slate-200 bg-slate-100 px-2 py-1 text-sm font-medium text-slate-900">
+          {`${sample.rhizome_weight_min || ""} – ${sample.rhizome_weight_max || ""}`.trim()}g
+        </div>
+      </div>
+    )}
+
+    {(sample.pressures_min || sample.pressures_max) && (
+      <div className="min-w-[150px] rounded-xl border border-slate-200 bg-white px-4 py-3">
+        <div className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Pressures</div>
+        <div className="mt-1 inline-flex rounded-md border border-slate-200 bg-slate-100 px-2 py-1 text-sm font-medium text-slate-900">
+          {`${sample.pressures_min || ""} – ${sample.pressures_max || ""}`.trim()}kg
+        </div>
+      </div>
+    )}
+
+    {(sample.brix_min || sample.brix_max) && (
+      <div className="min-w-[120px] rounded-xl border border-slate-200 bg-white px-4 py-3">
+        <div className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Brix</div>
+        <div className="mt-1 inline-flex rounded-md border border-slate-200 bg-slate-100 px-2 py-1 text-sm font-medium text-slate-900">
+          {`${sample.brix_min || ""} – ${sample.brix_max || ""}`.trim()}°
+        </div>
+      </div>
+    )}
+
+    {(sample.fruit_diameter_min || sample.fruit_diameter_max) && (
+      <div className="min-w-[140px] rounded-xl border border-slate-200 bg-white px-4 py-3">
+        <div className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Diameter</div>
+        <div className="mt-1 inline-flex rounded-md border border-slate-200 bg-slate-100 px-2 py-1 text-sm font-medium text-slate-900">
+          {`${sample.fruit_diameter_min || ""} – ${sample.fruit_diameter_max || ""}`.trim()}mm
+        </div>
+      </div>
+    )}
+  </div>
+
+  {/* Extra list'ai (paliekam tavo esamą logiką, tik su modernesniais chip'ais per renderInlineList) */}
+  <div className="space-y-4">
+    {sample.box_weight_extra?.length > 0 &&
+      renderInlineList("Extra Box Weights", sample.box_weight_extra, "kg")}
+    {sample.fruit_weights_extra?.length > 0 &&
+      renderInlineList("Extra Fruit Weights", sample.fruit_weights_extra, "g")}
+    {sample.pressures_extra?.length > 0 &&
+      renderInlineList("Extra Pressures", sample.pressures_extra, "kg")}
+    {sample.brix_extra?.length > 0 &&
+      renderInlineList("Extra Brix", sample.brix_extra, "°")}
+    {sample.diameter_extra?.length > 0 &&
+      renderInlineList("Extra Diameters", sample.diameter_extra, "mm")}
+  </div>
+
+  {/* Apatinė dalis: coloration/consistency + defects atskirom sekcijom (kaip 2-oje nuotraukoje) */}
+  <div className="grid lg:grid-cols-3 gap-6">
+    <div className="rounded-xl border border-slate-200 bg-white overflow-hidden">
+      <div className="bg-slate-50 px-4 py-3 border-b border-slate-200">
+        <h4 className="text-sm font-semibold text-slate-900">Coloration & Consistency</h4>
+      </div>
+      <div className="p-4 space-y-4 text-sm leading-relaxed">
+        {renderList("External Coloration", sample.external_coloration)}
+        {renderList("Internal Coloration", sample.internal_coloration)}
+        {renderConsistency(sample.consistency)}
+      </div>
+    </div>
+
+    <div className="rounded-xl border border-slate-200 bg-white overflow-hidden">
+      <div className="bg-slate-50 px-4 py-3 border-b border-slate-200">
+        <h4 className="text-sm font-semibold text-slate-900">Minor Defects</h4>
+      </div>
+      <div className="p-4 text-sm leading-relaxed">
+        {renderDefectsSelected("Minor Defects", sample.minor_defects_selected) ||
+          renderMultiLine("Minor Defects", sample.minor_defects)}
+      </div>
+    </div>
+
+    <div className="rounded-xl border border-slate-200 bg-white overflow-hidden">
+      <div className="bg-slate-50 px-4 py-3 border-b border-slate-200">
+        <h4 className="text-sm font-semibold text-slate-900">Major Defects</h4>
+      </div>
+      <div className="p-4 text-sm leading-relaxed">
+        {renderDefectsSelected("Major Defects", sample.major_defects_selected) ||
+          renderMultiLine("Major Defects", sample.major_defects)}
+      </div>
+    </div>
+  </div>
+</div>
+
 
       {/* Photos – toje pačioje kortelėje */}
      {photosForSample.length > 0 && (

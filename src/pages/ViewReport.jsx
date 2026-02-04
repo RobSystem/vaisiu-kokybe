@@ -535,10 +535,11 @@ const cardTitle = "text-lg md:text-xl font-semibold text-slate-900";
 
   {/* Right side: score badges (paliekam tavo esamą logiką) */}
   <div className="flex flex-wrap gap-2 text-sm md:text-base">
-    <span
+   <span
   className={
-    'inline-flex items-center rounded-full px-3 py-1.5 text-xs font-semibold ' +
-    'shadow-sm ring-1 ring-black/5 border border-white/60 ' +
+    'inline-flex items-center rounded-full ' +
+    'px-4 py-2 text-sm md:text-base font-semibold ' +
+    'shadow-md ring-1 ring-black/10 border border-white/70 ' +
     getColor(sample.quality_score, 'quality')
   }
 >
@@ -547,9 +548,10 @@ const cardTitle = "text-lg md:text-xl font-semibold text-slate-900";
 
 <span
   className={
-    'inline-flex items-center rounded-full px-3 py-1.5 text-xs font-semibold ' +
-    'shadow-sm ring-1 ring-black/5 border border-white/60 ' +
-    getColor(sample.storage_score, 'storage')
+    'inline-flex items-center rounded-full ' +
+    'px-4 py-2 text-sm md:text-base font-semibold ' +
+    'shadow-md ring-1 ring-black/10 border border-white/70 ' +
+    getColor(sample.storage_score, 'quality')
   }
 >
   Storage Score: {sample.storage_score ?? '—'}

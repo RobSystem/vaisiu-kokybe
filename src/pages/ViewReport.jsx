@@ -563,45 +563,7 @@ const cardTitle = "text-lg md:text-xl font-semibold text-slate-900";
       {/* Info – naujas išdėstymas (tik UI), rodome tik užpildytus laukus */}
 <div className="px-6 py-6 space-y-6">
   {/* Viršutinė eilė: identifikaciniai laukai (kaip tavo 2-oje nuotraukoje) */}
-  <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm">
-    {sample.variety && (
-      <div className="flex items-center gap-2">
-        <span className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Variety:</span>
-        <span className="text-sm font-medium text-slate-900">{sample.variety}</span>
-      </div>
-    )}
-    {sample.brand && (
-      <div className="flex items-center gap-2">
-        <span className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Brand:</span>
-        <span className="text-sm font-medium text-slate-900">{sample.brand}</span>
-      </div>
-    )}
-    {sample.packing_code && (
-      <div className="flex items-center gap-2">
-        <span className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Packing Code:</span>
-        <span className="text-sm font-medium text-slate-900">{sample.packing_code}</span>
-      </div>
-    )}
-    {sample.grower_code && (
-      <div className="flex items-center gap-2">
-        <span className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Grower Code:</span>
-        <span className="text-sm font-medium text-slate-900">{sample.grower_code}</span>
-      </div>
-    )}
-    {sample.ggn_number && (
-      <div className="flex items-center gap-2">
-        <span className="text-xs font-semibold text-slate-600 uppercase tracking-wide">GGN #:</span>
-        <span className="text-sm font-medium text-slate-900">{sample.ggn_number}</span>
-      </div>
-    )}
-    {(sample.ggn_exp_date || sample.ggn_exp) && (
-      <div className="flex items-center gap-2">
-        <span className="text-xs font-semibold text-slate-600 uppercase tracking-wide">GGN Exp:</span>
-        <span className="text-sm font-medium text-slate-900">{sample.ggn_exp_date || sample.ggn_exp}</span>
-      </div>
-    )}
-  </div>
-
+ 
   {/* Pagrindiniai matavimai: horizontaliai (wrap) */}
   {/* Pagrindiniai matavimai: General Information stilius (be kortelių), rodome tik užpildytus */}
 <div className="rounded-xl border border-slate-200 bg-white overflow-hidden">

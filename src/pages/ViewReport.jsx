@@ -788,15 +788,15 @@ const cardTitle = "text-lg md:text-xl font-semibold text-slate-900";
 
       {/* Final Summary */}
 {(report.qualityScore || report.storageScore || report.conclusion) && (
-  <section className="mt-8 rounded-2xl border border-slate-200 overflow-hidden print:break-inside-avoid">
+  <section className="mt-8 rounded-2xl border border-slate-200 overflow-hidden sticky bottom-0 z-40">
     {/* Header (spalva pagal Quality) */}
     <div
-      className={
-        "px-6 py-3 border-b border-slate-200 " +
-        "bg-gradient-to-r " +
-        getHeaderBgByQuality(report.qualityScore)
-      }
-    >
+  className={
+    "px-6 py-3 border-b border-slate-200 " +
+    "bg-gradient-to-r " + getHeaderBgByQuality(report?.quality_score) + " " +
+    "sticky bottom-0 z-40"
+  }
+>
       <div className="flex items-center justify-between gap-4">
         <h2 className="text-base md:text-lg font-semibold text-slate-900 uppercase tracking-wide">
           Final Summary

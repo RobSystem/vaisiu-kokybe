@@ -786,14 +786,15 @@ const cardTitle = "text-lg md:text-xl font-semibold text-slate-900";
 
 
       {/* Final Summary */}
-{(report.qualityScore || report.storageScore || report.conclusion) && (
+{/* Final Summary */}
+{(report?.quality_score || report?.storage_score || report?.conclusion) && (
   <section className="mt-8 rounded-2xl border border-slate-200 overflow-hidden print:break-inside-avoid">
     {/* Header (spalva pagal Quality) */}
     <div
       className={
         "px-6 py-3 border-b border-slate-200 " +
         "bg-gradient-to-r " +
-        getHeaderBgByQuality(report.qualityScore)
+        getHeaderBgByQuality(report?.quality_score)
       }
     >
       <div className="flex items-center justify-between gap-4">
@@ -803,29 +804,29 @@ const cardTitle = "text-lg md:text-xl font-semibold text-slate-900";
 
         {/* Scores */}
         <div className="flex flex-wrap gap-2">
-          {report.qualityScore && (
+          {report?.quality_score != null && (
             <span
               className={
                 "inline-flex items-center rounded-full " +
                 "px-4 py-2 text-sm md:text-base font-semibold " +
                 "shadow-md ring-1 ring-black/10 border border-white/70 " +
-                getColor(report.qualityScore, "quality")
+                getColor(report.quality_score, "quality")
               }
             >
-              Quality Score: {report.qualityScore}
+              Quality Score: {report.quality_score}
             </span>
           )}
 
-          {report.storageScore && (
+          {report?.storage_score != null && (
             <span
               className={
                 "inline-flex items-center rounded-full " +
                 "px-4 py-2 text-sm md:text-base font-semibold " +
                 "shadow-md ring-1 ring-black/10 border border-white/70 " +
-                getColor(report.storageScore, "storage")
+                getColor(report.storage_score, "storage")
               }
             >
-              Storage Score: {report.storageScore}
+              Storage Score: {report.storage_score}
             </span>
           )}
         </div>
@@ -834,7 +835,7 @@ const cardTitle = "text-lg md:text-xl font-semibold text-slate-900";
 
     {/* Body (be Conclusion kortelės) */}
     <div className="bg-slate-50 px-6 py-5">
-      {report.conclusion && (
+      {report?.conclusion && (
         <div className="text-slate-900 text-sm md:text-base leading-relaxed whitespace-pre-wrap">
           {report.conclusion}
         </div>
@@ -842,6 +843,7 @@ const cardTitle = "text-lg md:text-xl font-semibold text-slate-900";
     </div>
   </section>
 )}
+
 
       
 

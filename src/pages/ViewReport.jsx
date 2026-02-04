@@ -759,7 +759,7 @@ const cardTitle = "text-lg md:text-xl font-semibold text-slate-900";
     </div>
 
     <div className="p-4">
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+      <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-2">
         {photosForSample.map((p) => (
           <button
   key={p.id || p.url}

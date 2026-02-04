@@ -471,14 +471,7 @@ const cardTitle = "text-lg md:text-xl font-semibold text-slate-900";
         <span className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Packing Code:</span>
         <span className="text-sm font-medium text-slate-900">{sample.packing_code}</span>
       </div>
-    )}   
-
-    {sample.brand && (
-      <div className="flex items-center gap-2">
-        <span className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Brand:</span>
-        <span className="text-sm font-medium text-slate-900">{sample.brand}</span>
-      </div>
-    )}   
+    )}       
 
     
     {sample.variety && (
@@ -487,7 +480,12 @@ const cardTitle = "text-lg md:text-xl font-semibold text-slate-900";
         <span className="text-sm font-medium text-slate-900">{sample.variety}</span>
       </div>
     )} 
-
+    {sample.brand && (
+      <div className="flex items-center gap-2">
+        <span className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Brand:</span>
+        <span className="text-sm font-medium text-slate-900">{sample.brand}</span>
+      </div>
+    )} 
     
   </div>
 

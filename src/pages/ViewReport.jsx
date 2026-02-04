@@ -566,12 +566,10 @@ const cardTitle = "text-lg md:text-xl font-semibold text-slate-900";
  
   {/* Pagrindiniai matavimai: horizontaliai (wrap) */}
   {/* Pagrindiniai matavimai: General Information stilius (be kortelių), rodome tik užpildytus */}
-<div className="bg-slate-50 border border-slate-200 rounded-xl overflow-hidden">
+<div className="grid lg:grid-cols-12 gap-6">
+  {/* Kairė: Measurements (siauriau) */}
+  <div className="lg:col-span-8">
 
-  {/* Title */}
-  <div className="px-4 py-3 border-b border-slate-200">
-    <h4 className="text-sm font-semibold text-slate-900">Measurements</h4>
-  </div>
 
   {/* Main measurements grid */}
   <dl className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 divide-x divide-y divide-slate-200 text-sm">
@@ -682,6 +680,10 @@ const cardTitle = "text-lg md:text-xl font-semibold text-slate-900";
     </div>
   )}
 </div>
+</div>
+  <div className="lg:col-span-4">
+    {/* placeholder kol kas */}
+  </div>
 
   {/* Apatinė dalis: coloration/consistency + defects atskirom sekcijom (kaip 2-oje nuotraukoje) */}
   <div className="grid lg:grid-cols-3 gap-6">

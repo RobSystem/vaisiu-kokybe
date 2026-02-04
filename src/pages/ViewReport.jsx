@@ -481,7 +481,7 @@ const cardTitle = "text-lg md:text-xl font-semibold text-slate-900";
     {(sample.ggn_exp_date || sample.ggn_exp) && (
       <div className="flex items-center gap-2">
         <span className="text-xs font-medium text-slate-600 uppercase tracking-wide">
-  GGN EXP:
+  GGN EXP DATE:
 </span>
 <span className="text-sm md:text-base font-medium text-slate-900">
   {sample.ggn_exp_date}
@@ -603,106 +603,110 @@ const cardTitle = "text-lg md:text-xl font-semibold text-slate-900";
   </div>
 
   {/* Pagrindiniai matavimai: horizontaliai (wrap) */}
-  <div className="flex flex-wrap gap-4">
+  {/* Pagrindiniai matavimai: General Information stilius (be kortelių), rodome tik užpildytus */}
+<div className="rounded-xl border border-slate-200 bg-white overflow-hidden">
+  <div className="bg-slate-50 px-4 py-3 border-b border-slate-200">
+    <h4 className="text-sm font-semibold text-slate-900">Measurements</h4>
+  </div>
+
+  <dl className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-4 px-4 py-4 text-sm">
     {sample.packing_type && (
-      <div className="min-w-[150px] rounded-xl border border-slate-200 bg-white px-4 py-3">
-        <div className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Packing Type</div>
-        <div className="mt-1 inline-flex rounded-md border border-slate-200 bg-slate-100 px-2 py-1 text-sm font-medium text-slate-900">
-          {sample.packing_type}
-        </div>
+      <div>
+        <dt className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Packing Type</dt>
+        <dd className="mt-1 text-sm font-medium text-slate-900">{sample.packing_type}</dd>
       </div>
     )}
 
     {sample.size && (
-      <div className="min-w-[120px] rounded-xl border border-slate-200 bg-white px-4 py-3">
-        <div className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Size</div>
-        <div className="mt-1 inline-flex rounded-md border border-slate-200 bg-slate-100 px-2 py-1 text-sm font-medium text-slate-900">
-          {sample.size}
-        </div>
+      <div>
+        <dt className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Size</dt>
+        <dd className="mt-1 text-sm font-medium text-slate-900">{sample.size}</dd>
       </div>
     )}
 
     {(sample.box_weight_min || sample.box_weight_max) && (
-      <div className="min-w-[150px] rounded-xl border border-slate-200 bg-white px-4 py-3">
-        <div className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Box Weight</div>
-        <div className="mt-1 inline-flex rounded-md border border-slate-200 bg-slate-100 px-2 py-1 text-sm font-medium text-slate-900">
+      <div>
+        <dt className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Box Weight</dt>
+        <dd className="mt-1 text-sm font-medium text-slate-900">
           {`${sample.box_weight_min || ""} – ${sample.box_weight_max || ""}`.trim()}kg
-        </div>
+        </dd>
       </div>
     )}
 
     {(sample.fruit_weight_min || sample.fruit_weight_max) && (
-      <div className="min-w-[150px] rounded-xl border border-slate-200 bg-white px-4 py-3">
-        <div className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Fruit Weight</div>
-        <div className="mt-1 inline-flex rounded-md border border-slate-200 bg-slate-100 px-2 py-1 text-sm font-medium text-slate-900">
+      <div>
+        <dt className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Fruit Weight</dt>
+        <dd className="mt-1 text-sm font-medium text-slate-900">
           {`${sample.fruit_weight_min || ""} – ${sample.fruit_weight_max || ""}`.trim()}g
-        </div>
+        </dd>
       </div>
     )}
 
     {(sample.punnet_weight_min || sample.punnet_weight_max) && (
-      <div className="min-w-[150px] rounded-xl border border-slate-200 bg-white px-4 py-3">
-        <div className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Punnet Weight</div>
-        <div className="mt-1 inline-flex rounded-md border border-slate-200 bg-slate-100 px-2 py-1 text-sm font-medium text-slate-900">
+      <div>
+        <dt className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Punnet Weight</dt>
+        <dd className="mt-1 text-sm font-medium text-slate-900">
           {`${sample.punnet_weight_min || ""} – ${sample.punnet_weight_max || ""}`.trim()}g
-        </div>
+        </dd>
       </div>
     )}
 
     {(sample.bag_weight_min || sample.bag_weight_max) && (
-      <div className="min-w-[150px] rounded-xl border border-slate-200 bg-white px-4 py-3">
-        <div className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Bag Weight</div>
-        <div className="mt-1 inline-flex rounded-md border border-slate-200 bg-slate-100 px-2 py-1 text-sm font-medium text-slate-900">
+      <div>
+        <dt className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Bag Weight</dt>
+        <dd className="mt-1 text-sm font-medium text-slate-900">
           {`${sample.bag_weight_min || ""} – ${sample.bag_weight_max || ""}`.trim()}g
-        </div>
+        </dd>
       </div>
     )}
 
     {(sample.calibration_min || sample.calibration_max) && (
-      <div className="min-w-[150px] rounded-xl border border-slate-200 bg-white px-4 py-3">
-        <div className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Calibration</div>
-        <div className="mt-1 inline-flex rounded-md border border-slate-200 bg-slate-100 px-2 py-1 text-sm font-medium text-slate-900">
+      <div>
+        <dt className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Calibration</dt>
+        <dd className="mt-1 text-sm font-medium text-slate-900">
           {`${sample.calibration_min || ""} – ${sample.calibration_max || ""}`.trim()}
-        </div>
+        </dd>
       </div>
     )}
 
     {(sample.rhizome_weight_min || sample.rhizome_weight_max) && (
-      <div className="min-w-[170px] rounded-xl border border-slate-200 bg-white px-4 py-3">
-        <div className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Rhizome Weight</div>
-        <div className="mt-1 inline-flex rounded-md border border-slate-200 bg-slate-100 px-2 py-1 text-sm font-medium text-slate-900">
+      <div>
+        <dt className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Rhizome Weight</dt>
+        <dd className="mt-1 text-sm font-medium text-slate-900">
           {`${sample.rhizome_weight_min || ""} – ${sample.rhizome_weight_max || ""}`.trim()}g
-        </div>
+        </dd>
       </div>
     )}
 
     {(sample.pressures_min || sample.pressures_max) && (
-      <div className="min-w-[150px] rounded-xl border border-slate-200 bg-white px-4 py-3">
-        <div className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Pressures</div>
-        <div className="mt-1 inline-flex rounded-md border border-slate-200 bg-slate-100 px-2 py-1 text-sm font-medium text-slate-900">
+      <div>
+        <dt className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Pressures</dt>
+        <dd className="mt-1 text-sm font-medium text-slate-900">
           {`${sample.pressures_min || ""} – ${sample.pressures_max || ""}`.trim()}kg
-        </div>
+        </dd>
       </div>
     )}
 
     {(sample.brix_min || sample.brix_max) && (
-      <div className="min-w-[120px] rounded-xl border border-slate-200 bg-white px-4 py-3">
-        <div className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Brix</div>
-        <div className="mt-1 inline-flex rounded-md border border-slate-200 bg-slate-100 px-2 py-1 text-sm font-medium text-slate-900">
+      <div>
+        <dt className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Brix</dt>
+        <dd className="mt-1 text-sm font-medium text-slate-900">
           {`${sample.brix_min || ""} – ${sample.brix_max || ""}`.trim()}°
-        </div>
+        </dd>
       </div>
     )}
 
     {(sample.fruit_diameter_min || sample.fruit_diameter_max) && (
-      <div className="min-w-[140px] rounded-xl border border-slate-200 bg-white px-4 py-3">
-        <div className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Diameter</div>
-        <div className="mt-1 inline-flex rounded-md border border-slate-200 bg-slate-100 px-2 py-1 text-sm font-medium text-slate-900">
+      <div>
+        <dt className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Diameter</dt>
+        <dd className="mt-1 text-sm font-medium text-slate-900">
           {`${sample.fruit_diameter_min || ""} – ${sample.fruit_diameter_max || ""}`.trim()}mm
-        </div>
+        </dd>
       </div>
     )}
-  </div>
+  </dl>
+</div>
+
 
   {/* Extra list'ai (paliekam tavo esamą logiką, tik su modernesniais chip'ais per renderInlineList) */}
   <div className="space-y-4">

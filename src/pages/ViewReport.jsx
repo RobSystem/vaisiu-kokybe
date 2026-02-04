@@ -441,19 +441,68 @@ const cardTitle = "text-lg md:text-xl font-semibold text-slate-900";
   return (
     <section key={sample.id || idx} className="mt-8 border rounded-2xl shadow-sm overflow-hidden break-before-page">
       {/* Header */}
-      <div className="flex items-center justify-between bg-gray-50 px-6 py-3">
-        <h3 className="text-xl md:text-2xl font-semibold text-gray-900">
-          Pallet: {sample.pallet_number ?? idx + 1}
-        </h3>
-        <div className="flex flex-wrap gap-2 text-sm md:text-base">
-  <span className={'px-3 py-1.5 rounded-full font-semibold shadow-sm ' + getColor(sample.quality_score, 'quality')}>
-    Quality Score: {sample.quality_score ?? '—'}
-  </span>
-  <span className={'px-3 py-1.5 rounded-full font-semibold ' + getColor(sample.storage_score, 'storage')}>
-    Storage Score: {sample.storage_score ?? '—'}
-  </span>
-</div>
+      {/* Header (tik UI): Pallet + identifikacija vienoje eilėje, score'ai dešinėje */}
+<div className="flex items-center justify-between bg-gray-50 px-6 py-3">
+  {/* Left side: Pallet + inline meta */}
+  <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+    <h3 className="text-xl md:text-2xl font-semibold text-gray-900">
+      Pallet: {sample.pallet_number ?? idx + 1}
+    </h3>
+
+    {sample.variety && (
+      <div className="flex items-center gap-2">
+        <span className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Variety:</span>
+        <span className="text-sm font-medium text-slate-900">{sample.variety}</span>
       </div>
+    )}
+
+    {sample.brand && (
+      <div className="flex items-center gap-2">
+        <span className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Brand:</span>
+        <span className="text-sm font-medium text-slate-900">{sample.brand}</span>
+      </div>
+    )}
+
+    {sample.packing_code && (
+      <div className="flex items-center gap-2">
+        <span className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Packing Code:</span>
+        <span className="text-sm font-medium text-slate-900">{sample.packing_code}</span>
+      </div>
+    )}
+
+    {sample.grower_code && (
+      <div className="flex items-center gap-2">
+        <span className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Grower Code:</span>
+        <span className="text-sm font-medium text-slate-900">{sample.grower_code}</span>
+      </div>
+    )}
+
+    {sample.ggn_number && (
+      <div className="flex items-center gap-2">
+        <span className="text-xs font-semibold text-slate-600 uppercase tracking-wide">GGN #:</span>
+        <span className="text-sm font-medium text-slate-900">{sample.ggn_number}</span>
+      </div>
+    )}
+
+    {(sample.ggn_exp_date || sample.ggn_exp) && (
+      <div className="flex items-center gap-2">
+        <span className="text-xs font-semibold text-slate-600 uppercase tracking-wide">GGN Exp:</span>
+        <span className="text-sm font-medium text-slate-900">{sample.ggn_exp_date || sample.ggn_exp}</span>
+      </div>
+    )}
+  </div>
+
+  {/* Right side: score badges (paliekam tavo esamą logiką) */}
+  <div className="flex flex-wrap gap-2 text-sm md:text-base">
+    <span className={'px-3 py-1.5 rounded-full font-semibold shadow-sm ' + getColor(sample.quality_score, 'quality')}>
+      Quality Score: {sample.quality_score ?? '—'}
+    </span>
+    <span className={'px-3 py-1.5 rounded-full font-semibold ' + getColor(sample.storage_score, 'storage')}>
+      Storage Score: {sample.storage_score ?? '—'}
+    </span>
+  </div>
+</div>
+
 
       {/* Info – naujas išdėstymas (tik UI), rodome tik užpildytus laukus */}
 <div className="px-6 py-6 space-y-6">

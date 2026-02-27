@@ -207,7 +207,7 @@ const handleSend = async () => {
 
     // Siuntimas
     const response = await emailjs.send(
-      'service_v9qenwn',    // service ID
+      'service_jg9emgi',    // service ID
       'template_sf4fphk',   // template ID
       {
         to_email: toEmail,

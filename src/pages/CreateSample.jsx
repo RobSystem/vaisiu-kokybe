@@ -617,7 +617,7 @@ const handleDeletePhoto = async (photoId, url) => {
   /* =========================
      Save
      ========================= */
-  const handleSave = async () => {
+  const handleSave = async (goBack = false) => {
     setSaving(true);
     try {
       const payload = {};
@@ -672,38 +672,45 @@ const majorNames = majorPayload.map((r) => defectNameById.get(r.id)).filter(Bool
 payload.minor_defects = minorNames.length ? minorNames.join(", ") : null;
 payload.major_defects = majorNames.length ? majorNames.join(", ") : null;
 
-      if (sampleId) {
-        const { error } = await supabase.from("samples").update(payload).eq("id", sampleId);
-        if (error) throw error;
-      } else {
-        // next position
-        const { data: last, error: lastErr } = await supabase
-          .from("samples")
-          .select("position")
-          .eq("report_id", reportId)
-          .order("position", { ascending: false })
-          .limit(1);
-        if (lastErr) throw lastErr;
+      let currentSampleId = sampleId;
 
-        const nextPosition = (last?.[0]?.position || 0) + 1;
+if (sampleId) {
+  const { error } = await supabase.from("samples").update(payload).eq("id", sampleId);
+  if (error) throw error;
+} else {
+  const { data: last, error: lastErr } = await supabase
+    .from("samples")
+    .select("position")
+    .eq("report_id", reportId)
+    .order("position", { ascending: false })
+    .limit(1);
 
-        const { data: inserted, error } = await supabase
-  .from("samples")
-  .insert({
-    report_id: reportId,
-    position: nextPosition,
-    ...payload,
-  })
-  .select("id")
-  .single();
+  if (lastErr) throw lastErr;
 
-if (error) throw error;
+  const nextPosition = (last?.[0]?.position || 0) + 1;
 
-// pereinam į /create-sample/:reportId/:sampleId, kad Photo tab turėtų sampleId
-navigate(`/create-sample/${reportId}/${inserted.id}`, { replace: true });
-      }
+  const { data: inserted, error } = await supabase
+    .from("samples")
+    .insert({
+      report_id: reportId,
+      position: nextPosition,
+      ...payload,
+    })
+    .select("id")
+    .single();
 
-      toast.success("Saved successfully!");
+  if (error) throw error;
+
+  currentSampleId = inserted.id;
+}
+
+toast.success("Saved successfully!");
+
+if (goBack) {
+  navigate(`/edit/${reportId}`);
+} else if (!sampleId && currentSampleId) {
+  navigate(`/create-sample/${reportId}/${currentSampleId}`, { replace: true });
+}
     } catch (e) {
       console.error(e);
       toast.error("Failed to save");
@@ -727,23 +734,32 @@ navigate(`/create-sample/${reportId}/${inserted.id}`, { replace: true });
         </div>
 
         <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={handleSave}
-            disabled={saving}
-            className="h-10 rounded-xl bg-brand-600 px-4 text-sm font-semibold text-white hover:bg-brand-500 disabled:opacity-60"
-          >
-            {saving ? "Saving..." : "Save"}
-          </button>
+  <button
+    type="button"
+    onClick={() => handleSave(false)}
+    disabled={saving}
+    className="h-10 rounded-xl bg-brand-600 px-4 text-sm font-semibold text-white hover:bg-brand-500 disabled:opacity-60"
+  >
+    {saving ? "Saving..." : "Save"}
+  </button>
 
-          <button
-            type="button"
-            onClick={() => navigate(`/edit/${reportId}`)}
-            className="h-10 rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 hover:bg-slate-50"
-          >
-            Back to Report
-          </button>
-        </div>
+  <button
+    type="button"
+    onClick={() => handleSave(true)}
+    disabled={saving}
+    className="h-10 rounded-xl bg-slate-900 px-4 text-sm font-semibold text-white hover:bg-slate-800 disabled:opacity-60"
+  >
+    {saving ? "Saving..." : "Save and Back"}
+  </button>
+
+  <button
+    type="button"
+    onClick={() => navigate(`/edit/${reportId}`)}
+    className="h-10 rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+  >
+    Back to Report
+  </button>
+</div>
       </div>
 
       {/* tabs */}

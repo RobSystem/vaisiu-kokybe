@@ -391,11 +391,24 @@ return (
 
       {/* Conclusion */}
       <div className="mx-4 md:mx-6 mt-6">
-        <div className={cardClass}>
-          <h3 className="text-sm font-semibold text-slate-900 mb-2">Conclusion</h3>
-          <textarea name="conclusion" value={form.conclusion} onChange={handleFormChange} className={textareaClass} rows={4} />
-        </div>
-      </div>
+  <div className={cardClass}>
+    <h3 className="text-sm font-semibold text-slate-900 mb-2">Conclusion</h3>
+
+    <textarea
+      name="conclusion"
+      value={form.conclusion}
+      onChange={handleFormChange}
+      className={textareaClass}
+      rows={4}
+    />
+
+    <div className="flex justify-end mt-4">
+      <button onClick={handleSave} className={btnDark}>
+        Save
+      </button>
+    </div>
+  </div>
+</div>
 
       {/* Tabs */}
       <div className="mx-4 md:mx-6 mt-8">
@@ -417,13 +430,10 @@ return (
           {tab === 'samples' ? (
             <>
               <div className="flex flex-wrap gap-3 mb-4">
-                <button onClick={handleSave} className={btnDark}>
-                  Save
-                </button>
-                <button onClick={handleAddSample} className={btnPrimary}>
-                  Add sample
-                </button>
-              </div>
+  <button onClick={handleAddSample} className={btnPrimary}>
+    Add sample
+  </button>
+</div>
 
               {samples.length > 0 ? (
   <div className="overflow-x-auto">

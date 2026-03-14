@@ -411,10 +411,10 @@ return (
 
               {samples.length > 0 ? (
                 <div className="overflow-x-auto">
-                  <table className="w-full text-sm border border-slate-200 rounded-xl overflow-hidden">
+                  <table className="w-full text-xs border border-slate-200 rounded-xl overflow-hidden">
                     <thead className="bg-slate-50 text-slate-600">
                       <tr>
-                        {['#', 'Pallet number', 'Quality score', 'Storage score', 'Action'].map((h) => (
+                        {['#', 'Pallet number', 'Size', 'Variety', 'Quality score', 'Storage score', 'Action'].map((h) => (
                           <th key={h} className="px-3 py-2 text-left text-xs font-semibold">
                             {h}
                           </th>
@@ -424,10 +424,12 @@ return (
                     <tbody className="divide-y divide-slate-200">
                       {samples.map((s, i) => (
                         <tr key={s.id} className="odd:bg-white even:bg-slate-50">
-                          <td className="px-3 py-2">{i + 1}</td>
-                          <td className="px-3 py-2">{s.pallet_number}</td>
-                          <td className="px-3 py-2">{s.quality_score}</td>
-                          <td className="px-3 py-2">{s.storage_score}</td>
+                          <td className="px-2 py-1">{i + 1}</td>
+<td className="px-2 py-1">{s.pallet_number}</td>
+<td className="px-2 py-1">{s.size}</td>
+<td className="px-2 py-1">{s.variety}</td>
+<td className="px-2 py-1">{s.quality_score}</td>
+<td className="px-2 py-1">{s.storage_score}</td>
                           <td className="px-3 py-2">
                             <div className="flex flex-wrap gap-2">
                               <button

@@ -564,9 +564,9 @@ useEffect(() => {
         ) : (
           <>
             <div className="w-full overflow-x-auto">
-              <table className="min-w-[1100px] w-full border-collapse text-[10px]">
+              <table className="min-w-[1100px] w-full border-collapse text-[11px]">
                 <thead className="sticky top-0 bg-slate-50">
-                  <tr className="text-left text-[10px] font-bold uppercase tracking-wide text-slate-600">
+                  <tr className="text-left text-[11px] font-bold uppercase tracking-wide text-slate-600">
                     {[
                       "Date",
   "Container",

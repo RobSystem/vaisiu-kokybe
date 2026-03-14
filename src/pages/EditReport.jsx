@@ -303,38 +303,54 @@ return (
 
       {/* Basic info */}
       <div className="mx-4 md:mx-6 mt-6">
-        <div className={cardClass}>
-          <h3 className="text-sm font-semibold text-slate-900 mb-4">Basic info</h3>
+  <div className={cardClass}>
+    <div className="mb-4 flex items-center justify-between">
+      <h3 className="text-sm font-semibold text-slate-900">Basic info</h3>
 
-          <div className="grid md:grid-cols-3 gap-4">
-            <div>
-              <label className={labelClass}>Brand</label>
-              <input name="brand" value={form.brand} onChange={handleFormChange} className={inputClass} />
-            </div>
+      <button onClick={handleSave} className={btnDark}>
+        Save
+      </button>
+    </div>
 
-            <div>
-              <label className={labelClass}>Temperature</label>
-              <input
-                name="temperature"
-                value={form.temperature}
-                onChange={handleFormChange}
-                className={inputClass}
-              />
-            </div>
-
-            <div>
-              <label className={labelClass}>Category</label>
-              <select name="category" value={form.category} onChange={handleFormChange} className={selectClass}>
-                <option value="">Choose category...</option>
-                <option value="CLASS I">Class I</option>
-                <option value="CLASS II">Class II</option>
-                <option value="INDUSTRY CLASS">Industry Class</option>
-                <option value="CLASS I & CLASS II">Class I & Class II</option>
-              </select>
-            </div>
-          </div>
-        </div>
+    <div className="grid md:grid-cols-3 gap-4">
+      <div>
+        <label className={labelClass}>Brand</label>
+        <input
+          name="brand"
+          value={form.brand}
+          onChange={handleFormChange}
+          className={inputClass}
+        />
       </div>
+
+      <div>
+        <label className={labelClass}>Temperature</label>
+        <input
+          name="temperature"
+          value={form.temperature}
+          onChange={handleFormChange}
+          className={inputClass}
+        />
+      </div>
+
+      <div>
+        <label className={labelClass}>Category</label>
+        <select
+          name="category"
+          value={form.category}
+          onChange={handleFormChange}
+          className={selectClass}
+        >
+          <option value="">Choose category...</option>
+          <option value="CLASS I">Class I</option>
+          <option value="CLASS II">Class II</option>
+          <option value="INDUSTRY CLASS">Industry Class</option>
+          <option value="CLASS I & CLASS II">Class I & Class II</option>
+        </select>
+      </div>
+    </div>
+  </div>
+</div>
 
       {/* Scores */}
       <div className="mx-4 md:mx-6 mt-6">

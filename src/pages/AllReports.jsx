@@ -564,19 +564,18 @@ useEffect(() => {
         ) : (
           <>
             <div className="w-full overflow-x-auto">
-              <table className="min-w-[1100px] w-full border-collapse text-sm">
+              <table className="min-w-[1100px] w-full border-collapse text-[10px]">
                 <thead className="sticky top-0 bg-slate-50">
-                  <tr className="text-left text-xs font-bold uppercase tracking-wide text-slate-600">
+                  <tr className="text-left text-[10px] font-bold uppercase tracking-wide text-slate-600">
                     {[
                       "Date",
-                      "Container",
-                      "Client Ref",
-                      "Rochecks Ref",
-                      "Client",
-                      "Variety",
-                      "Location",
-                      "Actions",
-                      "Status",
+  "Container",
+  "Client Ref",
+  "Rochecks Ref",
+  "Client",
+  "Variety",
+  "Location",
+  "Status",
                     ].map((h) => (
                       <th key={h} className="border-b border-slate-200 px-4 py-3">
                         {h}
@@ -588,71 +587,46 @@ useEffect(() => {
                 <tbody>
                   {pageReports.length === 0 ? (
                     <tr>
-                      <td colSpan={9} className="px-4 py-10 text-center text-slate-500">
+                      <td colSpan={8} className="px-4 py-10 text-center text-slate-500">
                         No reports found.
                       </td>
                     </tr>
                   ) : (
                     pageReports.map((report) => (
-                      <tr key={report.id} className="hover:bg-slate-50/70">
-                        <td className="border-b border-slate-100 px-4 py-3 text-slate-800">
-                          {report.date}
-                        </td>
-                        <td className="border-b border-slate-100 px-4 py-3">
-                          {report.container_number || "-"}
-                        </td>
-                        <td className="border-b border-slate-100 px-4 py-3">
-                          {report.client_ref || "-"}
-                        </td>
-                        <td className="border-b border-slate-100 px-4 py-3">
-                          {report.rochecks_ref || "-"}
-                        </td>
-                        <td className="border-b border-slate-100 px-4 py-3 font-medium text-slate-900">
-                          {report.client}
-                        </td>
-                        <td className="border-b border-slate-100 px-4 py-3">
-                          {report.variety}
-                        </td>
-                        <td className="border-b border-slate-100 px-4 py-3">
-                          {report.location}
-                        </td>
-
-                        <td className="border-b border-slate-100 px-4 py-3">
-                          <div className="flex flex-wrap gap-2">
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setSelectedReport?.(report);
-                                navigate(`/edit/${report.id}`);
-                              }}
-                              className="rounded-lg border border-brand-400/40 bg-brand-50 px-3 py-1.5 text-xs font-semibold text-brand-700 hover:bg-brand-100 transition"
-                            >
-                              Edit
-                            </button>
-
-                            <button
-                              type="button"
-                              onClick={() => handleDone(report.id)}
-                              className="rounded-lg border border-emerald-300/60 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 hover:bg-emerald-100 transition"
-                            >
-                              Done
-                            </button>
-
-                            <button
-                              type="button"
-                              onClick={() => handleDelete(report.id)}
-                              className="rounded-lg border border-red-300/60 bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-100 transition"
-                            >
-                              Delete
-                            </button>
-                          </div>
-                        </td>
-
-                        <td className="border-b border-slate-100 px-4 py-3">
-  <StatusBadge report={report} />
-</td>
-                      </tr>
-                    ))
+  <tr
+    key={report.id}
+    className="cursor-pointer hover:bg-slate-50/70"
+    onClick={() => {
+      setSelectedReport?.(report);
+      navigate(`/edit/${report.id}`);
+    }}
+  >
+    <td className="border-b border-slate-100 px-3 py-2 text-slate-800">
+      {report.date}
+    </td>
+    <td className="border-b border-slate-100 px-3 py-2">
+      {report.container_number || "-"}
+    </td>
+    <td className="border-b border-slate-100 px-3 py-2">
+      {report.client_ref || "-"}
+    </td>
+    <td className="border-b border-slate-100 px-3 py-2">
+      {report.rochecks_ref || "-"}
+    </td>
+    <td className="border-b border-slate-100 px-3 py-2 font-medium text-slate-900">
+      {report.client}
+    </td>
+    <td className="border-b border-slate-100 px-3 py-2">
+      {report.variety}
+    </td>
+    <td className="border-b border-slate-100 px-3 py-2">
+      {report.location}
+    </td>
+    <td className="border-b border-slate-100 px-3 py-2">
+      <StatusBadge report={report} />
+    </td>
+  </tr>
+))
                   )}
                 </tbody>
               </table>

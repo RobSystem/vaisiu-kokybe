@@ -1,7 +1,7 @@
 // Redesign of EditReport.jsx to match AllReports style
 import { useState, useEffect } from 'react'
 import { supabase } from '../supabaseClient'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import emailjs from '@emailjs/browser';
 import toast from 'react-hot-toast';
 
@@ -13,6 +13,7 @@ function EditReport() {
   const [report, setReport] = useState(null);
   const [samples, setSamples] = useState([]);
   const { reportId } = useParams();
+  const navigate = useNavigate();
   const [showEditModal, setShowEditModal] = useState(false);
   const [pdfFiles, setPdfFiles] = useState([]);
   const [uploading, setUploading] = useState(false);
@@ -123,6 +124,97 @@ const fetchPdfFiles = async () => {
     await supabase.from('samples').delete().eq('id', id);
     setSamples(samples.filter(s => s.id !== id));
   }
+
+  const handleDeleteReport = async () => {
+  if (!reportId) return;
+
+  const ok = window.confirm(
+    'Are you sure you want to delete this report? This will also delete all related samples, photos and files.'
+  );
+  if (!ok) return;
+
+  try {
+    // 1. Gauti visus sample šitam report
+    const { data: sampleRows, error: sampleFetchError } = await supabase
+      .from('samples')
+      .select('id')
+      .eq('report_id', reportId);
+
+    if (sampleFetchError) throw sampleFetchError;
+
+    const sampleIds = (sampleRows || []).map((s) => s.id);
+
+    // 2. Gauti visas sample photos iš DB
+    if (sampleIds.length > 0) {
+      const { data: photoRows, error: photoFetchError } = await supabase
+        .from('sample_photos')
+        .select('id, url')
+        .in('sample_id', sampleIds);
+
+      if (photoFetchError) throw photoFetchError;
+
+      // 3. Ištrinti photo failus iš storage
+      const photoPaths = (photoRows || [])
+        .map((p) => {
+          const marker = '/storage/v1/object/public/photos/';
+          return p.url?.includes(marker) ? p.url.split(marker)[1] : null;
+        })
+        .filter(Boolean);
+
+      if (photoPaths.length > 0) {
+        const { error: storagePhotoDeleteError } = await supabase
+          .storage
+          .from('photos')
+          .remove(photoPaths);
+
+        if (storagePhotoDeleteError) throw storagePhotoDeleteError;
+      }
+
+      // 4. Ištrinti photo įrašus iš DB
+      const photoIds = (photoRows || []).map((p) => p.id);
+      if (photoIds.length > 0) {
+        const { error: photoDeleteError } = await supabase
+          .from('sample_photos')
+          .delete()
+          .in('id', photoIds);
+
+        if (photoDeleteError) throw photoDeleteError;
+      }
+
+      // 5. Ištrinti samples
+      const { error: sampleDeleteError } = await supabase
+        .from('samples')
+        .delete()
+        .in('id', sampleIds);
+
+      if (sampleDeleteError) throw sampleDeleteError;
+    }
+
+    // 6. Ištrinti report PDF failus iš storage
+    const reportFilePaths = [`${reportId}/file1.pdf`, `${reportId}/file2.pdf`, `${reportId}/file3.pdf`];
+
+    const { error: reportFilesDeleteError } = await supabase
+      .storage
+      .from('report-files')
+      .remove(reportFilePaths);
+
+    if (reportFilesDeleteError) throw reportFilesDeleteError;
+
+    // 7. Ištrinti patį report
+    const { error: reportDeleteError } = await supabase
+      .from('reports')
+      .delete()
+      .eq('id', reportId);
+
+    if (reportDeleteError) throw reportDeleteError;
+
+    toast.success('Report deleted successfully!');
+    navigate('/all-reports');
+  } catch (err) {
+    console.error('Delete report error:', err);
+    toast.error(`Failed to delete report: ${err?.message || 'Unknown error'}`);
+  }
+};
 
   const handleFileUpload = async (e) => {
     const files = Array.from(e.target.files);
@@ -283,21 +375,28 @@ return (
           </span>
 
           <div className="flex items-center gap-2">
-            <button
-              onClick={() => report && window.open(`/viewreport/${report.id}`, '_blank')}
-              className={btnSecondary}
-            >
-              View report
-            </button>
+  <button
+    onClick={() => report && window.open(`/viewreport/${report.id}`, '_blank')}
+    className={btnSecondary}
+  >
+    View report
+  </button>
 
-            <button onClick={handleSend} className={btnPrimary}>
-              Send report
-            </button>
+  <button onClick={handleSend} className={btnPrimary}>
+    Send report
+  </button>
 
-            <button onClick={handleOpenEditModal} className={btnDark}>
-              Edit report info
-            </button>
-          </div>
+  <button onClick={handleOpenEditModal} className={btnDark}>
+    Edit report info
+  </button>
+
+  <button
+    onClick={handleDeleteReport}
+    className="h-10 rounded-xl border border-red-200 bg-red-50 px-4 text-sm font-semibold text-red-700 hover:bg-red-100 disabled:opacity-60"
+  >
+    Delete report
+  </button>
+</div>
         </div>
       </div>
 

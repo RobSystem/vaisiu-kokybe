@@ -322,11 +322,19 @@ const handleSend = async () => {
     );
 
     if (response?.status === 200) {
-      await supabase.from('reports').update({ sent: true }).eq('id', report.id);
-      toast?.success?.('Report sent successfully!');
-    } else {
-      toast?.error?.('Email service returned non-200 response.');
-    }
+  await supabase
+    .from('reports')
+    .update({
+      sent: true,
+      status: 'done',
+    })
+    .eq('id', report.id);
+
+  toast?.success?.('Report sent successfully!');
+  navigate('/all');
+} else {
+  toast?.error?.('Email service returned non-200 response.');
+}
   } catch (err) {
     console.error('Sending error:', err);
     toast?.error?.(`Error sending report: ${err?.message || 'Unknown error'}`);

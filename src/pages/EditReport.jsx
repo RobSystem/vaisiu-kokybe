@@ -209,7 +209,7 @@ const fetchPdfFiles = async () => {
     if (reportDeleteError) throw reportDeleteError;
 
     toast.success('Report deleted successfully!');
-    navigate('/Allreports');
+    navigate('/all');
   } catch (err) {
     console.error('Delete report error:', err);
     toast.error(`Failed to delete report: ${err?.message || 'Unknown error'}`);

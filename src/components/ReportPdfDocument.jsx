@@ -374,7 +374,7 @@ export default function ReportPdfDocument({
     <React.Fragment key={sample.id || idx}>
       <View
         style={styles.sampleSection}
-        break={idx > 0}
+        break
       >
         <View style={[styles.sampleHeader, { backgroundColor: getSampleHeaderBg(sample.quality_score) }]}>
           <Text style={styles.sampleHeaderTitle}>

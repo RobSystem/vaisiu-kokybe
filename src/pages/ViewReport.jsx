@@ -1,8 +1,9 @@
 // Perrašytas ViewReport.jsx su taisyklinga nuotraukų blokų struktūra
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
+import { pdf } from '@react-pdf/renderer'
 import { supabase } from '../supabaseClient'
-import html2pdf from 'html2pdf.js'
+import ReportPdfDocument from '../components/ReportPdfDocument'
 
 function ViewReport() {
   const { reportId } = useParams()
@@ -11,7 +12,6 @@ function ViewReport() {
   const [photos, setPhotos] = useState([])
   const [attachments, setAttachments] = useState([])
   const [previewUrl, setPreviewUrl] = useState(null)
-  const reportRef = useRef()
   const [defectNameById, setDefectNameById] = useState(new Map());
 
   useEffect(() => {
@@ -228,25 +228,37 @@ function getHeaderBgByQuality(score) {
 }
 
 
-  const handleDownloadPDF = () => {
-    const el = reportRef.current
-    if (!el) return
-    setTimeout(() => {
-      html2pdf().set({
-        filename: `${report.client_ref}_report.pdf`,
-        image: { type: 'jpeg', quality: 1 },
-        html2canvas: { scale: 1.5, useCORS: true },
-        jsPDF: { orientation: 'landscape', unit: 'pt', format: 'a4' },
-        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] },
-      }).from(el).save()
-    }, 500)
+  const handleDownloadPDF = async () => {
+  if (!report) return;
+
+  try {
+    const blob = await pdf(
+      <ReportPdfDocument
+        report={report}
+        samples={samples}
+        photos={photos}
+        defectNameById={defectNameById}
+      />
+    ).toBlob();
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${report.client_ref || 'report'}_report.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error('PDF generation failed:', error);
   }
+};
   const card = "mt-8 overflow-hidden rounded-2xl bg-white ring-1 ring-slate-200/70 shadow-sm";
 const cardHeader = "flex items-center justify-between border-b border-slate-200/70 bg-slate-50/60 px-6 py-3";
 const cardTitle = "text-lg md:text-xl font-semibold text-slate-900";
 
   return (
-    <div ref={reportRef} className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50">
   <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
     {/* visas turinys, įskaitant headerį, korteles ir t.t. */}
   </div>

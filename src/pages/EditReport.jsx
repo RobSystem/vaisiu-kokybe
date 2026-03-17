@@ -12,6 +12,8 @@ function EditReport() {
   });
   const [report, setReport] = useState(null);
   const [samples, setSamples] = useState([]);
+  const [selectedSampleIds, setSelectedSampleIds] = useState([]);
+const [creatingNewReport, setCreatingNewReport] = useState(false);
   const { reportId } = useParams();
   const navigate = useNavigate();
   const [showEditModal, setShowEditModal] = useState(false);
@@ -213,6 +215,145 @@ const fetchPdfFiles = async () => {
   } catch (err) {
     console.error('Delete report error:', err);
     toast.error(`Failed to delete report: ${err?.message || 'Unknown error'}`);
+  }
+};
+
+const toggleSampleSelection = (sampleId) => {
+  setSelectedSampleIds((prev) =>
+    prev.includes(sampleId)
+      ? prev.filter((id) => id !== sampleId)
+      : [...prev, sampleId]
+  );
+};
+
+const handleSelectAllSamples = () => {
+  setSelectedSampleIds(samples.map((s) => s.id));
+};
+
+const handleClearSelectedSamples = () => {
+  setSelectedSampleIds([]);
+};
+
+const handleCreateNewReportFromSelected = async () => {
+  if (!report?.id) {
+    toast.error('Report not loaded.');
+    return;
+  }
+
+  if (!selectedSampleIds.length) {
+    toast.error('Please select at least one sample.');
+    return;
+  }
+
+  const confirmed = window.confirm(
+    `Create a new report with ${selectedSampleIds.length} selected sample(s)?`
+  );
+
+  if (!confirmed) return;
+
+  setCreatingNewReport(true);
+
+  try {
+    // 1. Kopijuojam report informaciją
+    const {
+      id: oldReportId,
+      created_at,
+      updated_at,
+      ...reportData
+    } = report;
+
+    const newReportPayload = {
+      ...reportData,
+      sent: false,
+      status: 'draft',
+    };
+
+    const { data: newReport, error: newReportError } = await supabase
+      .from('reports')
+      .insert([newReportPayload])
+      .select()
+      .single();
+
+    if (newReportError) throw newReportError;
+
+    // 2. Pasiimam tik pažymėtus sample
+    const selectedSamples = samples.filter((s) => selectedSampleIds.includes(s.id));
+
+    if (!selectedSamples.length) {
+      throw new Error('No selected samples found.');
+    }
+
+    // 3. Sukuriam naujus sample naujam reportui
+    const oldSampleIdsInOrder = selectedSamples.map((s) => s.id);
+
+    const newSamplesPayload = selectedSamples.map((sample, index) => {
+      const {
+        id,
+        created_at,
+        updated_at,
+        report_id,
+        ...sampleData
+      } = sample;
+
+      return {
+        ...sampleData,
+        report_id: newReport.id,
+        position: index + 1,
+      };
+    });
+
+    const { data: insertedSamples, error: insertedSamplesError } = await supabase
+      .from('samples')
+      .insert(newSamplesPayload)
+      .select();
+
+    if (insertedSamplesError) throw insertedSamplesError;
+
+    // 4. Susiejam senus sample ID su naujais
+    const oldToNewSampleIdMap = {};
+    oldSampleIdsInOrder.forEach((oldId, index) => {
+      oldToNewSampleIdMap[oldId] = insertedSamples[index]?.id;
+    });
+
+    // 5. Pasiimam senas nuotraukas
+    const { data: oldPhotos, error: oldPhotosError } = await supabase
+      .from('sample_photos')
+      .select('*')
+      .in('sample_id', oldSampleIdsInOrder);
+
+    if (oldPhotosError) throw oldPhotosError;
+
+    // 6. Sukuriam naujus photo įrašus naujiems sample
+    if (oldPhotos?.length) {
+      const newPhotosPayload = oldPhotos.map((photo) => {
+        const {
+          id,
+          created_at,
+          updated_at,
+          sample_id,
+          ...photoData
+        } = photo;
+
+        return {
+          ...photoData,
+          sample_id: oldToNewSampleIdMap[sample_id],
+        };
+      });
+
+      const { error: insertPhotosError } = await supabase
+        .from('sample_photos')
+        .insert(newPhotosPayload);
+
+      if (insertPhotosError) throw insertPhotosError;
+    }
+
+    toast.success('New report created successfully!');
+    navigate(`/editreport/${newReport.id}`);
+  } catch (error) {
+    console.error('Create new report failed:', error);
+    toast.error(error.message || 'Failed to create new report.');
+  } finally {
+    setCreatingNewReport(false);
   }
 };
 
@@ -536,34 +677,64 @@ return (
         <div className={`${cardClass} mt-4`}>
           {tab === 'samples' ? (
             <>
-              <div className="flex flex-wrap gap-3 mb-4">
-  <button onClick={handleAddSample} className={btnPrimary}>
-    Add sample
-  </button>
+              <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+  <div>
+    <button onClick={handleAddSample} className={btnPrimary}>
+      Add sample
+    </button>
+  </div>
+
+  <div className="flex flex-wrap gap-2">
+    <button onClick={handleSelectAllSamples} className={btnSecondary}>
+      Select all
+    </button>
+
+    <button onClick={handleClearSelectedSamples} className={btnSecondary}>
+      Clear
+    </button>
+
+    <button
+      onClick={handleCreateNewReportFromSelected}
+      disabled={creatingNewReport || selectedSampleIds.length === 0}
+      className={btnDark}
+    >
+      {creatingNewReport ? 'Creating...' : 'Create new report'}
+    </button>
+  </div>
 </div>
 
               {samples.length > 0 ? (
   <div className="overflow-x-auto">
     <table className="w-full text-[10px] border border-slate-200 rounded-xl overflow-hidden">
       <thead className="bg-slate-50 text-slate-600">
-        <tr>
-          {['#', 'Pallet number', 'Size', 'Variety', 'Quality score', 'Storage score', 'Action'].map((h) => (
-            <th key={h} className="px-2 py-1 text-left text-[10px] font-semibold">
-              {h}
-            </th>
-          ))}
-        </tr>
-      </thead>
+  <tr>
+    <th className="px-2 py-1 text-left text-[10px] font-semibold">Select</th>
+    <th className="px-2 py-1 text-left text-[10px] font-semibold">#</th>
+    <th className="px-2 py-1 text-left text-[10px] font-semibold">Pallet number</th>
+    <th className="px-2 py-1 text-left text-[10px] font-semibold">Size</th>
+    <th className="px-2 py-1 text-left text-[10px] font-semibold">Variety</th>
+    <th className="px-2 py-1 text-left text-[10px] font-semibold">Quality score</th>
+    <th className="px-2 py-1 text-left text-[10px] font-semibold">Storage score</th>
+    <th className="px-2 py-1 text-left text-[10px] font-semibold">Action</th>
+  </tr>
+</thead>
       <tbody className="divide-y divide-slate-200">
         {samples.map((s, i) => (
           <tr key={s.id} className="odd:bg-white even:bg-slate-50 hover:bg-slate-100">
-            <td className="px-2 py-1 text-[11px]">{i + 1}</td>
-            <td className="px-2 py-1 text-[11px]">{s.pallet_number}</td>
-            <td className="px-2 py-1 text-[11px]">{s.size || '—'}</td>
-            <td className="px-2 py-1 text-[11px]">{s.variety || '—'}</td>
-            <td className="px-2 py-1 text-[11px]">{s.quality_score}</td>
-            <td className="px-2 py-1 text-[11px]">{s.storage_score}</td>
-            <td className="px-2 py-1">
+  <td className="px-2 py-1 text-[11px]">
+    <input
+      type="checkbox"
+      checked={selectedSampleIds.includes(s.id)}
+      onChange={() => toggleSampleSelection(s.id)}
+    />
+  </td>
+  <td className="px-2 py-1 text-[11px]">{i + 1}</td>
+  <td className="px-2 py-1 text-[11px]">{s.pallet_number}</td>
+  <td className="px-2 py-1 text-[11px]">{s.size || '—'}</td>
+  <td className="px-2 py-1 text-[11px]">{s.variety || '—'}</td>
+  <td className="px-2 py-1 text-[11px]">{s.quality_score}</td>
+  <td className="px-2 py-1 text-[11px]">{s.storage_score}</td>
+  <td className="px-2 py-1">
               <div className="flex flex-wrap gap-2">
                 <button
                   onClick={() => handleEditSample(s.id)}

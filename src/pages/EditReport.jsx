@@ -265,7 +265,7 @@ const handleCreateNewReportFromSelected = async () => {
     const newReportPayload = {
       ...reportData,
       sent: false,
-      status: 'draft',
+      status: 'active',
     };
 
     const { data: newReport, error: newReportError } = await supabase
@@ -348,7 +348,7 @@ const handleCreateNewReportFromSelected = async () => {
     }
 
     toast.success('New report created successfully!');
-    navigate(`/editreport/${newReport.id}`);
+    navigate(`/edit/${newReport.id}`);
   } catch (error) {
     console.error('Create new report failed:', error);
     toast.error(error.message || 'Failed to create new report.');

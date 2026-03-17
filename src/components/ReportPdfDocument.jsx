@@ -17,11 +17,11 @@ const styles = StyleSheet.create({
     color: '#0f172a',
   },
   header: {
-    marginBottom: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#cbd5e1',
-    paddingBottom: 10,
-  },
+  marginBottom: 12,
+  borderBottomWidth: 1,
+  borderBottomColor: '#cbd5e1',
+  paddingBottom: 8,
+},
   title: {
     fontSize: 16,
     fontWeight: 700,
@@ -163,24 +163,27 @@ const styles = StyleSheet.create({
     padding: 10,
     paddingTop: 0,
   },
+  photoPageSection: {
+  marginTop: 16,
+},
   photoGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 6,
   },
-  photoCard: {
-    width: '23%',
-    borderWidth: 1,
-    borderColor: '#e2e8f0',
-    borderRadius: 4,
-    overflow: 'hidden',
-    marginBottom: 6,
-  },
-  photo: {
-    width: '100%',
-    height: 100,
-    objectFit: 'cover',
-  },
+ photoCard: {
+  width: '48%',
+  borderWidth: 1,
+  borderColor: '#e2e8f0',
+  borderRadius: 4,
+  overflow: 'hidden',
+  marginBottom: 8,
+},
+photo: {
+  width: '100%',
+  height: 180,
+  objectFit: 'cover',
+},
   summarySection: {
     marginTop: 16,
     borderWidth: 1,
@@ -295,7 +298,7 @@ const measurementItems = (sample) => [
   ['Diameter', (sample.fruit_diameter_min || sample.fruit_diameter_max) ? `${sample.fruit_diameter_min || ''} – ${sample.fruit_diameter_max || ''} mm` : null],
 ].filter(([, value]) => value);
 
-const chunkPhotos = (arr, size = 8) => {
+const chunkPhotos = (arr, size = 4) => {
   const result = [];
   for (let i = 0; i < arr.length; i += size) {
     result.push(arr.slice(i, i + size));
@@ -364,110 +367,114 @@ export default function ReportPdfDocument({
         </View>
 
         {samples.map((sample, idx) => {
-          const photosForSample = getPhotosForSample(sample.id);
-          const photoGroups = chunkPhotos(photosForSample, 8);
+  const photosForSample = getPhotosForSample(sample.id);
+  const photoGroups = chunkPhotos(photosForSample, 4);
 
-          return (
-            <View
-              key={sample.id || idx}
-              style={styles.sampleSection}
-              break={idx > 0}
-              wrap={false}
-            >
-              <View style={[styles.sampleHeader, { backgroundColor: getSampleHeaderBg(sample.quality_score) }]}>
-                <Text style={styles.sampleHeaderTitle}>
-                  PALLET: {sample.pallet_number ?? idx + 1}
-                </Text>
+  return (
+    <React.Fragment key={sample.id || idx}>
+      <View
+        style={styles.sampleSection}
+        break={idx > 0}
+      >
+        <View style={[styles.sampleHeader, { backgroundColor: getSampleHeaderBg(sample.quality_score) }]}>
+          <Text style={styles.sampleHeaderTitle}>
+            PALLET: {sample.pallet_number ?? idx + 1}
+          </Text>
 
-                <Text style={styles.sampleHeaderMeta}>
-                  {sample.ggn_number ? `GGN: ${sample.ggn_number}   ` : ''}
-                  {sample.ggn_exp_date ? `GGN EXP DATE: ${sample.ggn_exp_date}   ` : ''}
-                  {sample.grower_code ? `GROWER CODE: ${sample.grower_code}   ` : ''}
-                  {sample.packing_code ? `PACKING CODE: ${sample.packing_code}   ` : ''}
-                  {sample.variety ? `VARIETY: ${sample.variety}   ` : ''}
-                  {sample.brand ? `BRAND: ${sample.brand}` : ''}
-                </Text>
+          <Text style={styles.sampleHeaderMeta}>
+            {sample.ggn_number ? `GGN: ${sample.ggn_number}   ` : ''}
+            {sample.ggn_exp_date ? `GGN EXP DATE: ${sample.ggn_exp_date}   ` : ''}
+            {sample.grower_code ? `GROWER CODE: ${sample.grower_code}   ` : ''}
+            {sample.packing_code ? `PACKING CODE: ${sample.packing_code}   ` : ''}
+            {sample.variety ? `VARIETY: ${sample.variety}   ` : ''}
+            {sample.brand ? `BRAND: ${sample.brand}` : ''}
+          </Text>
 
-                <Text style={styles.sampleHeaderMeta}>
-                  Quality Score: {sample.quality_score ?? '—'}   |   Storage Score: {sample.storage_score ?? '—'}
-                </Text>
+          <Text style={styles.sampleHeaderMeta}>
+            Quality Score: {sample.quality_score ?? '—'}   |   Storage Score: {sample.storage_score ?? '—'}
+          </Text>
+        </View>
+
+        <View style={styles.twoCol}>
+          <View style={styles.leftCol}>
+            <View style={styles.block}>
+              <View style={styles.blockHeader}>
+                <Text style={styles.blockHeaderText}>Measurements</Text>
               </View>
-
-              <View style={styles.twoCol}>
-                <View style={styles.leftCol}>
-                  <View style={styles.block}>
-                    <View style={styles.blockHeader}>
-                      <Text style={styles.blockHeaderText}>Measurements</Text>
-                    </View>
-                    <View style={styles.measurementGrid}>
-                      {measurementItems(sample).map(([label, value]) => (
-                        <View key={label} style={styles.measurementCell}>
-                          <Text style={styles.measurementLabel}>{label}</Text>
-                          <Text style={styles.measurementValue}>{value}</Text>
-                        </View>
-                      ))}
-                    </View>
+              <View style={styles.measurementGrid}>
+                {measurementItems(sample).map(([label, value]) => (
+                  <View key={label} style={styles.measurementCell}>
+                    <Text style={styles.measurementLabel}>{label}</Text>
+                    <Text style={styles.measurementValue}>{value}</Text>
                   </View>
-                </View>
-
-                <View style={styles.rightCol}>
-                  <View style={styles.block}>
-                    <View style={styles.blockHeader}>
-                      <Text style={styles.blockHeaderText}>Minor Defects</Text>
-                    </View>
-                    <View style={styles.blockBody}>
-                      {renderDefectsSelected(sample.minor_defects_selected, defectNameById) || renderMultiLine(sample.minor_defects) || <Text>—</Text>}
-                    </View>
-                  </View>
-
-                  <View style={styles.block}>
-                    <View style={styles.blockHeader}>
-                      <Text style={styles.blockHeaderText}>Major Defects</Text>
-                    </View>
-                    <View style={styles.blockBody}>
-                      {renderDefectsSelected(sample.major_defects_selected, defectNameById) || renderMultiLine(sample.major_defects) || <Text>—</Text>}
-                    </View>
-                  </View>
-
-                  {(sample.external_coloration || sample.internal_coloration || sample.consistency) && (
-                    <View style={styles.block}>
-                      <View style={styles.blockHeader}>
-                        <Text style={styles.blockHeaderText}>Coloration / Consistency</Text>
-                      </View>
-                      <View style={styles.blockBody}>
-                        {renderListLines(sample.external_coloration)}
-                        {renderListLines(sample.internal_coloration)}
-                        {renderConsistency(sample.consistency)}
-                      </View>
-                    </View>
-                  )}
-                </View>
+                ))}
               </View>
-
-              {photoGroups.length > 0 && photoGroups.map((group, groupIndex) => (
-                <View key={`${sample.id}-photos-${groupIndex}`} style={styles.photosSection} break={groupIndex > 0}>
-                  <View style={styles.block}>
-                    <View style={styles.blockHeader}>
-                      <Text style={styles.blockHeaderText}>
-                        Photos{photoGroups.length > 1 ? ` (${groupIndex + 1}/${photoGroups.length})` : ''}
-                      </Text>
-                    </View>
-                    <View style={styles.blockBody}>
-                      <View style={styles.photoGrid}>
-                        {group.map((photo) => (
-                          <View key={photo.id || photo.url} style={styles.photoCard}>
-                            <Image src={photo.url} style={styles.photo} />
-                          </View>
-                        ))}
-                      </View>
-                    </View>
-                  </View>
-                </View>
-              ))}
             </View>
-          );
-        })}
+          </View>
 
+          <View style={styles.rightCol}>
+            <View style={styles.block}>
+              <View style={styles.blockHeader}>
+                <Text style={styles.blockHeaderText}>Minor Defects</Text>
+              </View>
+              <View style={styles.blockBody}>
+                {renderDefectsSelected(sample.minor_defects_selected, defectNameById) || renderMultiLine(sample.minor_defects) || <Text>—</Text>}
+              </View>
+            </View>
+
+            <View style={styles.block}>
+              <View style={styles.blockHeader}>
+                <Text style={styles.blockHeaderText}>Major Defects</Text>
+              </View>
+              <View style={styles.blockBody}>
+                {renderDefectsSelected(sample.major_defects_selected, defectNameById) || renderMultiLine(sample.major_defects) || <Text>—</Text>}
+              </View>
+            </View>
+
+            {(sample.external_coloration || sample.internal_coloration || sample.consistency) && (
+              <View style={styles.block}>
+                <View style={styles.blockHeader}>
+                  <Text style={styles.blockHeaderText}>Coloration / Consistency</Text>
+                </View>
+                <View style={styles.blockBody}>
+                  {renderListLines(sample.external_coloration)}
+                  {renderListLines(sample.internal_coloration)}
+                  {renderConsistency(sample.consistency)}
+                </View>
+              </View>
+            )}
+          </View>
+        </View>
+      </View>
+
+      {photoGroups.length > 0 && photoGroups.map((group, groupIndex) => (
+        <View
+          key={`${sample.id}-photos-${groupIndex}`}
+          style={styles.photoPageSection}
+          break
+        >
+          <View style={styles.block}>
+            <View style={styles.blockHeader}>
+              <Text style={styles.blockHeaderText}>
+                Pallet {sample.pallet_number ?? idx + 1} — Photos
+                {photoGroups.length > 1 ? ` (${groupIndex + 1}/${photoGroups.length})` : ''}
+              </Text>
+            </View>
+            <View style={styles.blockBody}>
+              <View style={styles.photoGrid}>
+                {group.map((photo) => (
+                  <View key={photo.id || photo.url} style={styles.photoCard}>
+                    <Image src={photo.url} style={styles.photo} />
+                  </View>
+                ))}
+              </View>
+            </View>
+          </View>
+        </View>
+      ))}
+    </React.Fragment>
+  );
+})}
         {(report?.qualityScore || report?.storageScore || report?.conclusion) && (
           <View style={styles.summarySection} break>
             <View style={styles.sectionHeader}>

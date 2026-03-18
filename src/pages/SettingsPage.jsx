@@ -880,12 +880,12 @@ function SettingsPage() {
                   </p>
                 </div>
 
-                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                <div className="space-y-2">
                   {FIELD_KEYS.map((f) => (
                     <label
-                      key={f.key}
-                      className="flex items-center gap-3 rounded-xl border border-transparent bg-white px-3 py-2 text-sm text-slate-700 ring-1 ring-slate-200 transition hover:bg-slate-50"
-                    >
+  key={f.key}
+  className="flex items-center gap-3 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 transition hover:bg-slate-50"
+>
                       <input
                         type="checkbox"
                         checked={!!fieldsEnabled[f.key]}
@@ -936,39 +936,39 @@ function SettingsPage() {
                       </select>
                     </div>
 
-                    <div className="space-y-2 pr-1">
-                      {minorCatalog.map((d) => (
-                        <div
-                          key={d.id}
-                          className="flex items-center justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2"
-                        >
-                          <label className="flex items-center gap-3 text-sm text-slate-700">
-                            <input
-                              type="checkbox"
-                              checked={!!minorEnabled[d.id]}
-                              onChange={(e) =>
-                                setMinorEnabled((p) => ({
-                                  ...p,
-                                  [d.id]: e.target.checked,
-                                }))
-                              }
-                              className="h-4 w-4 rounded border-slate-300"
-                            />
-                            <span>{d.name}</span>
-                          </label>
+                    <div className="grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-4">
+  {minorCatalog.map((d) => (
+    <div
+      key={d.id}
+      className="flex items-center justify-between gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2"
+    >
+      <label className="flex min-w-0 items-center gap-2 text-sm text-slate-700">
+        <input
+          type="checkbox"
+          checked={!!minorEnabled[d.id]}
+          onChange={(e) =>
+            setMinorEnabled((p) => ({
+              ...p,
+              [d.id]: e.target.checked,
+            }))
+          }
+          className="h-4 w-4 shrink-0 rounded border-slate-300"
+        />
+        <span className="truncate">{d.name}</span>
+      </label>
 
-                          <button
-                            type="button"
-                            onClick={() => handleDeleteDefect(d)}
-                            disabled={deletingDefectId === d.id}
-                            className="rounded-lg px-2 py-1 text-xs font-semibold text-slate-500 transition hover:bg-red-50 hover:text-red-700 disabled:opacity-50"
-                            title="Delete defect"
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      ))}
-                    </div>
+      <button
+        type="button"
+        onClick={() => handleDeleteDefect(d)}
+        disabled={deletingDefectId === d.id}
+        className="rounded-lg px-2 py-1 text-xs font-semibold ..."
+        title="Delete defect"
+      >
+        Delete
+      </button>
+    </div>
+  ))}
+</div>
                   </div>
 
                   <div className="rounded-2xl border border-slate-200 bg-white p-4">
@@ -992,39 +992,39 @@ function SettingsPage() {
                       </select>
                     </div>
 
-                    <div className="space-y-2 pr-1">
-                      {majorCatalog.map((d) => (
-                        <div
-                          key={d.id}
-                          className="flex items-center justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2"
-                        >
-                          <label className="flex items-center gap-3 text-sm text-slate-700">
-                            <input
-                              type="checkbox"
-                              checked={!!majorEnabled[d.id]}
-                              onChange={(e) =>
-                                setMajorEnabled((p) => ({
-                                  ...p,
-                                  [d.id]: e.target.checked,
-                                }))
-                              }
-                              className="h-4 w-4 rounded border-slate-300"
-                            />
-                            <span>{d.name}</span>
-                          </label>
+                    <div className="grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-4">
+  {majorCatalog.map((d) => (
+    <div
+      key={d.id}
+      className="flex items-center justify-between gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2"
+    >
+      <label className="flex min-w-0 items-center gap-2 text-sm text-slate-700">
+        <input
+          type="checkbox"
+          checked={!!majorEnabled[d.id]}
+          onChange={(e) =>
+            setMajorEnabled((p) => ({
+              ...p,
+              [d.id]: e.target.checked,
+            }))
+          }
+          className="h-4 w-4 shrink-0 rounded border-slate-300"
+        />
+        <span className="truncate">{d.name}</span>
+      </label>
 
-                          <button
-                            type="button"
-                            onClick={() => handleDeleteDefect(d)}
-                            disabled={deletingDefectId === d.id}
-                            className="rounded-lg px-2 py-1 text-xs font-semibold text-slate-500 transition hover:bg-red-50 hover:text-red-700 disabled:opacity-50"
-                            title="Delete defect"
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      ))}
-                    </div>
+      <button
+        type="button"
+        onClick={() => handleDeleteDefect(d)}
+        disabled={deletingDefectId === d.id}
+        className="rounded-lg px-2 py-1 text-xs font-semibold ..."
+        title="Delete defect"
+      >
+        Delete
+      </button>
+    </div>
+  ))}
+</div>
                   </div>
                 </div>
               </div>
@@ -1041,7 +1041,7 @@ function SettingsPage() {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 gap-6 2xl:grid-cols-2">
+            <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
               <div className="rounded-[24px] border border-slate-200 bg-slate-50 p-5">
                 <div className="mb-4 flex items-center justify-between gap-3">
                   <div>
@@ -1058,39 +1058,39 @@ function SettingsPage() {
                   </div>
                 </div>
 
-                <div className="space-y-2 pr-1">
-                  {externalColors.map((c) => (
-                    <div
-                      key={c.id}
-                      className="flex items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-3 py-2"
-                    >
-                      <label className="flex items-center gap-3 text-sm text-slate-700">
-                        <input
-                          type="checkbox"
-                          checked={!!externalColorEnabled[c.id]}
-                          onChange={(e) =>
-                            setExternalColorEnabled((p) => ({
-                              ...p,
-                              [c.id]: e.target.checked,
-                            }))
-                          }
-                          className="h-4 w-4 rounded border-slate-300"
-                        />
-                        <span>{c.name}</span>
-                      </label>
+                <div className="grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-4">
+  {externalColors.map((c) => (
+    <div
+      key={c.id}
+      className="flex items-center justify-between gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2"
+    >
+      <label className="flex min-w-0 items-center gap-2 text-sm text-slate-700">
+        <input
+          type="checkbox"
+          checked={!!externalColorEnabled[c.id]}
+          onChange={(e) =>
+            setExternalColorEnabled((p) => ({
+              ...p,
+              [c.id]: e.target.checked,
+            }))
+          }
+          className="h-4 w-4 shrink-0 rounded border-slate-300"
+        />
+        <span className="truncate">{c.name}</span>
+      </label>
 
-                      <button
-                        type="button"
-                        onClick={() => handleDeleteColoration(c)}
-                        disabled={deletingColorId === c.id}
-                        className="rounded-lg px-2 py-1 text-xs font-semibold text-slate-500 transition hover:bg-red-50 hover:text-red-700 disabled:opacity-50"
-                        title="Delete color"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  ))}
-                </div>
+      <button
+        type="button"
+        onClick={() => handleDeleteColoration(c)}
+        disabled={deletingColorId === c.id}
+        className="rounded-lg px-2 py-1 text-xs font-semibold ..."
+        title="Delete color"
+      >
+        Delete
+      </button>
+    </div>
+  ))}
+</div>
               </div>
 
               <div className="rounded-[24px] border border-slate-200 bg-slate-50 p-5">
@@ -1109,39 +1109,39 @@ function SettingsPage() {
                   </div>
                 </div>
 
-                <div className="space-y-2 pr-1">
-                  {internalColors.map((c) => (
-                    <div
-                      key={c.id}
-                      className="flex items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-3 py-2"
-                    >
-                      <label className="flex items-center gap-3 text-sm text-slate-700">
-                        <input
-                          type="checkbox"
-                          checked={!!internalColorEnabled[c.id]}
-                          onChange={(e) =>
-                            setInternalColorEnabled((p) => ({
-                              ...p,
-                              [c.id]: e.target.checked,
-                            }))
-                          }
-                          className="h-4 w-4 rounded border-slate-300"
-                        />
-                        <span>{c.name}</span>
-                      </label>
+                <div className="grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-4">
+  {internalColors.map((c) => (
+    <div
+      key={c.id}
+      className="flex items-center justify-between gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2"
+    >
+      <label className="flex min-w-0 items-center gap-2 text-sm text-slate-700">
+        <input
+          type="checkbox"
+          checked={!!internalColorEnabled[c.id]}
+          onChange={(e) =>
+            setInternalColorEnabled((p) => ({
+              ...p,
+              [c.id]: e.target.checked,
+            }))
+          }
+          className="h-4 w-4 shrink-0 rounded border-slate-300"
+        />
+        <span className="truncate">{c.name}</span>
+      </label>
 
-                      <button
-                        type="button"
-                        onClick={() => handleDeleteColoration(c)}
-                        disabled={deletingColorId === c.id}
-                        className="rounded-lg px-2 py-1 text-xs font-semibold text-slate-500 transition hover:bg-red-50 hover:text-red-700 disabled:opacity-50"
-                        title="Delete color"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  ))}
-                </div>
+      <button
+        type="button"
+        onClick={() => handleDeleteColoration(c)}
+        disabled={deletingColorId === c.id}
+        className="rounded-lg px-2 py-1 text-xs font-semibold ..."
+        title="Delete color"
+      >
+        Delete
+      </button>
+    </div>
+  ))}
+</div>
               </div>
             </div>
           </div>

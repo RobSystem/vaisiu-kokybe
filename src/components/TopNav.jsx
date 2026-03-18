@@ -29,14 +29,21 @@ export default function TopNav({ onLogout }) {
   }, []);
 
   const items = useMemo(() => {
-    const base = [
-      { label: "Dashboard", to: "/dashboard" },
-      { label: "Inspections", to: "/all" },   // šiuo metu nukreipiam į AllReports
-      { label: "Archive", to: "/done" },
-    ];
-    if (role === "admin") base.push({ label: "Admin Panel", to: "/admin" });
-    return base;
-  }, [role]);
+  const base = [
+    { label: "Dashboard", to: "/dashboard" },
+    { label: "Inspections", to: "/all" },
+    { label: "Archive", to: "/done" },
+  ];
+
+  if (role === "admin") {
+    base.push(
+      { label: "Admin Panel", to: "/admin" },
+      { label: "Settings", to: "/settings" }
+    );
+  }
+
+  return base;
+}, [role]);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-brand-400/30 bg-gradient-to-r from-slate-950 via-slate-950 to-brand-900/40 backdrop-blur">

@@ -136,13 +136,9 @@ function MainApp({ onLogout }) {
 
       <main className="w-full p-0">
         <Routes>
-          {/* default */}
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
-
-          {/* Dashboard (visiems prisijungusiems) */}
           <Route path="/dashboard" element={<Dashboard />} />
 
-          {/* Inspections */}
           <Route path="/create" element={<CreateReport />} />
           <Route
             path="/all"
@@ -153,14 +149,17 @@ function MainApp({ onLogout }) {
           <Route path="/create-sample/:reportId/:sampleId" element={<CreateSample />} />
           <Route path="/upload-photos/:sampleId" element={<UploadPhotos />} />
 
-          {/* Archive */}
           <Route path="/done" element={<DoneReports />} />
-          <Route
-  path="/settings"
-  element={role === "admin" ? <SettingsPage /> : <Navigate to="/" replace />}
-/>
 
-          {/* Admin */}
+          <Route
+            path="/settings"
+            element={
+              <AdminRoute>
+                <SettingsPage />
+              </AdminRoute>
+            }
+          />
+
           <Route
             path="/admin"
             element={
@@ -186,7 +185,6 @@ function MainApp({ onLogout }) {
             }
           />
 
-          {/* fallback */}
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </main>

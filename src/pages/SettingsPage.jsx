@@ -594,7 +594,7 @@ function SettingsPage() {
 
   return (
   <div className="min-h-screen bg-slate-100">
-    <div className="mx-auto max-w-[1600px] px-4 py-6 sm:px-6 lg:px-8">
+    <div className="w-full px-6 py-6 sm:px-8 lg:px-10">
       {/* Header */}
       <div className="mb-6 overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-sm">
         <div className="flex flex-col gap-6 border-b border-slate-100 px-6 py-6 lg:flex-row lg:items-end lg:justify-between lg:px-8">
@@ -687,7 +687,7 @@ function SettingsPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[360px_minmax(0,1fr)]">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[300px_minmax(0,1fr)]">
         {/* Left rail */}
         <aside className="space-y-6">
           <div className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
@@ -936,7 +936,7 @@ function SettingsPage() {
                       </select>
                     </div>
 
-                    <div className="max-h-72 space-y-2 overflow-auto pr-1">
+                    <div className="space-y-2 pr-1">
                       {minorCatalog.map((d) => (
                         <div
                           key={d.id}
@@ -992,7 +992,7 @@ function SettingsPage() {
                       </select>
                     </div>
 
-                    <div className="max-h-72 space-y-2 overflow-auto pr-1">
+                    <div className="space-y-2 pr-1">
                       {majorCatalog.map((d) => (
                         <div
                           key={d.id}
@@ -1058,7 +1058,7 @@ function SettingsPage() {
                   </div>
                 </div>
 
-                <div className="max-h-80 space-y-2 overflow-auto pr-1">
+                <div className="space-y-2 pr-1">
                   {externalColors.map((c) => (
                     <div
                       key={c.id}
@@ -1109,7 +1109,7 @@ function SettingsPage() {
                   </div>
                 </div>
 
-                <div className="max-h-80 space-y-2 overflow-auto pr-1">
+                <div className="space-y-2 pr-1">
                   {internalColors.map((c) => (
                     <div
                       key={c.id}

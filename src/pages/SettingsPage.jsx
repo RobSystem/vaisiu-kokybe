@@ -853,298 +853,275 @@ function SettingsPage() {
         {/* Main content */}
         <section className="space-y-6">
           <div className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm">
-            <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-              <div>
-                <h2 className="text-lg font-semibold text-slate-950">
-                  Configuration builder
-                </h2>
-                <p className="mt-1 text-sm text-slate-600">
-                  Define what is enabled for the selected report type.
-                </p>
-              </div>
-
-              <div className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-600">
-                Active: {reportTypes.find((r) => r.id === selectedReportTypeId)?.name || "—"}
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 gap-6 2xl:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
-              {/* Fields */}
-              <div className="rounded-[24px] border border-slate-200 bg-slate-50 p-5">
-                <div className="mb-4">
-                  <h3 className="text-base font-semibold text-slate-950">
-                    Measurement fields
-                  </h3>
-                  <p className="mt-1 text-sm text-slate-600">
-                    Select which measurement blocks appear in this report type.
-                  </p>
-                </div>
-
-                <div className="space-y-2">
-                  {FIELD_KEYS.map((f) => (
-                    <label
-  key={f.key}
-  className="flex items-center gap-3 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 transition hover:bg-slate-50"
->
-                      <input
-                        type="checkbox"
-                        checked={!!fieldsEnabled[f.key]}
-                        onChange={(e) =>
-                          setFieldsEnabled((p) => ({
-                            ...p,
-                            [f.key]: e.target.checked,
-                          }))
-                        }
-                        className="h-4 w-4 rounded border-slate-300"
-                      />
-                      <span>{f.label}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-
-              {/* Defects */}
-              <div className="rounded-[24px] border border-slate-200 bg-slate-50 p-5">
-                <div className="mb-4">
-                  <h3 className="text-base font-semibold text-slate-950">
-                    Defects
-                  </h3>
-                  <p className="mt-1 text-sm text-slate-600">
-                    Enable allowed defects and choose the entry mode for each severity.
-                  </p>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="rounded-2xl border border-slate-200 bg-white p-4">
-                    <div className="mb-3 flex items-center justify-between gap-3">
-                      <div>
-                        <div className="text-sm font-semibold text-slate-900">
-                          Minor defects
-                        </div>
-                        <div className="text-xs text-slate-500">
-                          Input mode for all minor defects
-                        </div>
-                      </div>
-
-                      <select
-                        value={minorInputMode}
-                        onChange={(e) => setMinorInputMode(e.target.value)}
-                        className="h-10 rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm outline-none focus:border-slate-300 focus:ring-4 focus:ring-slate-200"
-                      >
-                        <option value="qty">Qty</option>
-                        <option value="pct">%</option>
-                      </select>
-                    </div>
-
-                    <div className="grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-4">
-  {minorCatalog.map((d) => (
-    <div
-      key={d.id}
-      className="flex items-center justify-between gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2"
-    >
-      <label className="flex min-w-0 items-center gap-2 text-sm text-slate-700">
-        <input
-          type="checkbox"
-          checked={!!minorEnabled[d.id]}
-          onChange={(e) =>
-            setMinorEnabled((p) => ({
-              ...p,
-              [d.id]: e.target.checked,
-            }))
-          }
-          className="h-4 w-4 shrink-0 rounded border-slate-300"
-        />
-        <span className="truncate">{d.name}</span>
-      </label>
-
-      <button
-        type="button"
-        onClick={() => handleDeleteDefect(d)}
-        disabled={deletingDefectId === d.id}
-        className="rounded-lg px-2 py-1 text-xs font-semibold ..."
-        title="Delete defect"
-      >
-        Delete
-      </button>
+  <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+    <div>
+      <h2 className="text-lg font-semibold text-slate-950">
+        Configuration builder
+      </h2>
+      <p className="mt-1 text-sm text-slate-600">
+        Define what is enabled for the selected report type.
+      </p>
     </div>
-  ))}
-</div>
-                  </div>
 
-                  <div className="rounded-2xl border border-slate-200 bg-white p-4">
-                    <div className="mb-3 flex items-center justify-between gap-3">
-                      <div>
-                        <div className="text-sm font-semibold text-slate-900">
-                          Major defects
-                        </div>
-                        <div className="text-xs text-slate-500">
-                          Input mode for all major defects
-                        </div>
-                      </div>
-
-                      <select
-                        value={majorInputMode}
-                        onChange={(e) => setMajorInputMode(e.target.value)}
-                        className="h-10 rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm outline-none focus:border-slate-300 focus:ring-4 focus:ring-slate-200"
-                      >
-                        <option value="qty">Qty</option>
-                        <option value="pct">%</option>
-                      </select>
-                    </div>
-
-                    <div className="grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-4">
-  {majorCatalog.map((d) => (
-    <div
-      key={d.id}
-      className="flex items-center justify-between gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2"
-    >
-      <label className="flex min-w-0 items-center gap-2 text-sm text-slate-700">
-        <input
-          type="checkbox"
-          checked={!!majorEnabled[d.id]}
-          onChange={(e) =>
-            setMajorEnabled((p) => ({
-              ...p,
-              [d.id]: e.target.checked,
-            }))
-          }
-          className="h-4 w-4 shrink-0 rounded border-slate-300"
-        />
-        <span className="truncate">{d.name}</span>
-      </label>
-
-      <button
-        type="button"
-        onClick={() => handleDeleteDefect(d)}
-        disabled={deletingDefectId === d.id}
-        className="rounded-lg px-2 py-1 text-xs font-semibold ..."
-        title="Delete defect"
-      >
-        Delete
-      </button>
+    <div className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-600">
+      Active: {reportTypes.find((r) => r.id === selectedReportTypeId)?.name || "—"}
     </div>
-  ))}
-</div>
-                  </div>
-                </div>
-              </div>
-            </div>
+  </div>
+
+  <div className="grid grid-cols-1 gap-4 2xl:grid-cols-5">
+    {/* Measurement fields */}
+    <div className="rounded-[24px] border border-slate-200 bg-slate-50 p-4">
+      <div className="mb-4">
+        <h3 className="text-base font-semibold text-slate-950">
+          Measurement fields
+        </h3>
+        <p className="mt-1 text-sm text-slate-600">
+          Select which measurement blocks appear in this report type.
+        </p>
+      </div>
+
+      <div className="space-y-2">
+        {FIELD_KEYS.map((f) => (
+          <label
+            key={f.key}
+            className="flex items-center gap-3 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 transition hover:bg-slate-50"
+          >
+            <input
+              type="checkbox"
+              checked={!!fieldsEnabled[f.key]}
+              onChange={(e) =>
+                setFieldsEnabled((p) => ({
+                  ...p,
+                  [f.key]: e.target.checked,
+                }))
+              }
+              className="h-4 w-4 rounded border-slate-300"
+            />
+            <span className="truncate">{f.label}</span>
+          </label>
+        ))}
+      </div>
+    </div>
+
+    {/* Minor defects */}
+    <div className="rounded-[24px] border border-slate-200 bg-slate-50 p-4">
+      <div className="mb-4 flex items-start justify-between gap-3">
+        <div>
+          <h3 className="text-base font-semibold text-slate-950">
+            Minor defects
+          </h3>
+          <p className="mt-1 text-sm text-slate-600">
+            Input mode for all minor defects.
+          </p>
+        </div>
+
+        <select
+          value={minorInputMode}
+          onChange={(e) => setMinorInputMode(e.target.value)}
+          className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-slate-300 focus:ring-4 focus:ring-slate-200"
+        >
+          <option value="qty">Qty</option>
+          <option value="pct">%</option>
+        </select>
+      </div>
+
+      <div className="space-y-2">
+        {minorCatalog.map((d) => (
+          <div
+            key={d.id}
+            className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2"
+          >
+            <label className="flex min-w-0 flex-1 items-center gap-2 text-sm text-slate-700">
+              <input
+                type="checkbox"
+                checked={!!minorEnabled[d.id]}
+                onChange={(e) =>
+                  setMinorEnabled((p) => ({
+                    ...p,
+                    [d.id]: e.target.checked,
+                  }))
+                }
+                className="h-4 w-4 shrink-0 rounded border-slate-300"
+              />
+              <span className="truncate">{d.name}</span>
+            </label>
+
+            <button
+              type="button"
+              onClick={() => handleDeleteDefect(d)}
+              disabled={deletingDefectId === d.id}
+              className="shrink-0 text-xs font-medium text-slate-500 transition hover:text-red-700 disabled:opacity-50"
+              title="Delete defect"
+            >
+              Delete
+            </button>
           </div>
-
-          <div className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm">
-            <div className="mb-5">
-              <h2 className="text-lg font-semibold text-slate-950">
-                Coloration
-              </h2>
-              <p className="mt-1 text-sm text-slate-600">
-                Choose which external and internal coloration values are available.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-              <div className="rounded-[24px] border border-slate-200 bg-slate-50 p-5">
-                <div className="mb-4 flex items-center justify-between gap-3">
-                  <div>
-                    <h3 className="text-base font-semibold text-slate-950">
-                      External colors
-                    </h3>
-                    <p className="mt-1 text-sm text-slate-600">
-                      Surface appearance options.
-                    </p>
-                  </div>
-
-                  <div className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-600 ring-1 ring-slate-200">
-                    {externalColors.length} items
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-4">
-  {externalColors.map((c) => (
-    <div
-      key={c.id}
-      className="flex items-center justify-between gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2"
-    >
-      <label className="flex min-w-0 items-center gap-2 text-sm text-slate-700">
-        <input
-          type="checkbox"
-          checked={!!externalColorEnabled[c.id]}
-          onChange={(e) =>
-            setExternalColorEnabled((p) => ({
-              ...p,
-              [c.id]: e.target.checked,
-            }))
-          }
-          className="h-4 w-4 shrink-0 rounded border-slate-300"
-        />
-        <span className="truncate">{c.name}</span>
-      </label>
-
-      <button
-        type="button"
-        onClick={() => handleDeleteColoration(c)}
-        disabled={deletingColorId === c.id}
-        className="rounded-lg px-2 py-1 text-xs font-semibold ..."
-        title="Delete color"
-      >
-        Delete
-      </button>
+        ))}
+      </div>
     </div>
-  ))}
-</div>
-              </div>
 
-              <div className="rounded-[24px] border border-slate-200 bg-slate-50 p-5">
-                <div className="mb-4 flex items-center justify-between gap-3">
-                  <div>
-                    <h3 className="text-base font-semibold text-slate-950">
-                      Internal colors
-                    </h3>
-                    <p className="mt-1 text-sm text-slate-600">
-                      Internal flesh coloration options.
-                    </p>
-                  </div>
+    {/* Major defects */}
+    <div className="rounded-[24px] border border-slate-200 bg-slate-50 p-4">
+      <div className="mb-4 flex items-start justify-between gap-3">
+        <div>
+          <h3 className="text-base font-semibold text-slate-950">
+            Major defects
+          </h3>
+          <p className="mt-1 text-sm text-slate-600">
+            Input mode for all major defects.
+          </p>
+        </div>
 
-                  <div className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-600 ring-1 ring-slate-200">
-                    {internalColors.length} items
-                  </div>
-                </div>
+        <select
+          value={majorInputMode}
+          onChange={(e) => setMajorInputMode(e.target.value)}
+          className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-slate-300 focus:ring-4 focus:ring-slate-200"
+        >
+          <option value="qty">Qty</option>
+          <option value="pct">%</option>
+        </select>
+      </div>
 
-                <div className="grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-4">
-  {internalColors.map((c) => (
-    <div
-      key={c.id}
-      className="flex items-center justify-between gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2"
-    >
-      <label className="flex min-w-0 items-center gap-2 text-sm text-slate-700">
-        <input
-          type="checkbox"
-          checked={!!internalColorEnabled[c.id]}
-          onChange={(e) =>
-            setInternalColorEnabled((p) => ({
-              ...p,
-              [c.id]: e.target.checked,
-            }))
-          }
-          className="h-4 w-4 shrink-0 rounded border-slate-300"
-        />
-        <span className="truncate">{c.name}</span>
-      </label>
+      <div className="space-y-2">
+        {majorCatalog.map((d) => (
+          <div
+            key={d.id}
+            className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2"
+          >
+            <label className="flex min-w-0 flex-1 items-center gap-2 text-sm text-slate-700">
+              <input
+                type="checkbox"
+                checked={!!majorEnabled[d.id]}
+                onChange={(e) =>
+                  setMajorEnabled((p) => ({
+                    ...p,
+                    [d.id]: e.target.checked,
+                  }))
+                }
+                className="h-4 w-4 shrink-0 rounded border-slate-300"
+              />
+              <span className="truncate">{d.name}</span>
+            </label>
 
-      <button
-        type="button"
-        onClick={() => handleDeleteColoration(c)}
-        disabled={deletingColorId === c.id}
-        className="rounded-lg px-2 py-1 text-xs font-semibold ..."
-        title="Delete color"
-      >
-        Delete
-      </button>
-    </div>
-  ))}
-</div>
-              </div>
-            </div>
+            <button
+              type="button"
+              onClick={() => handleDeleteDefect(d)}
+              disabled={deletingDefectId === d.id}
+              className="shrink-0 text-xs font-medium text-slate-500 transition hover:text-red-700 disabled:opacity-50"
+              title="Delete defect"
+            >
+              Delete
+            </button>
           </div>
+        ))}
+      </div>
+    </div>
+
+    {/* External colors */}
+    <div className="rounded-[24px] border border-slate-200 bg-slate-50 p-4">
+      <div className="mb-4 flex items-start justify-between gap-3">
+        <div>
+          <h3 className="text-base font-semibold text-slate-950">
+            External colors
+          </h3>
+          <p className="mt-1 text-sm text-slate-600">
+            Surface appearance options.
+          </p>
+        </div>
+
+        <div className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-600 ring-1 ring-slate-200">
+          {externalColors.length} items
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        {externalColors.map((c) => (
+          <div
+            key={c.id}
+            className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2"
+          >
+            <label className="flex min-w-0 flex-1 items-center gap-2 text-sm text-slate-700">
+              <input
+                type="checkbox"
+                checked={!!externalColorEnabled[c.id]}
+                onChange={(e) =>
+                  setExternalColorEnabled((p) => ({
+                    ...p,
+                    [c.id]: e.target.checked,
+                  }))
+                }
+                className="h-4 w-4 shrink-0 rounded border-slate-300"
+              />
+              <span className="truncate">{c.name}</span>
+            </label>
+
+            <button
+              type="button"
+              onClick={() => handleDeleteColoration(c)}
+              disabled={deletingColorId === c.id}
+              className="shrink-0 text-xs font-medium text-slate-500 transition hover:text-red-700 disabled:opacity-50"
+              title="Delete color"
+            >
+              Delete
+            </button>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    {/* Internal colors */}
+    <div className="rounded-[24px] border border-slate-200 bg-slate-50 p-4">
+      <div className="mb-4 flex items-start justify-between gap-3">
+        <div>
+          <h3 className="text-base font-semibold text-slate-950">
+            Internal colors
+          </h3>
+          <p className="mt-1 text-sm text-slate-600">
+            Internal flesh coloration options.
+          </p>
+        </div>
+
+        <div className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-600 ring-1 ring-slate-200">
+          {internalColors.length} items
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        {internalColors.map((c) => (
+          <div
+            key={c.id}
+            className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2"
+          >
+            <label className="flex min-w-0 flex-1 items-center gap-2 text-sm text-slate-700">
+              <input
+                type="checkbox"
+                checked={!!internalColorEnabled[c.id]}
+                onChange={(e) =>
+                  setInternalColorEnabled((p) => ({
+                    ...p,
+                    [c.id]: e.target.checked,
+                  }))
+                }
+                className="h-4 w-4 shrink-0 rounded border-slate-300"
+              />
+              <span className="truncate">{c.name}</span>
+            </label>
+
+            <button
+              type="button"
+              onClick={() => handleDeleteColoration(c)}
+              disabled={deletingColorId === c.id}
+              className="shrink-0 text-xs font-medium text-slate-500 transition hover:text-red-700 disabled:opacity-50"
+              title="Delete color"
+            >
+              Delete
+            </button>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</div>
         </section>
       </div>
 

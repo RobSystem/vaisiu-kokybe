@@ -16,6 +16,7 @@ import AdminPanel from "./pages/AdminPanel";
 import AdminClients from "./pages/AdminClients";
 import AddUserPage from "./pages/AddUserPage";
 import Dashboard from "./pages/Dashboard";
+import SettingsPage from "./pages/SettingsPage";
 
 import { Toaster } from "react-hot-toast";
 
@@ -154,6 +155,10 @@ function MainApp({ onLogout }) {
 
           {/* Archive */}
           <Route path="/done" element={<DoneReports />} />
+          <Route
+  path="/settings"
+  element={role === "admin" ? <SettingsPage /> : <Navigate to="/" replace />}
+/>
 
           {/* Admin */}
           <Route

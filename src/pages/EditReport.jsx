@@ -50,9 +50,10 @@ const fetchPdfFiles = async () => {
       if (data) {
         setReport(data);
         setForm({
-          brand: data.brand || '', temperature: data.temperature || '', category: data.category || 'CLASS I',
-          qualityScore: data.qualityScore || '', storageScore: data.storageScore || '', conclusion: data.conclusion || ''
-        });
+  qualityScore: data.qualityScore || '',
+  storageScore: data.storageScore || '',
+  conclusion: data.conclusion || ''
+});
         fetchSamples(data.id);
       }
     }
@@ -371,10 +372,17 @@ const handleCreateNewReportFromSelected = async () => {
   }
 
   const handleSave = async () => {
-    const { error } = await supabase.from('reports').update({ ...form, samples }).eq('id', report.id);
-    if (!error) toast.success('Report saved successfully!');
-  }
+  const { error } = await supabase
+    .from('reports')
+    .update({
+      qualityScore: form.qualityScore,
+      storageScore: form.storageScore,
+      conclusion: form.conclusion,
+    })
+    .eq('id', report.id);
 
+  if (!error) toast.success('Report saved successfully!');
+}
   const handleOpenEditModal = () => {
     setEditInfo({
       client_ref: report?.client_ref || '', container_number: report?.container_number || '',
@@ -549,58 +557,7 @@ return (
         </div>
       </div>
 
-      {/* Basic info */}
-      <div className="mx-4 md:mx-6 mt-6">
-  <div className={cardClass}>
-    <div className="mb-4 flex items-center justify-between">
-      <h3 className="text-sm font-semibold text-slate-900">Basic info</h3>
-
-      <button onClick={handleSave} className={btnDark}>
-        Save
-      </button>
-    </div>
-
-    <div className="grid md:grid-cols-3 gap-4">
-      <div>
-        <label className={labelClass}>Brand</label>
-        <input
-          name="brand"
-          value={form.brand}
-          onChange={handleFormChange}
-          className={inputClass}
-        />
-      </div>
-
-      <div>
-        <label className={labelClass}>Temperature</label>
-        <input
-          name="temperature"
-          value={form.temperature}
-          onChange={handleFormChange}
-          className={inputClass}
-        />
-      </div>
-
-      <div>
-        <label className={labelClass}>Category</label>
-        <select
-          name="category"
-          value={form.category}
-          onChange={handleFormChange}
-          className={selectClass}
-        >
-          <option value="">Choose category...</option>
-          <option value="CLASS I">Class I</option>
-          <option value="CLASS II">Class II</option>
-          <option value="INDUSTRY CLASS">Industry Class</option>
-          <option value="CLASS I & CLASS II">Class I & Class II</option>
-        </select>
-      </div>
-    </div>
-  </div>
-</div>
-
-      {/* Scores */}
+            {/* Scores */}
       <div className="mx-4 md:mx-6 mt-6">
         <div className={cardClass}>
           <h3 className="text-sm font-semibold text-slate-900 mb-4">Scores</h3>

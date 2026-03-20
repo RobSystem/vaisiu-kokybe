@@ -203,6 +203,8 @@ const [uploadProgress, setUploadProgress] = useState(0);
     brand: "",
     box_amount: "",
 fruits_amount: "",
+  temperature: '',
+  category: '',
 
     // measurements
     packing_type: "",
@@ -789,6 +791,7 @@ if (goBack) {
               ["Packing Code", "packing_code"],
               ["Variety", "variety"],
               ["Brand", "brand"],
+              ["Temperature", "temperature"],
               ["Box Amount", "box_amount"],
 ["Fruits Amount (per box)", "fruits_amount"],
             ].map(([label, key]) => (
@@ -796,6 +799,19 @@ if (goBack) {
                 <Input name={key} value={form[key] ?? ""} onChange={handleChange} />
               </Field>
             ))}
+            <Field label="Category">
+  <Select
+    name="category"
+    value={form.category ?? "CLASS I"}
+    onChange={handleChange}
+  >
+    <option value="">Choose category...</option>
+    <option value="CLASS I">Class I</option>
+    <option value="CLASS II">Class II</option>
+    <option value="INDUSTRY CLASS">Industry Class</option>
+    <option value="CLASS I & CLASS II">Class I & Class II</option>
+  </Select>
+</Field>
           </div>
         </Card>
       )}

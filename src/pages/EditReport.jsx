@@ -7,7 +7,7 @@ import toast from 'react-hot-toast';
 
 function EditReport() {
   const [form, setForm] = useState({
-    brand: '', temperature: '', category: 'CLASS I',
+  
     qualityScore: '', storageScore: '', conclusion: ''
   });
   const [report, setReport] = useState(null);

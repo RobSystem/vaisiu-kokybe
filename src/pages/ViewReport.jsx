@@ -5,6 +5,14 @@ import { pdf } from '@react-pdf/renderer'
 import { supabase } from '../supabaseClient'
 import ReportPdfDocument from '../components/ReportPdfDocument'
 
+const uniqueValues = (items, key) => {
+  return [...new Set(
+    (items || [])
+      .map(item => item?.[key])
+      .filter(v => v !== null && v !== undefined && String(v).trim() !== '')
+  )];
+};
+
 function ViewReport() {
   const { reportId } = useParams()
   const [report, setReport] = useState(null)
@@ -91,6 +99,14 @@ if (ids.size > 0) {
   }, [reportId])
 
   if (!report) return null
+
+  const brandValues = uniqueValues(samples, 'brand');
+const temperatureValues = uniqueValues(samples, 'temperature');
+const categoryValues = uniqueValues(samples, 'category');
+
+const brandDisplay = brandValues.length ? brandValues.join(', ') : '—';
+const temperatureDisplay = temperatureValues.length ? temperatureValues.join(', ') : '—';
+const categoryDisplay = categoryValues.length ? categoryValues.join(', ') : '—';
 
   const getPhotosForSample = id => photos.filter(p => p.sample_id === id)
   const renderField = (label, value) => value && <p><span className="font-semibold">{label}:</span> {value}</p>
@@ -438,19 +454,19 @@ const cardTitle = "text-lg md:text-xl font-semibold text-slate-900";
         </div>
 
         <div className="flex items-center justify-between gap-4 px-4 py-3">
-          <dt className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Brand</dt>
-          <dd className="text-sm font-medium text-slate-900">{report?.brand || '—'}</dd>
-        </div>
+  <dt className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Brand</dt>
+  <dd className="text-sm font-medium text-slate-900">{brandDisplay}</dd>
+</div>
 
-        <div className="flex items-center justify-between gap-4 px-4 py-3">
-          <dt className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Temperature</dt>
-          <dd className="text-sm font-medium text-slate-900">{report?.temperature || '—'}</dd>
-        </div>
+<div className="flex items-center justify-between gap-4 px-4 py-3">
+  <dt className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Temperature</dt>
+  <dd className="text-sm font-medium text-slate-900">{temperatureDisplay}</dd>
+</div>
 
-        <div className="flex items-center justify-between gap-4 px-4 py-3">
-          <dt className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Category</dt>
-          <dd className="text-sm font-medium text-slate-900">{report?.category || '—'}</dd>
-        </div>
+<div className="flex items-center justify-between gap-4 px-4 py-3">
+  <dt className="text-xs font-semibold text-slate-600 uppercase tracking-wide">Category</dt>
+  <dd className="text-sm font-medium text-slate-900">{categoryDisplay}</dd>
+</div>
       </dl>
     </div>
   </div>

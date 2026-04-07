@@ -666,56 +666,64 @@ return (
       <thead className="bg-slate-50 text-slate-600">
   <tr>
     <th className="px-2 py-1 text-left text-[10px] font-semibold">Select</th>
-    <th className="px-2 py-1 text-left text-[10px] font-semibold">#</th>
     <th className="px-2 py-1 text-left text-[10px] font-semibold">Pallet number</th>
-    <th className="px-2 py-1 text-left text-[10px] font-semibold">Size</th>
+    <th className="px-2 py-1 text-left text-[10px] font-semibold">GGN</th>
+    <th className="px-2 py-1 text-left text-[10px] font-semibold">Grower Code</th>
     <th className="px-2 py-1 text-left text-[10px] font-semibold">Variety</th>
-    <th className="px-2 py-1 text-left text-[10px] font-semibold">Quality score</th>
-    <th className="px-2 py-1 text-left text-[10px] font-semibold">Storage score</th>
+    <th className="px-2 py-1 text-left text-[10px] font-semibold">Size</th>
+    <th className="px-2 py-1 text-left text-[10px] font-semibold">Brand</th>
+    <th className="px-2 py-1 text-left text-[10px] font-semibold">Category</th>
+    <th className="px-2 py-1 text-left text-[10px] font-semibold">QC</th>
+    <th className="px-2 py-1 text-left text-[10px] font-semibold">SC</th>
     <th className="px-2 py-1 text-left text-[10px] font-semibold">Action</th>
   </tr>
 </thead>
       <tbody className="divide-y divide-slate-200">
-        {samples.map((s, i) => (
-          <tr key={s.id} className="odd:bg-white even:bg-slate-50 hover:bg-slate-100">
-  <td className="px-2 py-1 text-[11px]">
-    <input
-      type="checkbox"
-      checked={selectedSampleIds.includes(s.id)}
-      onChange={() => toggleSampleSelection(s.id)}
-    />
-  </td>
-  <td className="px-2 py-1 text-[11px]">{i + 1}</td>
-  <td className="px-2 py-1 text-[11px]">{s.pallet_number}</td>
-  <td className="px-2 py-1 text-[11px]">{s.size || '—'}</td>
-  <td className="px-2 py-1 text-[11px]">{s.variety || '—'}</td>
-  <td className="px-2 py-1 text-[11px]">{s.quality_score}</td>
-  <td className="px-2 py-1 text-[11px]">{s.storage_score}</td>
-  <td className="px-2 py-1">
-              <div className="flex flex-wrap gap-2">
-                <button
-                  onClick={() => handleEditSample(s.id)}
-                  className="h-7 rounded-lg border border-slate-200 bg-white px-2 text-[10px] font-semibold text-slate-700 hover:bg-slate-50"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => handleCopySample(s.id)}
-                  className="h-7 rounded-lg border border-slate-200 bg-white px-2 text-[10px] font-semibold text-slate-700 hover:bg-slate-50"
-                >
-                  Copy
-                </button>
-                <button
-                  onClick={() => handleDeleteSample(s.id)}
-                  className="h-7 rounded-lg border border-red-200 bg-red-50 px-2 text-[10px] font-semibold text-red-700 hover:bg-red-100"
-                >
-                  Delete
-                </button>
-              </div>
-            </td>
-          </tr>
-        ))}
-      </tbody>
+  {samples.map((s) => (
+    <tr key={s.id} className="odd:bg-white even:bg-slate-50 hover:bg-slate-100">
+      <td className="px-2 py-1 text-[11px]">
+        <input
+          type="checkbox"
+          checked={selectedSampleIds.includes(s.id)}
+          onChange={() => toggleSampleSelection(s.id)}
+        />
+      </td>
+
+      <td className="px-2 py-1 text-[11px]">{s.pallet_number || '—'}</td>
+      <td className="px-2 py-1 text-[11px]">{s.ggn_number || '—'}</td>
+      <td className="px-2 py-1 text-[11px]">{s.grower_code || '—'}</td>
+      <td className="px-2 py-1 text-[11px]">{s.variety || '—'}</td>
+      <td className="px-2 py-1 text-[11px]">{s.size || '—'}</td>
+      <td className="px-2 py-1 text-[11px]">{s.brand || '—'}</td>
+      <td className="px-2 py-1 text-[11px]">{s.category || '—'}</td>
+      <td className="px-2 py-1 text-[11px]">{s.quality_score || '—'}</td>
+      <td className="px-2 py-1 text-[11px]">{s.storage_score || '—'}</td>
+
+      <td className="px-2 py-1">
+        <div className="flex flex-wrap gap-2">
+          <button
+            onClick={() => handleEditSample(s.id)}
+            className="h-7 rounded-lg border border-slate-200 bg-white px-2 text-[10px] font-semibold text-slate-700 hover:bg-slate-50"
+          >
+            Edit
+          </button>
+          <button
+            onClick={() => handleCopySample(s.id)}
+            className="h-7 rounded-lg border border-slate-200 bg-white px-2 text-[10px] font-semibold text-slate-700 hover:bg-slate-50"
+          >
+            Copy
+          </button>
+          <button
+            onClick={() => handleDeleteSample(s.id)}
+            className="h-7 rounded-lg border border-red-200 bg-red-50 px-2 text-[10px] font-semibold text-red-700 hover:bg-red-100"
+          >
+            Delete
+          </button>
+        </div>
+      </td>
+    </tr>
+  ))}
+</tbody>
     </table>
   </div>
 ) : (

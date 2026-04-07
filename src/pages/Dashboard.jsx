@@ -200,32 +200,46 @@ export default function Dashboard() {
             <span className="text-xs text-slate-500">Auto refresh</span>
           </div>
 
-          {monthlyStats.length === 0 ? (
-            <p className="text-sm text-slate-500">No data found.</p>
-          ) : (
-            <div className="h-72 flex items-end gap-2">
-              {monthlyStats.map((item) => {
-                const height = `${(item.count / maxMonthlyCount) * 100}%`;
+         {monthlyStats.length === 0 ? (
+  <p className="text-sm text-slate-500">No data found.</p>
+) : (
+  <div className="h-72 relative">
+    <div className="absolute inset-0 flex flex-col justify-between pointer-events-none">
+      <div className="border-t border-slate-100" />
+      <div className="border-t border-slate-100" />
+      <div className="border-t border-slate-100" />
+      <div className="border-t border-slate-100" />
+    </div>
 
-                return (
-                  <div
-                    key={item.key}
-                    className="flex-1 min-w-0 flex flex-col items-center justify-end gap-2"
-                  >
-                    <div className="text-[11px] text-slate-600">{item.count}</div>
-                    <div
-                      className="w-full max-w-[42px] rounded-t-xl bg-slate-800"
-                      style={{ height }}
-                      title={`${item.label}: ${item.count}`}
-                    />
-                    <div className="text-[10px] text-slate-500 text-center leading-tight">
-                      {item.label}
-                    </div>
-                  </div>
-                );
-              })}
+    <div className="relative h-full flex items-end gap-3">
+      {monthlyStats.map((item) => {
+        const rawHeight = (item.count / maxMonthlyCount) * 100;
+        const height = item.count > 0 ? Math.max(rawHeight, 8) : 0;
+
+        return (
+          <div
+            key={item.key}
+            className="flex-1 min-w-0 h-full flex flex-col justify-end items-center"
+          >
+            <div className="h-[220px] w-full flex flex-col justify-end items-center">
+              <div className="text-[11px] text-slate-600 mb-2">{item.count}</div>
+
+              <div
+                className="w-full max-w-[42px] rounded-t-xl bg-slate-800 transition-all"
+                style={{ height: `${height}%` }}
+                title={`${item.label}: ${item.count}`}
+              />
             </div>
-          )}
+
+            <div className="mt-3 text-[10px] text-slate-500 text-center leading-tight">
+              {item.label}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  </div>
+)}
         </div>
 
         {/* Inspections per client */}

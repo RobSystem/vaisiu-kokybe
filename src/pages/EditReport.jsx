@@ -514,13 +514,21 @@ return (
       <div className="sticky top-0 z-20 bg-white/90 backdrop-blur border-b border-slate-200">
         <div className="mx-4 md:mx-6 py-3 flex flex-wrap items-center gap-3">
           <div className="flex-1 min-w-[260px]">
-            <p className="text-xs text-slate-500 uppercase tracking-wide">Edit report</p>
-            <h2 className="text-lg font-semibold text-slate-900">
-              {report
-                ? `Container: ${report.container_number || '—'} • ${report.variety || '—'} • ${report.origin || '—'}`
-                : 'Loading...'}
-            </h2>
-          </div>
+  <p className="text-xs text-slate-500 uppercase tracking-wide">Edit report</p>
+
+  {report ? (
+    <div className="text-sm text-slate-900 font-medium flex flex-wrap gap-x-4 gap-y-1">
+      <span><strong>Container:</strong> {report.container_number || '—'}</span>
+      <span><strong>Client number:</strong> {report.client_ref || '—'}</span>
+      <span><strong>Supplier:</strong> {report.supplier || '—'}</span>
+      <span><strong>Variety:</strong> {report.variety || '—'}</span>
+      <span><strong>Origin:</strong> {report.origin || '—'}</span>
+      <span><strong>Location:</strong> {report.location || '—'}</span>
+    </div>
+  ) : (
+    <h2 className="text-lg font-semibold text-slate-900">Loading...</h2>
+  )}
+</div>
 
           {/* Status chip */}
           <span

@@ -770,9 +770,23 @@ return (
       </td>
       <td className="px-2 py-1 text-center">
   {samplePhotoMap[s.id] ? (
-    <span title="Has photos">📷</span>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className="w-4 h-4 text-slate-700 mx-auto"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      title="Has photos"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={1.5}
+        d="M3 7h4l2-3h6l2 3h4v12H3V7z"
+      />
+    </svg>
   ) : (
-    <span className="text-slate-300">—</span>
+    <span className="text-slate-300 text-xs">—</span>
   )}
 </td>
     </tr>

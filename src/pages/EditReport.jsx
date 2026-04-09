@@ -21,6 +21,7 @@ const [creatingNewReport, setCreatingNewReport] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [users, setUsers] = useState([]);
   const [userProfile, setUserProfile] = useState(null);
+  const [samplePhotoMap, setSamplePhotoMap] = useState({});
   const [editInfo, setEditInfo] = useState({
     client_ref: '', container_number: '', rochecks_ref: '', variety: '',
     origin: '', location: '', total_pallets: '', type: 'Conventional',
@@ -103,17 +104,46 @@ const fetchPdfFiles = async () => {
     fetchUserProfile();
   }, []);
 
-  const fetchSamples = async (reportId) => {
-  const { data } = await supabase
+ const fetchSamples = async (reportId) => {
+  const { data, error } = await supabase
     .from('samples')
-    .select(`
-      *,
-      sample_photos (id)
-    `)
+    .select('*')
     .eq('report_id', reportId)
     .order('position');
 
-  if (data) setSamples(data);
+  if (error) {
+    console.error('Fetch samples error:', error);
+    setSamples([]);
+    setSamplePhotoMap({});
+    return;
+  }
+
+  setSamples(data || []);
+
+  const sampleIds = (data || []).map((s) => s.id);
+
+  if (!sampleIds.length) {
+    setSamplePhotoMap({});
+    return;
+  }
+
+  const { data: photoRows, error: photosError } = await supabase
+    .from('sample_photos')
+    .select('id, sample_id')
+    .in('sample_id', sampleIds);
+
+  if (photosError) {
+    console.error('Fetch sample photos error:', photosError);
+    setSamplePhotoMap({});
+    return;
+  }
+
+  const map = {};
+  (photoRows || []).forEach((photo) => {
+    map[photo.sample_id] = true;
+  });
+
+  setSamplePhotoMap(map);
 };
 
   const handleFormChange = e => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -739,7 +769,7 @@ return (
         </div>
       </td>
       <td className="px-2 py-1 text-center">
-  {s.sample_photos && s.sample_photos.length > 0 ? (
+  {samplePhotoMap[s.id] ? (
     <span title="Has photos">📷</span>
   ) : (
     <span className="text-slate-300">—</span>

@@ -104,9 +104,17 @@ const fetchPdfFiles = async () => {
   }, []);
 
   const fetchSamples = async (reportId) => {
-    const { data } = await supabase.from('samples').select('*').eq('report_id', reportId).order('position');
-    if (data) setSamples(data);
-  }
+  const { data } = await supabase
+    .from('samples')
+    .select(`
+      *,
+      sample_photos (id)
+    `)
+    .eq('report_id', reportId)
+    .order('position');
+
+  if (data) setSamples(data);
+};
 
   const handleFormChange = e => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
   const handleEditInfoChange = e => setEditInfo(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -684,6 +692,7 @@ return (
     <th className="px-2 py-1 text-left text-[10px] font-semibold">QC</th>
     <th className="px-2 py-1 text-left text-[10px] font-semibold">SC</th>
     <th className="px-2 py-1 text-left text-[10px] font-semibold">Action</th>
+    <th className="px-2 py-1 text-[10px] font-semibold">Photos</th>
   </tr>
 </thead>
       <tbody className="divide-y divide-slate-200">
@@ -729,6 +738,13 @@ return (
           </button>
         </div>
       </td>
+      <td className="px-2 py-1 text-center">
+  {s.sample_photos && s.sample_photos.length > 0 ? (
+    <span title="Has photos">📷</span>
+  ) : (
+    <span className="text-slate-300">—</span>
+  )}
+</td>
     </tr>
   ))}
 </tbody>

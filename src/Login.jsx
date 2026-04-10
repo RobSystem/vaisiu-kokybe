@@ -38,7 +38,7 @@ function Login({ onLogin }) {
           onChange={(e) => setPassword(e.target.value)}
           required
         /><br /><br />
-        <button type="submit">Prisijungti</button>
+        <button type="submit">Log In</button>
       </form>
       {errorMsg && <p style={{ color: 'red' }}>{errorMsg}</p>}
     </div>

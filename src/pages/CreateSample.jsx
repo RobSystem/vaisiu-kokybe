@@ -1390,7 +1390,7 @@ if (goBack) {
   >
     {!sampleId ? (
       <div className="text-sm text-slate-600">
-        Pirmiausia paspausk <b>Save</b>, kad sistema sukurtų sample ID. Tada galėsi įkelti nuotraukas.
+        First click <b>Save</b>, so the system can generate a sample ID. Then you will be able to upload photos.
       </div>
     ) : (
       <>

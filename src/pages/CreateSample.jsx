@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "../supabaseClient";
 import toast from "react-hot-toast";
@@ -191,6 +191,8 @@ const [majorMode, setMajorMode] = useState("qty");
 const [photos, setPhotos] = useState([]);
 const [previewUrl, setPreviewUrl] = useState(null);
 const [uploadProgress, setUploadProgress] = useState(0);
+const [isUploading, setIsUploading] = useState(false);
+const uploadInProgressRef = useRef(false);
 
   const [form, setForm] = useState({
     // pallet
@@ -566,40 +568,60 @@ const removeSelectedFile = (index) => {
 };
 
 const handleUpload = async () => {
+  if (uploadInProgressRef.current || isUploading) return;
+
   if (!sampleId) {
     toast.error("Pirmiausia išsaugok sample (Save), tada galėsi įkelti nuotraukas.");
     return;
   }
   if (!files.length) return;
 
+  uploadInProgressRef.current = true;
+  setIsUploading(true);
+
+  const filesToUpload = [...files];
   let uploaded = 0;
 
-  for (const file of files) {
-    const filePath = `samples/${sampleId}/${Date.now()}-${file.name}`;
+  try {
+    for (const file of filesToUpload) {
+      const filePath = `samples/${sampleId}/${Date.now()}-${file.name}`;
 
-    const { error: uploadError } = await supabase.storage
-      .from("photos")
-      .upload(filePath, file);
+      const { error: uploadError } = await supabase.storage
+        .from("photos")
+        .upload(filePath, file);
 
-    if (uploadError) {
-      toast.error("Nepavyko įkelti: " + file.name);
-      continue;
+      if (uploadError) {
+        toast.error("Nepavyko įkelti: " + file.name);
+        continue;
+      }
+
+      const publicUrl = supabase.storage
+        .from("photos")
+        .getPublicUrl(filePath).data.publicUrl;
+
+      const { error: insertError } = await supabase
+        .from("sample_photos")
+        .insert({ sample_id: sampleId, url: publicUrl });
+
+      if (insertError) {
+        toast.error("Nepavyko išsaugoti DB: " + file.name);
+        continue;
+      }
+
+      uploaded++;
+      setUploadProgress(Math.round((uploaded / filesToUpload.length) * 100));
     }
 
-    const publicUrl = supabase.storage
-      .from("photos")
-      .getPublicUrl(filePath).data.publicUrl;
-
-    await supabase.from("sample_photos").insert({ sample_id: sampleId, url: publicUrl });
-
-    uploaded++;
-    setUploadProgress(Math.round((uploaded / files.length) * 100));
+    if (uploaded > 0) {
+      toast.success("Nuotraukos įkeltos!");
+      setFiles([]);
+      fetchPhotos();
+    }
+  } finally {
+    setUploadProgress(0);
+    setIsUploading(false);
+    uploadInProgressRef.current = false;
   }
-
-  toast.success("Nuotraukos įkeltos!");
-  setFiles([]);
-  setUploadProgress(0);
-  fetchPhotos();
 };
 
 const handleDeletePhoto = async (photoId, url) => {
@@ -1434,9 +1456,10 @@ if (goBack) {
           <button
             type="button"
             onClick={handleUpload}
-            className="h-10 rounded-xl bg-brand-600 px-4 text-sm font-semibold text-white hover:bg-brand-500"
+            disabled={isUploading || !files.length}
+            className="h-10 rounded-xl bg-brand-600 px-4 text-sm font-semibold text-white hover:bg-brand-500 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            Upload Photos
+            {isUploading ? "Uploading..." : "Upload Photos"}
           </button>
 
           <button

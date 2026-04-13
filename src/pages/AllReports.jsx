@@ -597,15 +597,27 @@ useEffect(() => {
   </div>
 )}
       {/* Table card */}
-      <div className="rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-[0_10px_30px_rgba(15,23,42,0.06)]">
+        <div className="flex flex-col gap-2 border-b border-slate-200 bg-slate-50/80 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+  <div>
+    <h3 className="text-sm font-semibold text-slate-900">Inspection reports</h3>
+    <p className="text-xs text-slate-500">
+      Active reports list with quick access to edit view.
+    </p>
+  </div>
+
+  <div className="text-xs font-medium text-slate-500">
+    {total} total
+  </div>
+</div>
         {loading ? (
-          <div className="p-6 text-sm text-slate-600">Kraunama…</div>
+          <div className="px-5 py-10 text-sm text-slate-500">Loading reports...</div>
         ) : (
           <>
             <div className="w-full overflow-x-auto">
-              <table className="min-w-[1100px] w-full border-collapse text-[11px]">
-                <thead className="sticky top-0 bg-slate-50">
-                  <tr className="text-left text-[11px] font-bold uppercase tracking-wide text-slate-600">
+  <table className="min-w-[980px] w-full border-collapse text-sm">
+                <thead className="bg-slate-50">
+  <tr className="text-left text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
                     {[
                       "Date",
   "Container",
@@ -616,7 +628,7 @@ useEffect(() => {
   "Location",
   "Status",
                     ].map((h) => (
-                      <th key={h} className="border-b border-slate-200 px-4 py-3">
+                      <th key={h} className="border-b border-slate-200 px-4 py-3.5">
                         {h}
                       </th>
                     ))}
@@ -626,42 +638,47 @@ useEffect(() => {
                 <tbody>
                   {pageReports.length === 0 ? (
                     <tr>
-                      <td colSpan={8} className="px-4 py-10 text-center text-slate-500">
-                        No reports found.
-                      </td>
+                      <td colSpan={8} className="px-4 py-14 text-center">
+  <div className="mx-auto max-w-sm">
+    <div className="text-sm font-semibold text-slate-900">No reports found</div>
+    <p className="mt-1 text-sm text-slate-500">
+      Try changing the search phrase or filter settings.
+    </p>
+  </div>
+</td>
                     </tr>
                   ) : (
                     pageReports.map((report) => (
   <tr
-    key={report.id}
-    className="cursor-pointer hover:bg-slate-50/70"
+  key={report.id}
+  className="cursor-pointer transition hover:bg-brand-50/40"
     onClick={() => {
       setSelectedReport?.(report);
       navigate(`/edit/${report.id}`);
     }}
   >
-    <td className="border-b border-slate-100 px-3 py-2 text-slate-800">
+    <td className="border-b border-slate-100 px-4 py-3 align-middle text-slate-700">
       {report.date}
     </td>
-    <td className="border-b border-slate-100 px-3 py-2">
+    <td className="border-b border-slate-100 px-4 py-3 align-middle text-slate-600">
       {report.container_number || "-"}
     </td>
-    <td className="border-b border-slate-100 px-3 py-2">
+    <td className="border-b border-slate-100 px-4 py-3 align-middle text-slate-600">
       {report.client_ref || "-"}
     </td>
-    <td className="border-b border-slate-100 px-3 py-2">
+   <td className="border-b border-slate-100 px-4 py-3 align-middle text-slate-600">
       {report.rochecks_ref || "-"}
     </td>
-    <td className="border-b border-slate-100 px-3 py-2 font-medium text-slate-900">
+   <td className="border-b border-slate-100 px-4 py-3 align-middle font-semibold text-slate-900">
       {report.client}
     </td>
-    <td className="border-b border-slate-100 px-3 py-2">
+    <td className="border-b border-slate-100 px-4 py-3 align-middle text-slate-700">
       {report.variety}
     </td>
-    <td className="border-b border-slate-100 px-3 py-2">
+    <td className="border-b border-slate-100 px-4 py-3 align-middle text-slate-600">
       {report.location}
     </td>
-    <td className="border-b border-slate-100 px-3 py-2">
+    <td className="border-b border-slate-100 px-4 py-3 align-middle">
       <StatusBadge report={report} />
     </td>
   </tr>
@@ -672,7 +689,7 @@ useEffect(() => {
             </div>
 
             {/* Footer / pagination */}
-            <div className="flex flex-col gap-3 border-t border-slate-200 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-col gap-3 border-t border-slate-200 bg-white px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
               <p className="text-xs text-slate-500">
                 Showing {total === 0 ? 0 : start + 1}–{end} of {total} entries
               </p>

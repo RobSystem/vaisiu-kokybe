@@ -570,10 +570,11 @@ const removeSelectedFile = (index) => {
 
 const compressImage = async (file) => {
   const options = {
-    maxSizeMB: 0.8,
-    maxWidthOrHeight: 1600,
-    useWebWorker: true,
-  };
+  maxSizeMB: 0.35,
+  maxWidthOrHeight: 1200,
+  useWebWorker: true,
+  initialQuality: 0.7,
+};
 
   return await imageCompression(file, options);
 };
@@ -1492,11 +1493,13 @@ if (goBack) {
           {photos.map((photo) => (
             <div key={photo.id} className="relative">
               <img
-                src={photo.url}
-                alt="photo"
-                className="w-40 h-40 object-cover rounded-xl border border-slate-200 cursor-pointer"
-                onClick={() => setPreviewUrl(photo.url)}
-              />
+  src={photo.url}
+  alt="photo"
+  loading="lazy"
+  decoding="async"
+  className="w-40 h-40 object-cover rounded-xl border border-slate-200 cursor-pointer"
+  onClick={() => setPreviewUrl(photo.url)}
+/>
               <button
                 type="button"
                 onClick={() => handleDeletePhoto(photo.id, photo.url)}

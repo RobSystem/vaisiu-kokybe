@@ -13,6 +13,7 @@
     "@emailjs/browser": "^4.4.1",
     "@react-pdf/renderer": "^4.3.2",
     "@supabase/supabase-js": "^2.49.4",
+    "browser-image-compression": "^2.0.2",
     "html2canvas": "^1.4.1",
     "html2pdf.js": "^0.10.3",
     "jspdf": "^3.0.1",

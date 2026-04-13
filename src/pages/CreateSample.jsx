@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "../supabaseClient";
 import toast from "react-hot-toast";
+import imageCompression from "browser-image-compression";
 
 /* =========================
    UI helpers (OUTSIDE)
@@ -567,6 +568,16 @@ const removeSelectedFile = (index) => {
   setFiles(newFiles);
 };
 
+const compressImage = async (file) => {
+  const options = {
+    maxSizeMB: 0.8,
+    maxWidthOrHeight: 1600,
+    useWebWorker: true,
+  };
+
+  return await imageCompression(file, options);
+};
+
 const handleUpload = async () => {
   if (uploadInProgressRef.current || isUploading) return;
 
@@ -574,6 +585,7 @@ const handleUpload = async () => {
     toast.error("Pirmiausia išsaugok sample (Save), tada galėsi įkelti nuotraukas.");
     return;
   }
+
   if (!files.length) return;
 
   uploadInProgressRef.current = true;
@@ -584,11 +596,13 @@ const handleUpload = async () => {
 
   try {
     for (const file of filesToUpload) {
+      const compressed = await compressImage(file);
+
       const filePath = `samples/${sampleId}/${Date.now()}-${file.name}`;
 
       const { error: uploadError } = await supabase.storage
         .from("photos")
-        .upload(filePath, file);
+        .upload(filePath, compressed);
 
       if (uploadError) {
         toast.error("Nepavyko įkelti: " + file.name);
@@ -623,7 +637,6 @@ const handleUpload = async () => {
     uploadInProgressRef.current = false;
   }
 };
-
 const handleDeletePhoto = async (photoId, url) => {
   const path = url.split("/storage/v1/object/public/photos/")[1];
 
@@ -637,6 +650,7 @@ const handleDeletePhoto = async (photoId, url) => {
   if (dbError) toast.error("Nepavyko ištrinti iš DB");
   else fetchPhotos();
 };
+
 
   /* =========================
      Save

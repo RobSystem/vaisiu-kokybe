@@ -312,246 +312,277 @@ useEffect(() => {
       </div>
 {createOpen && (
   <div
-    className="fixed inset-0 z-[60] flex items-center justify-center p-4"
+    className="fixed inset-0 z-[70] flex items-center justify-center p-3 sm:p-4"
     onMouseDown={(e) => {
-      // click ant backdrop uždaro
       if (e.target === e.currentTarget) setCreateOpen(false);
     }}
   >
-    <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
+    <div className="absolute inset-0 bg-slate-900/45 backdrop-blur-sm" />
 
-    <div className="relative w-full max-w-3xl rounded-2xl border border-slate-200 bg-white shadow-xl">
-      <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4">
-        <div>
-          <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-            Inspections
-          </div>
-          <h3 className="text-lg font-bold text-slate-900">New inspection</h3>
-        </div>
-
-        <button
-          type="button"
-          onClick={() => setCreateOpen(false)}
-          className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
-        >
-          Close
-        </button>
-      </div>
-
-      <form onSubmit={handleCreateSubmit} className="p-5">
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          {/* DATE */}
+    <div className="relative flex w-full max-w-5xl flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-[0_20px_80px_rgba(15,23,42,0.18)]">
+      {/* Header */}
+      <div className="border-b border-slate-200 bg-gradient-to-r from-white to-slate-50 px-4 py-4 sm:px-6">
+        <div className="flex items-start justify-between gap-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-600 mb-1">DATE</label>
-            <input
-              type="date"
-              name="date"
-              value={formData.date}
-              onChange={handleCreateChange}
-              className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-brand-400/60"
-              required
-            />
+            <div className="mb-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+              Inspections
+            </div>
+            <h3 className="text-xl font-bold tracking-tight text-slate-900">
+              New inspection
+            </h3>
+            <p className="mt-1 text-sm text-slate-500">
+              Create a new inspection report and continue to the edit page.
+            </p>
           </div>
 
-          {/* VARIETY */}
-          <div>
-            <label className="block text-xs font-semibold text-slate-600 mb-1">VARIETY</label>
-            <input
-              type="text"
-              name="variety"
-              value={formData.variety}
-              onChange={handleCreateChange}
-              className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-brand-400/60"
-              required
-            />
-          </div>
-<div>
-  <label className="block text-xs font-semibold text-slate-600 mb-1">
-    REPORT TYPE
-  </label>
-  <select
-    name="report_type_id"
-    value={formData.report_type_id}
-    onChange={handleCreateChange}
-    className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-brand-400/60"
-    required
-  >
-    <option value="">-- Select report type --</option>
-    {reportTypes.map((t) => (
-      <option key={t.id} value={t.id}>
-        {t.name}
-      </option>
-    ))}
-  </select>
-</div>
-          {/* CLIENT */}
-          <div>
-            <label className="block text-xs font-semibold text-slate-600 mb-1">CLIENT</label>
-            <select
-              name="client"
-              value={formData.client}
-              onChange={handleCreateChange}
-              className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-brand-400/60"
-              required
-            >
-              <option value="">-- Select client --</option>
-              {clients.map((c) => (
-                <option key={c.id} value={c.name}>{c.name}</option>
-              ))}
-            </select>
-          </div>
-
-          {/* SUPPLIER */}
-          <div>
-            <label className="block text-xs font-semibold text-slate-600 mb-1">SUPPLIER</label>
-            <input
-              type="text"
-              name="supplier"
-              value={formData.supplier}
-              onChange={handleCreateChange}
-              className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-brand-400/60"
-              required
-            />
-          </div>
-
-          {/* CLIENT REF */}
-          <div>
-            <label className="block text-xs font-semibold text-slate-600 mb-1">CLIENT REF</label>
-            <input
-              type="text"
-              name="client_ref"
-              value={formData.client_ref}
-              onChange={handleCreateChange}
-              className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-brand-400/60"
-              required
-            />
-          </div>
-
-          {/* ORIGIN */}
-          <div>
-            <label className="block text-xs font-semibold text-slate-600 mb-1">ORIGIN</label>
-            <input
-              type="text"
-              name="origin"
-              value={formData.origin}
-              onChange={handleCreateChange}
-              className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-brand-400/60"
-              required
-            />
-          </div>
-
-          {/* CONTAINER NUMBER */}
-          <div>
-            <label className="block text-xs font-semibold text-slate-600 mb-1">CONTAINER</label>
-            <input
-              type="text"
-              name="container_number"
-              value={formData.container_number}
-              onChange={handleCreateChange}
-              className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-brand-400/60"
-              required
-            />
-          </div>
-
-          {/* LOCATION */}
-          <div>
-            <label className="block text-xs font-semibold text-slate-600 mb-1">LOCATION</label>
-            <input
-              type="text"
-              name="location"
-              value={formData.location}
-              onChange={handleCreateChange}
-              className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-brand-400/60"
-              required
-            />
-          </div>
-
-          {/* ROCHECKS REF */}
-          <div>
-            <label className="block text-xs font-semibold text-slate-600 mb-1">ROCHECKS REF</label>
-            <input
-              type="text"
-              name="rochecks_ref"
-              value={formData.rochecks_ref}
-              onChange={handleCreateChange}
-              className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-brand-400/60"
-              required
-            />
-          </div>
-
-          {/* TOTAL PALLETS */}
-          <div>
-            <label className="block text-xs font-semibold text-slate-600 mb-1">TOTAL PALLETS</label>
-            <input
-              type="text"
-              name="total_pallets"
-              value={formData.total_pallets}
-              onChange={handleCreateChange}
-              className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-brand-400/60"
-              required
-            />
-          </div>
-
-          {/* TYPE */}
-          <div>
-            <label className="block text-xs font-semibold text-slate-600 mb-1">TYPE</label>
-            <select
-              name="type"
-              value={formData.type}
-              onChange={handleCreateChange}
-              className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-brand-400/60"
-              required
-            >
-              <option value="Conventional">Conventional</option>
-              <option value="Organic">Organic</option>
-            </select>
-          </div>
-
-          {/* SURVEYOR */}
-          <div>
-            <label className="block text-xs font-semibold text-slate-600 mb-1">SURVEYOR</label>
-            <select
-              name="surveyor"
-              value={formData.surveyor}
-              onChange={handleCreateChange}
-              className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-brand-400/60"
-              required
-              disabled={userProfile?.role === "user"} // user negali keisti
-            >
-              <option value="">-- Select surveyor --</option>
-              {userProfile?.role === "admin"
-                ? users.map((u) => (
-                    <option key={u.id} value={u.name}>{u.name}</option>
-                  ))
-                : userProfile && (
-                    <option value={userProfile.name}>{userProfile.name}</option>
-                  )}
-            </select>
-          </div>
-        </div>
-
-        {createMessage && (
-          <div className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-            {createMessage}
-          </div>
-        )}
-
-        <div className="mt-5 flex items-center justify-end gap-2">
           <button
             type="button"
             onClick={() => setCreateOpen(false)}
-            className="h-10 rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+            className="inline-flex h-11 items-center rounded-2xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
           >
-            Cancel
+            Close
           </button>
+        </div>
+      </div>
 
-          <button
-            type="submit"
-            disabled={createLoading}
-            className="h-10 rounded-xl bg-brand-600 px-4 text-sm font-semibold text-white hover:bg-brand-500 disabled:opacity-60"
-          >
-            {createLoading ? "Creating..." : "Create"}
-          </button>
+      {/* Body */}
+      <form onSubmit={handleCreateSubmit} className="flex min-h-0 flex-1 flex-col">
+        <div className="max-h-[75vh] overflow-y-auto px-4 py-4 sm:px-6 sm:py-5">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div>
+              <label className="mb-1.5 block text-sm font-medium text-slate-700">
+                Date
+              </label>
+              <input
+                type="date"
+                name="date"
+                value={formData.date}
+                onChange={handleCreateChange}
+                className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm text-slate-900 outline-none transition focus:border-brand-500 focus:ring-4 focus:ring-brand-100"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="mb-1.5 block text-sm font-medium text-slate-700">
+                Variety
+              </label>
+              <input
+                type="text"
+                name="variety"
+                value={formData.variety}
+                onChange={handleCreateChange}
+                className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm text-slate-900 outline-none transition focus:border-brand-500 focus:ring-4 focus:ring-brand-100"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="mb-1.5 block text-sm font-medium text-slate-700">
+                Report type
+              </label>
+              <select
+                name="report_type_id"
+                value={formData.report_type_id}
+                onChange={handleCreateChange}
+                className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm text-slate-900 outline-none transition focus:border-brand-500 focus:ring-4 focus:ring-brand-100"
+                required
+              >
+                <option value="">Select report type</option>
+                {reportTypes.map((t) => (
+                  <option key={t.id} value={t.id}>
+                    {t.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="mb-1.5 block text-sm font-medium text-slate-700">
+                Client
+              </label>
+              <select
+                name="client"
+                value={formData.client}
+                onChange={handleCreateChange}
+                className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm text-slate-900 outline-none transition focus:border-brand-500 focus:ring-4 focus:ring-brand-100"
+                required
+              >
+                <option value="">Select client</option>
+                {clients.map((c) => (
+                  <option key={c.id} value={c.name}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="mb-1.5 block text-sm font-medium text-slate-700">
+                Supplier
+              </label>
+              <input
+                type="text"
+                name="supplier"
+                value={formData.supplier}
+                onChange={handleCreateChange}
+                className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm text-slate-900 outline-none transition focus:border-brand-500 focus:ring-4 focus:ring-brand-100"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="mb-1.5 block text-sm font-medium text-slate-700">
+                Client ref
+              </label>
+              <input
+                type="text"
+                name="client_ref"
+                value={formData.client_ref}
+                onChange={handleCreateChange}
+                className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm text-slate-900 outline-none transition focus:border-brand-500 focus:ring-4 focus:ring-brand-100"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="mb-1.5 block text-sm font-medium text-slate-700">
+                Origin
+              </label>
+              <input
+                type="text"
+                name="origin"
+                value={formData.origin}
+                onChange={handleCreateChange}
+                className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm text-slate-900 outline-none transition focus:border-brand-500 focus:ring-4 focus:ring-brand-100"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="mb-1.5 block text-sm font-medium text-slate-700">
+                Container
+              </label>
+              <input
+                type="text"
+                name="container_number"
+                value={formData.container_number}
+                onChange={handleCreateChange}
+                className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm text-slate-900 outline-none transition focus:border-brand-500 focus:ring-4 focus:ring-brand-100"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="mb-1.5 block text-sm font-medium text-slate-700">
+                Location
+              </label>
+              <input
+                type="text"
+                name="location"
+                value={formData.location}
+                onChange={handleCreateChange}
+                className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm text-slate-900 outline-none transition focus:border-brand-500 focus:ring-4 focus:ring-brand-100"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="mb-1.5 block text-sm font-medium text-slate-700">
+                Rochecks ref
+              </label>
+              <input
+                type="text"
+                name="rochecks_ref"
+                value={formData.rochecks_ref}
+                onChange={handleCreateChange}
+                className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm text-slate-900 outline-none transition focus:border-brand-500 focus:ring-4 focus:ring-brand-100"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="mb-1.5 block text-sm font-medium text-slate-700">
+                Total pallets
+              </label>
+              <input
+                type="text"
+                name="total_pallets"
+                value={formData.total_pallets}
+                onChange={handleCreateChange}
+                className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm text-slate-900 outline-none transition focus:border-brand-500 focus:ring-4 focus:ring-brand-100"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="mb-1.5 block text-sm font-medium text-slate-700">
+                Type
+              </label>
+              <select
+                name="type"
+                value={formData.type}
+                onChange={handleCreateChange}
+                className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm text-slate-900 outline-none transition focus:border-brand-500 focus:ring-4 focus:ring-brand-100"
+                required
+              >
+                <option value="Conventional">Conventional</option>
+                <option value="Organic">Organic</option>
+              </select>
+            </div>
+
+            <div className="md:col-span-2">
+              <label className="mb-1.5 block text-sm font-medium text-slate-700">
+                Surveyor
+              </label>
+              <select
+                name="surveyor"
+                value={formData.surveyor}
+                onChange={handleCreateChange}
+                className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm text-slate-900 outline-none transition focus:border-brand-500 focus:ring-4 focus:ring-brand-100 disabled:bg-slate-50"
+                required
+                disabled={userProfile?.role === "user"}
+              >
+                <option value="">Select surveyor</option>
+                {userProfile?.role === "admin"
+                  ? users.map((u) => (
+                      <option key={u.id} value={u.name}>
+                        {u.name}
+                      </option>
+                    ))
+                  : userProfile && (
+                      <option value={userProfile.name}>{userProfile.name}</option>
+                    )}
+              </select>
+            </div>
+          </div>
+
+          {createMessage && (
+            <div className="mt-5 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+              {createMessage}
+            </div>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="border-t border-slate-200 bg-white px-4 py-4 sm:px-6">
+          <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+            <button
+              type="button"
+              onClick={() => setCreateOpen(false)}
+              className="h-12 rounded-2xl border border-slate-200 bg-white px-5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+            >
+              Cancel
+            </button>
+
+            <button
+              type="submit"
+              disabled={createLoading}
+              className="h-12 rounded-2xl bg-brand-600 px-5 text-sm font-semibold text-white transition hover:bg-brand-500 disabled:opacity-60"
+            >
+              {createLoading ? "Creating..." : "Create inspection"}
+            </button>
+          </div>
         </div>
       </form>
     </div>

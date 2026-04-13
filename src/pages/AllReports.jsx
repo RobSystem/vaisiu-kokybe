@@ -268,48 +268,56 @@ useEffect(() => {
   return (
     <div className="w-full px-6 py-6">
       {/* Page header */}
-      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-            Inspections
-          </div>
-          <h2 className="text-xl font-bold text-slate-900">All Reports</h2>
-        </div>
+      <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+  {/* Left */}
+  <div>
+    <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+      Inspections
+    </div>
+    <h2 className="mt-1 text-2xl font-bold tracking-tight text-slate-900">
+      All reports
+    </h2>
+  </div>
 
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-          <div className="flex gap-2">
-            <select
-              value={sentFilter}
-              onChange={(e) => {
-                setSentFilter(e.target.value);
-                setPage(1);
-              }}
-              className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-700 outline-none focus:border-brand-400/60"
-            >
-              <option value="all">All</option>
-              <option value="sent">Sent</option>
-              <option value="notsent">Not sent</option>
-            </select>
+  {/* Right controls */}
+  <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-2">
+    
+    {/* Filter */}
+    <select
+      value={sentFilter}
+      onChange={(e) => {
+        setSentFilter(e.target.value);
+        setPage(1);
+      }}
+      className="h-11 rounded-2xl border border-slate-200 bg-white px-4 text-sm text-slate-700 outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-100"
+    >
+      <option value="all">All</option>
+      <option value="sent">Sent</option>
+      <option value="notsent">Not sent</option>
+    </select>
 
-            <input
-              type="text"
-              placeholder="Search client, ref, container, location..."
-              value={searchTerm}
-              onChange={(e) => {
-                setSearchTerm(e.target.value);
-                setPage(1);
-              }}
-              className="h-10 w-full min-w-[240px] rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:border-brand-400/60"
-            />
-          </div>
+    {/* Search */}
+    <input
+      type="text"
+      placeholder="Search client, ref, container..."
+      value={searchTerm}
+      onChange={(e) => {
+        setSearchTerm(e.target.value);
+        setPage(1);
+      }}
+      className="h-11 w-full sm:w-[260px] rounded-2xl border border-slate-200 bg-white px-4 text-sm text-slate-900 placeholder:text-slate-400 outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-100"
+    />
 
-          <button type="button" onClick={() => setCreateOpen(true)}
-            className="h-10 rounded-xl bg-brand-600 px-4 text-sm font-semibold text-white hover:bg-brand-500 transition"
-          >
-            + New inspection
-          </button>
-        </div>
-      </div>
+    {/* Button */}
+    <button
+      type="button"
+      onClick={() => setCreateOpen(true)}
+      className="h-11 rounded-2xl bg-brand-600 px-5 text-sm font-semibold text-white transition hover:bg-brand-500 shadow-sm"
+    >
+      + New inspection
+    </button>
+  </div>
+</div>
 {createOpen && (
   <div
     className="fixed inset-0 z-[70] flex items-center justify-center p-3 sm:p-4"

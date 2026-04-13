@@ -758,6 +758,15 @@ if (goBack) {
     }
   };
 
+  const sampleHeaderTitle = [
+  form.pallet_number,
+  form.variety,
+  form.size,
+  form.brand,
+]
+  .filter((value) => value && String(value).trim() !== "")
+  .join(" / ");
+
   /* =========================
      Render
      ========================= */
@@ -769,7 +778,9 @@ if (goBack) {
           <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
             CREATE SAMPLE
           </div>
-          <h2 className="text-xl font-bold text-slate-900">{sampleId ? "Edit Sample" : "New Sample"}</h2>
+          <h2 className="text-xl font-bold text-slate-900">
+  {sampleHeaderTitle || (sampleId ? "Edit Sample" : "New Sample")}
+</h2>
         </div>
 
         <div className="flex items-center gap-2">

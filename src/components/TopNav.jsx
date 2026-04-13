@@ -1,3 +1,4 @@
+// src/components/TopNav.jsx
 import { useEffect, useMemo, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { supabase } from "../supabaseClient";
@@ -62,30 +63,28 @@ export default function TopNav({ onLogout }) {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-slate-200/80 bg-white/90 backdrop-blur">
+    <header className="sticky top-0 z-50 w-full border-b border-[#2B7A78]/25 bg-[#2B7A78] shadow-[0_8px_30px_rgba(43,122,120,0.18)]">
       <div className="mx-auto w-full px-4 sm:px-6 lg:px-8">
         <div className="flex min-h-16 items-center justify-between gap-3 py-3">
-          {/* Brand */}
           <button
             onClick={() => handleNavigate("/dashboard")}
-            className="flex min-w-0 items-center gap-3 rounded-2xl px-2 py-1 transition hover:bg-slate-100"
+            className="flex min-w-0 items-center gap-3 rounded-2xl px-2 py-1 transition hover:bg-white/10"
             type="button"
           >
             <img
               src={logo}
               alt="Rochecks"
-              className="h-10 w-10 rounded-full border border-slate-200 bg-white object-cover"
+              className="h-10 w-10 rounded-full border border-white/20 bg-white object-cover"
             />
 
             <div className="min-w-0 text-left">
-              <div className="truncate text-sm font-semibold text-slate-900">
+              <div className="truncate text-sm font-semibold text-white">
                 Rochecks
               </div>
-              <div className="truncate text-xs text-slate-500">{userName}</div>
+              <div className="truncate text-xs text-white/75">{userName}</div>
             </div>
           </button>
 
-          {/* Desktop nav */}
           <nav className="hidden lg:flex items-center gap-2">
             {items.map((it) => (
               <NavLink
@@ -95,8 +94,8 @@ export default function TopNav({ onLogout }) {
                   cx(
                     "rounded-2xl px-4 py-2 text-sm font-medium transition",
                     isActive
-                      ? "bg-slate-900 text-white shadow-sm"
-                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                      ? "bg-white text-[#2B7A78] shadow-sm"
+                      : "text-white/85 hover:bg-white/10 hover:text-white"
                   )
                 }
               >
@@ -105,40 +104,36 @@ export default function TopNav({ onLogout }) {
             ))}
           </nav>
 
-          {/* Right side */}
           <div className="flex items-center gap-2">
-            {/* Tablet quick nav */}
             <div className="hidden md:flex lg:hidden items-center gap-2">
               <button
                 type="button"
                 onClick={() => handleNavigate("/dashboard")}
-                className="rounded-2xl px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
+                className="rounded-2xl px-3 py-2 text-sm font-medium text-white/85 transition hover:bg-white/10 hover:text-white"
               >
                 Dashboard
               </button>
               <button
                 type="button"
                 onClick={() => handleNavigate("/all")}
-                className="rounded-2xl px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
+                className="rounded-2xl px-3 py-2 text-sm font-medium text-white/85 transition hover:bg-white/10 hover:text-white"
               >
                 Inspections
               </button>
             </div>
 
-            {/* Desktop logout */}
             <button
               onClick={handleLogoutClick}
               type="button"
-              className="hidden sm:inline-flex h-11 items-center rounded-2xl bg-slate-900 px-4 text-sm font-semibold text-white transition hover:bg-slate-800"
+              className="hidden sm:inline-flex h-11 items-center rounded-2xl bg-white px-4 text-sm font-semibold text-[#2B7A78] transition hover:bg-white/90"
             >
               Log out
             </button>
 
-            {/* Mobile / tablet menu button */}
             <button
               type="button"
               onClick={() => setMobileOpen((prev) => !prev)}
-              className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-700 transition hover:bg-slate-100 lg:hidden"
+              className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-white/20 bg-white/10 text-white transition hover:bg-white/15 lg:hidden"
               aria-label="Open menu"
             >
               <span className="text-lg">{mobileOpen ? "✕" : "☰"}</span>
@@ -147,13 +142,12 @@ export default function TopNav({ onLogout }) {
         </div>
       </div>
 
-      {/* Mobile / tablet dropdown */}
       {mobileOpen && (
-        <div className="border-t border-slate-200 bg-white lg:hidden">
+        <div className="border-t border-white/10 bg-[#2B7A78] lg:hidden">
           <div className="space-y-2 px-4 py-4 sm:px-6">
-            <div className="rounded-2xl bg-slate-50 px-4 py-3">
-              <div className="text-sm font-semibold text-slate-900">Rochecks</div>
-              <div className="text-xs text-slate-500">{userName}</div>
+            <div className="rounded-2xl bg-white/10 px-4 py-3">
+              <div className="text-sm font-semibold text-white">Rochecks</div>
+              <div className="text-xs text-white/75">{userName}</div>
             </div>
 
             <nav className="flex flex-col gap-2">
@@ -162,7 +156,7 @@ export default function TopNav({ onLogout }) {
                   key={it.to}
                   type="button"
                   onClick={() => handleNavigate(it.to)}
-                  className="flex h-11 items-center rounded-2xl px-4 text-left text-sm font-medium text-slate-700 transition hover:bg-slate-100 hover:text-slate-900"
+                  className="flex h-11 items-center rounded-2xl px-4 text-left text-sm font-medium text-white transition hover:bg-white/10"
                 >
                   {it.label}
                 </button>
@@ -173,7 +167,7 @@ export default function TopNav({ onLogout }) {
               <button
                 onClick={handleLogoutClick}
                 type="button"
-                className="flex h-11 w-full items-center justify-center rounded-2xl bg-slate-900 px-4 text-sm font-semibold text-white transition hover:bg-slate-800"
+                className="flex h-11 w-full items-center justify-center rounded-2xl bg-white px-4 text-sm font-semibold text-[#2B7A78] transition hover:bg-white/90"
               >
                 Log out
               </button>

@@ -30,7 +30,7 @@ function Login({ onLogin }) {
         
         {/* Title */}
         <h2 className="text-2xl font-bold text-slate-800 text-center mb-6">
-          Welcome back
+          Sign IN
         </h2>
 
         {/* Form */}

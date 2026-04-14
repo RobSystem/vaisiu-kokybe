@@ -549,59 +549,94 @@ return (
         Keeping markup consistent with the rest of the app.
       */}
 
-      <div className="sticky top-0 z-20 bg-white/90 backdrop-blur border-b border-slate-200">
-        <div className="mx-4 md:mx-6 py-3 flex flex-wrap items-center gap-3">
-          <div className="flex-1 min-w-[260px]">
-  <p className="text-xs text-slate-500 uppercase tracking-wide">Edit report</p>
+      <div className="sticky top-0 z-20 border-b border-slate-200 bg-white/90 backdrop-blur">
+  <div className="mx-4 md:mx-6 py-4">
+    <div className="rounded-3xl border border-slate-200 bg-white px-4 py-4 shadow-sm sm:px-5">
+      <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
+        {/* Left side */}
+        <div className="min-w-0 flex-1">
+          <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+            Edit report
+          </div>
 
-  {report ? (
-    <div className="text-sm text-slate-900 font-medium flex flex-wrap gap-x-4 gap-y-1">
-      <span><strong>Container:</strong> {report.container_number || '—'}</span>
-      <span><strong>Client number:</strong> {report.client_ref || '—'}</span>
-      <span><strong>Supplier:</strong> {report.supplier || '—'}</span>
-      <span><strong>Variety:</strong> {report.variety || '—'}</span>
-      <span><strong>Origin:</strong> {report.origin || '—'}</span>
-      <span><strong>Location:</strong> {report.location || '—'}</span>
-    </div>
-  ) : (
-    <h2 className="text-lg font-semibold text-slate-900">Loading...</h2>
-  )}
-</div>
+          {report ? (
+            <>
+              <h1 className="mt-1 text-xl font-bold tracking-tight text-slate-900 sm:text-2xl">
+                {report.container_number || "No container"} / {report.client_ref || "No client ref"}
+              </h1>
 
-          {/* Status chip */}
-          <span
-            className={`px-2.5 py-1 rounded-full text-xs font-semibold ${
-              report?.sent ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-600'
-            }`}
-          >
-            {report?.sent ? 'Sent' : 'Not sent'}
-          </span>
+              <div className="mt-3 grid grid-cols-1 gap-x-6 gap-y-2 text-sm text-slate-600 sm:grid-cols-2 xl:grid-cols-3">
+                <div>
+                  <span className="font-medium text-slate-900">Supplier:</span>{" "}
+                  {report.supplier || "—"}
+                </div>
+                <div>
+                  <span className="font-medium text-slate-900">Variety:</span>{" "}
+                  {report.variety || "—"}
+                </div>
+                <div>
+                  <span className="font-medium text-slate-900">Origin:</span>{" "}
+                  {report.origin || "—"}
+                </div>
+                <div>
+                  <span className="font-medium text-slate-900">Location:</span>{" "}
+                  {report.location || "—"}
+                </div>
+                <div>
+                  <span className="font-medium text-slate-900">Rochecks ref:</span>{" "}
+                  {report.rochecks_ref || "—"}
+                </div>
+                <div>
+                  <span className="font-medium text-slate-900">Total pallets:</span>{" "}
+                  {report.total_pallets || "—"}
+                </div>
+              </div>
+            </>
+          ) : (
+            <h2 className="mt-1 text-lg font-semibold text-slate-900">Loading...</h2>
+          )}
+        </div>
 
-          <div className="flex items-center gap-2">
-  <button
-    onClick={() => report && window.open(`/viewreport/${report.id}`, '_blank')}
-    className={btnSecondary}
-  >
-    View report
-  </button>
+        {/* Right side */}
+        <div className="flex w-full flex-col gap-3 xl:w-auto xl:min-w-[320px]">
+          <div className="flex items-center justify-start xl:justify-end">
+            <span
+              className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold ${
+                report?.sent
+                  ? "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200"
+                  : "bg-amber-50 text-amber-700 ring-1 ring-amber-200"
+              }`}
+            >
+              <span className={`h-2 w-2 rounded-full ${report?.sent ? "bg-emerald-500" : "bg-amber-500"}`} />
+              {report?.sent ? "Sent" : "Not sent"}
+            </span>
+          </div>
 
-  <button onClick={handleSend} className={btnPrimary}>
-    Send report
-  </button>
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-2">
+            <button
+              onClick={() => report && window.open(`/viewreport/${report.id}`, "_blank")}
+              className={btnSecondary}
+            >
+              View report
+            </button>
 
-  <button onClick={handleOpenEditModal} className={btnDark}>
-    Edit report info
-  </button>
+            <button onClick={handleSend} className={btnPrimary}>
+              Send report
+            </button>
 
-  <button
-    onClick={handleDeleteReport}
-    className="h-10 rounded-xl border border-red-200 bg-red-50 px-4 text-sm font-semibold text-red-700 hover:bg-red-100 disabled:opacity-60"
-  >
-    Delete report
-  </button>
-</div>
+            <button onClick={handleOpenEditModal} className={btnDark}>
+              Edit report info
+            </button>
+
+            <button onClick={handleDeleteReport} className={btnDanger}>
+              Delete report
+            </button>
+          </div>
         </div>
       </div>
+    </div>
+  </div>
+</div>
 
             {/* Scores */}
       <div className="mx-4 md:mx-6 mt-6">

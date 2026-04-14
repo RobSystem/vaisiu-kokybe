@@ -597,129 +597,133 @@ useEffect(() => {
   </div>
 )}
       {/* Table card */}
-      <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-[0_10px_30px_rgba(15,23,42,0.06)]">
-        <div className="flex flex-col gap-2 border-b border-slate-200 bg-slate-50/80 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
-  <div>
-    <h3 className="text-sm font-semibold text-slate-900">Inspection reports</h3>
-    <p className="text-xs text-slate-500">
-      Active reports list with quick access to edit view.
-    </p>
+      {/* Table card */}
+<div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-[0_10px_30px_rgba(15,23,42,0.06)]">
+  <div className="flex flex-col gap-2 border-b border-slate-200 bg-slate-50/80 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+    <div>
+      <h3 className="text-sm font-semibold text-slate-900">Inspection reports</h3>
+      <p className="text-xs text-slate-500">
+        Active reports list with quick access to edit view.
+      </p>
+    </div>
+
+    <div className="text-xs font-medium text-slate-500">
+      {total} total
+    </div>
   </div>
 
-  <div className="text-xs font-medium text-slate-500">
-    {total} total
-  </div>
-</div>
-        {loading ? (
-          <div className="px-5 py-10 text-sm text-slate-500">Loading reports...</div>
-        ) : (
-          <>
-            <div className="w-full overflow-x-auto">
-  <table className="min-w-[980px] w-full border-collapse text-sm">
-                <thead className="bg-slate-50">
-  <tr className="text-left text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
-                    {[
-                      "Date",
-  "Container",
-  "Client Ref",
-  "Rochecks Ref",
-  "Client",
-  "Variety",
-  "Location",
-  "Status",
-                    ].map((h) => (
-                      <th key={h} className="border-b border-slate-200 px-4 py-3.5">
-                        {h}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
+  {loading ? (
+    <div className="px-5 py-10 text-sm text-slate-500">Loading reports...</div>
+  ) : (
+    <>
+      <div className="w-full overflow-x-auto">
+        <table className="min-w-[980px] w-full border-collapse text-sm">
+          <thead className="bg-slate-50">
+            <tr className="text-left text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
+              {[
+                "Date",
+                "Container",
+                "Client Ref",
+                "Rochecks Ref",
+                "Client",
+                "Variety",
+                "Location",
+                "Status",
+              ].map((h) => (
+                <th key={h} className="border-b border-slate-200 px-4 py-3.5">
+                  {h}
+                </th>
+              ))}
+            </tr>
+          </thead>
 
-                <tbody>
-                  {pageReports.length === 0 ? (
-                    <tr>
-                      <td colSpan={8} className="px-4 py-14 text-center">
-  <div className="mx-auto max-w-sm">
-    <div className="text-sm font-semibold text-slate-900">No reports found</div>
-    <p className="mt-1 text-sm text-slate-500">
-      Try changing the search phrase or filter settings.
-    </p>
-  </div>
-</td>
-                    </tr>
-                  ) : (
-                    pageReports.map((report) => (
-  <tr
-  key={report.id}
-  className="cursor-pointer transition hover:bg-brand-50/40"
-    onClick={() => {
-      setSelectedReport?.(report);
-      navigate(`/edit/${report.id}`);
-    }}
-  >
-    <td className="border-b border-slate-100 px-4 py-3 align-middle text-slate-700">
-      {report.date}
-    </td>
-    <td className="border-b border-slate-100 px-4 py-3 align-middle text-slate-600">
-      {report.container_number || "-"}
-    </td>
-    <td className="border-b border-slate-100 px-4 py-3 align-middle text-slate-600">
-      {report.client_ref || "-"}
-    </td>
-   <td className="border-b border-slate-100 px-4 py-3 align-middle text-slate-600">
-      {report.rochecks_ref || "-"}
-    </td>
-   <td className="border-b border-slate-100 px-4 py-3 align-middle font-semibold text-slate-900">
-      {report.client}
-    </td>
-    <td className="border-b border-slate-100 px-4 py-3 align-middle text-slate-700">
-      {report.variety}
-    </td>
-    <td className="border-b border-slate-100 px-4 py-3 align-middle text-slate-600">
-      {report.location}
-    </td>
-    <td className="border-b border-slate-100 px-4 py-3 align-middle">
-      <StatusBadge report={report} />
-    </td>
-  </tr>
-))
-                  )}
-                </tbody>
-              </table>
-            </div>
-
-            {/* Footer / pagination */}
-            <div className="flex flex-col gap-3 border-t border-slate-200 bg-white px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
-              <p className="text-xs text-slate-500">
-                Showing {total === 0 ? 0 : start + 1}–{end} of {total} entries
-              </p>
-
-              <div className="flex items-center justify-center gap-2">
-                <button
-                  className="h-9 rounded-xl border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
-                  onClick={() => setPage((p) => Math.max(1, p - 1))}
-                  disabled={page === 1}
+          <tbody>
+            {pageReports.length === 0 ? (
+              <tr>
+                <td colSpan={8} className="px-4 py-14 text-center">
+                  <div className="mx-auto max-w-sm">
+                    <div className="text-sm font-semibold text-slate-900">
+                      No reports found
+                    </div>
+                    <p className="mt-1 text-sm text-slate-500">
+                      Try changing the search phrase or filter settings.
+                    </p>
+                  </div>
+                </td>
+              </tr>
+            ) : (
+              pageReports.map((report) => (
+                <tr
+                  key={report.id}
+                  className="cursor-pointer transition hover:bg-brand-50/40"
+                  onClick={() => {
+                    setSelectedReport?.(report);
+                    navigate(`/edit/${report.id}`);
+                  }}
                 >
-                  Previous
-                </button>
-
-                <span className="text-sm text-slate-700">
-                  Page <span className="font-semibold">{page}</span> of{" "}
-                  <span className="font-semibold">{totalPages}</span>
-                </span>
-
-                <button
-                  className="h-9 rounded-xl border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
-                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                  disabled={page === totalPages}
-                >
-                  Next
-                </button>
-              </div>
-            </div>
-          </>
-        )}
+                  <td className="border-b border-slate-100 px-4 py-3 align-middle text-slate-700">
+                    {report.date}
+                  </td>
+                  <td className="border-b border-slate-100 px-4 py-3 align-middle text-slate-600">
+                    {report.container_number || "-"}
+                  </td>
+                  <td className="border-b border-slate-100 px-4 py-3 align-middle text-slate-600">
+                    {report.client_ref || "-"}
+                  </td>
+                  <td className="border-b border-slate-100 px-4 py-3 align-middle text-slate-600">
+                    {report.rochecks_ref || "-"}
+                  </td>
+                  <td className="border-b border-slate-100 px-4 py-3 align-middle font-semibold text-slate-900">
+                    {report.client}
+                  </td>
+                  <td className="border-b border-slate-100 px-4 py-3 align-middle text-slate-700">
+                    {report.variety}
+                  </td>
+                  <td className="border-b border-slate-100 px-4 py-3 align-middle text-slate-600">
+                    {report.location}
+                  </td>
+                  <td className="border-b border-slate-100 px-4 py-3 align-middle">
+                    <StatusBadge report={report} />
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
       </div>
+
+      {/* Footer / pagination */}
+      <div className="flex flex-col gap-3 border-t border-slate-200 bg-white px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+        <p className="text-xs text-slate-500">
+          Showing {total === 0 ? 0 : start + 1}–{end} of {total} entries
+        </p>
+
+        <div className="flex items-center justify-center gap-2">
+          <button
+            className="h-10 rounded-2xl border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:opacity-50"
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={page === 1}
+          >
+            Previous
+          </button>
+
+          <span className="text-sm text-slate-700">
+            Page <span className="font-semibold">{page}</span> of{" "}
+            <span className="font-semibold">{totalPages}</span>
+          </span>
+
+          <button
+            className="h-10 rounded-2xl border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:opacity-50"
+            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            disabled={page === totalPages}
+          >
+            Next
+          </button>
+        </div>
+      </div>
+    </>
+  )}
+</div>
     </div>
   );
 }

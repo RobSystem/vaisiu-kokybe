@@ -549,7 +549,7 @@ return (
         Keeping markup consistent with the rest of the app.
       */}
 
-      <div className="sticky top-0 z-20 border-b border-slate-200 bg-white/90 backdrop-blur">
+      <div className="border-b border-slate-200 bg-white lg:sticky lg:top-0 lg:z-20 lg:bg-white/90 lg:backdrop-blur">
   <div className="mx-4 md:mx-6 py-4">
     <div className="rounded-3xl border border-slate-200 bg-white px-4 py-4 shadow-sm sm:px-5">
       <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">

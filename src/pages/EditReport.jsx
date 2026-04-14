@@ -715,14 +715,19 @@ return (
         <div className={`${cardClass} mt-4`}>
           {tab === 'samples' ? (
             <>
-              <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+              <div className="mb-5 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
   <div>
+    <h3 className="text-sm font-semibold text-slate-900">Samples</h3>
+    <p className="text-xs text-slate-500">
+      Manage samples, copy them, or create a new report from selected entries.
+    </p>
+  </div>
+
+  <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
     <button onClick={handleAddSample} className={btnPrimary}>
       Add sample
     </button>
-  </div>
 
-  <div className="flex flex-wrap gap-2">
     <button onClick={handleSelectAllSamples} className={btnSecondary}>
       Select all
     </button>
@@ -736,101 +741,226 @@ return (
       disabled={creatingNewReport || selectedSampleIds.length === 0}
       className={btnDark}
     >
-      {creatingNewReport ? 'Creating...' : 'Create new report'}
+      {creatingNewReport ? "Creating..." : "Create new report"}
     </button>
   </div>
 </div>
 
               {samples.length > 0 ? (
-  <div className="overflow-x-auto">
-    <table className="w-full text-[10px] border border-slate-200 rounded-xl overflow-hidden">
-      <thead className="bg-slate-50 text-slate-600">
-  <tr>
-    <th className="px-2 py-1 text-left text-[10px] font-semibold">Select</th>
-    <th className="px-2 py-1 text-left text-[10px] font-semibold">Pallet number</th>
-    <th className="px-2 py-1 text-left text-[10px] font-semibold">GGN</th>
-    <th className="px-2 py-1 text-left text-[10px] font-semibold">Grower Code</th>
-    <th className="px-2 py-1 text-left text-[10px] font-semibold">Variety</th>
-    <th className="px-2 py-1 text-left text-[10px] font-semibold">Size</th>
-    <th className="px-2 py-1 text-left text-[10px] font-semibold">Brand</th>
-    <th className="px-2 py-1 text-left text-[10px] font-semibold">Category</th>
-    <th className="px-2 py-1 text-left text-[10px] font-semibold">QC</th>
-    <th className="px-2 py-1 text-left text-[10px] font-semibold">SC</th>
-    <th className="px-2 py-1 text-left text-[10px] font-semibold">Action</th>
-    <th className="px-2 py-1 text-[10px] font-semibold">Photos</th>
-  </tr>
-</thead>
-      <tbody className="divide-y divide-slate-200">
-  {samples.map((s) => (
-    <tr key={s.id} className="odd:bg-white even:bg-slate-50 hover:bg-slate-100">
-      <td className="px-2 py-1 text-[11px]">
-        <input
-          type="checkbox"
-          checked={selectedSampleIds.includes(s.id)}
-          onChange={() => toggleSampleSelection(s.id)}
-        />
-      </td>
+  <>
+    {/* Mobile cards */}
+    <div className="block lg:hidden space-y-3">
+      {samples.map((s) => (
+        <div
+          key={s.id}
+          className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
+        >
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <div className="text-sm font-semibold text-slate-900">
+                {s.pallet_number || "No pallet number"}
+              </div>
+              <div className="mt-1 text-sm text-slate-500">
+                {s.variety || "—"} / {s.size || "—"} / {s.brand || "—"}
+              </div>
+            </div>
 
-      <td className="px-2 py-1 text-[11px]">{s.pallet_number || '—'}</td>
-      <td className="px-2 py-1 text-[11px]">{s.ggn_number || '—'}</td>
-      <td className="px-2 py-1 text-[11px]">{s.grower_code || '—'}</td>
-      <td className="px-2 py-1 text-[11px]">{s.variety || '—'}</td>
-      <td className="px-2 py-1 text-[11px]">{s.size || '—'}</td>
-      <td className="px-2 py-1 text-[11px]">{s.brand || '—'}</td>
-      <td className="px-2 py-1 text-[11px]">{s.category || '—'}</td>
-      <td className="px-2 py-1 text-[11px]">{s.quality_score || '—'}</td>
-      <td className="px-2 py-1 text-[11px]">{s.storage_score || '—'}</td>
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={selectedSampleIds.includes(s.id)}
+                onChange={() => toggleSampleSelection(s.id)}
+                className="h-4 w-4 rounded border-slate-300"
+              />
+            </div>
+          </div>
 
-      <td className="px-2 py-1">
-        <div className="flex flex-wrap gap-2">
-          <button
-            onClick={() => handleEditSample(s.id)}
-            className="h-7 rounded-lg border border-slate-200 bg-white px-2 text-[10px] font-semibold text-slate-700 hover:bg-slate-50"
-          >
-            Edit
-          </button>
-          <button
-            onClick={() => handleCopySample(s.id)}
-            className="h-7 rounded-lg border border-slate-200 bg-white px-2 text-[10px] font-semibold text-slate-700 hover:bg-slate-50"
-          >
-            Copy
-          </button>
-          <button
-            onClick={() => handleDeleteSample(s.id)}
-            className="h-7 rounded-lg border border-red-200 bg-red-50 px-2 text-[10px] font-semibold text-red-700 hover:bg-red-100"
-          >
-            Delete
-          </button>
+          <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3">
+            <div>
+              <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">
+                GGN
+              </div>
+              <div className="mt-1 text-sm text-slate-700">
+                {s.ggn_number || "—"}
+              </div>
+            </div>
+
+            <div>
+              <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">
+                Grower code
+              </div>
+              <div className="mt-1 text-sm text-slate-700">
+                {s.grower_code || "—"}
+              </div>
+            </div>
+
+            <div>
+              <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">
+                Category
+              </div>
+              <div className="mt-1 text-sm text-slate-700">
+                {s.category || "—"}
+              </div>
+            </div>
+
+            <div>
+              <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">
+                Photos
+              </div>
+              <div className="mt-1 text-sm text-slate-700">
+                {samplePhotoMap[s.id] ? "Yes" : "No"}
+              </div>
+            </div>
+
+            <div>
+              <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">
+                QC
+              </div>
+              <div className="mt-1 text-sm text-slate-700">
+                {s.quality_score || "—"}
+              </div>
+            </div>
+
+            <div>
+              <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">
+                SC
+              </div>
+              <div className="mt-1 text-sm text-slate-700">
+                {s.storage_score || "—"}
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+            <button
+              onClick={() => handleEditSample(s.id)}
+              className="h-10 rounded-2xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+            >
+              Edit
+            </button>
+            <button
+              onClick={() => handleCopySample(s.id)}
+              className="h-10 rounded-2xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+            >
+              Copy
+            </button>
+            <button
+              onClick={() => handleDeleteSample(s.id)}
+              className="h-10 rounded-2xl border border-red-200 bg-red-50 px-4 text-sm font-semibold text-red-700 hover:bg-red-100"
+            >
+              Delete
+            </button>
+          </div>
         </div>
-      </td>
-      <td className="px-2 py-1 text-center">
-  {samplePhotoMap[s.id] ? (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      className="w-4 h-4 text-slate-700 mx-auto"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-      title="Has photos"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={1.5}
-        d="M3 7h4l2-3h6l2 3h4v12H3V7z"
-      />
-    </svg>
-  ) : (
-    <span className="text-slate-300 text-xs">—</span>
-  )}
-</td>
-    </tr>
-  ))}
-</tbody>
-    </table>
-  </div>
+      ))}
+    </div>
+
+    {/* Desktop table */}
+    <div className="hidden lg:block overflow-x-auto">
+      <table className="w-full min-w-[1100px] border-collapse text-sm">
+        <thead className="bg-slate-50">
+          <tr className="text-left text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
+            <th className="border-b border-slate-200 px-4 py-3">Select</th>
+            <th className="border-b border-slate-200 px-4 py-3">Pallet number</th>
+            <th className="border-b border-slate-200 px-4 py-3">GGN</th>
+            <th className="border-b border-slate-200 px-4 py-3">Grower Code</th>
+            <th className="border-b border-slate-200 px-4 py-3">Variety</th>
+            <th className="border-b border-slate-200 px-4 py-3">Size</th>
+            <th className="border-b border-slate-200 px-4 py-3">Brand</th>
+            <th className="border-b border-slate-200 px-4 py-3">Category</th>
+            <th className="border-b border-slate-200 px-4 py-3">QC</th>
+            <th className="border-b border-slate-200 px-4 py-3">SC</th>
+            <th className="border-b border-slate-200 px-4 py-3">Photos</th>
+            <th className="border-b border-slate-200 px-4 py-3">Action</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {samples.map((s) => (
+            <tr key={s.id} className="transition hover:bg-brand-50/30">
+              <td className="border-b border-slate-100 px-4 py-3 align-middle">
+                <input
+                  type="checkbox"
+                  checked={selectedSampleIds.includes(s.id)}
+                  onChange={() => toggleSampleSelection(s.id)}
+                  className="h-4 w-4 rounded border-slate-300"
+                />
+              </td>
+
+              <td className="border-b border-slate-100 px-4 py-3 align-middle font-medium text-slate-900">
+                {s.pallet_number || "—"}
+              </td>
+              <td className="border-b border-slate-100 px-4 py-3 align-middle text-slate-600">
+                {s.ggn_number || "—"}
+              </td>
+              <td className="border-b border-slate-100 px-4 py-3 align-middle text-slate-600">
+                {s.grower_code || "—"}
+              </td>
+              <td className="border-b border-slate-100 px-4 py-3 align-middle text-slate-700">
+                {s.variety || "—"}
+              </td>
+              <td className="border-b border-slate-100 px-4 py-3 align-middle text-slate-700">
+                {s.size || "—"}
+              </td>
+              <td className="border-b border-slate-100 px-4 py-3 align-middle text-slate-700">
+                {s.brand || "—"}
+              </td>
+              <td className="border-b border-slate-100 px-4 py-3 align-middle text-slate-700">
+                {s.category || "—"}
+              </td>
+              <td className="border-b border-slate-100 px-4 py-3 align-middle text-slate-700">
+                {s.quality_score || "—"}
+              </td>
+              <td className="border-b border-slate-100 px-4 py-3 align-middle text-slate-700">
+                {s.storage_score || "—"}
+              </td>
+              <td className="border-b border-slate-100 px-4 py-3 align-middle text-center">
+                {samplePhotoMap[s.id] ? (
+                  <span className="inline-flex items-center rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-200">
+                    Yes
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-500 ring-1 ring-slate-200">
+                    No
+                  </span>
+                )}
+              </td>
+
+              <td className="border-b border-slate-100 px-4 py-3 align-middle">
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    onClick={() => handleEditSample(s.id)}
+                    className="h-9 rounded-xl border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleCopySample(s.id)}
+                    className="h-9 rounded-xl border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+                  >
+                    Copy
+                  </button>
+                  <button
+                    onClick={() => handleDeleteSample(s.id)}
+                    className="h-9 rounded-xl border border-red-200 bg-red-50 px-3 text-sm font-semibold text-red-700 hover:bg-red-100"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </>
 ) : (
-  <p className="text-sm text-slate-500">No samples.</p>
+  <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-4 py-10 text-center">
+    <div className="text-sm font-semibold text-slate-900">No samples yet</div>
+    <p className="mt-1 text-sm text-slate-500">
+      Add the first sample to start building this report.
+    </p>
+  </div>
 )}
             </>
           ) : (

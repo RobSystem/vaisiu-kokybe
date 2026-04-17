@@ -773,44 +773,54 @@ if (goBack) {
   return (
     <div className="w-full px-6 py-6">
       {/* header */}
-      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-            CREATE SAMPLE
-          </div>
-          <h2 className="text-xl font-bold text-slate-900">
-  {sampleHeaderTitle || (sampleId ? "Edit Sample" : "New Sample")}
-</h2>
+      {/* header */}
+<div className="mb-6">
+  <div className="rounded-3xl border border-slate-200 bg-white px-4 py-4 shadow-sm sm:px-6">
+    <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+      <div className="min-w-0">
+        <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+          Sample
         </div>
 
-        <div className="flex items-center gap-2">
-  <button
-    type="button"
-    onClick={() => handleSave(false)}
-    disabled={saving}
-    className="h-10 rounded-xl bg-brand-600 px-4 text-sm font-semibold text-white hover:bg-brand-500 disabled:opacity-60"
-  >
-    {saving ? "Saving..." : "Save"}
-  </button>
+        <h1 className="mt-1 text-xl font-bold tracking-tight text-slate-900 sm:text-2xl">
+          {sampleHeaderTitle || (sampleId ? "Edit Sample" : "New Sample")}
+        </h1>
 
-  <button
-    type="button"
-    onClick={() => handleSave(true)}
-    disabled={saving}
-    className="h-10 rounded-xl bg-slate-900 px-4 text-sm font-semibold text-white hover:bg-slate-800 disabled:opacity-60"
-  >
-    {saving ? "Saving..." : "Save and Back"}
-  </button>
-
-  <button
-    type="button"
-    onClick={() => navigate(`/edit/${reportId}`)}
-    className="h-10 rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 hover:bg-slate-50"
-  >
-    Back to Report
-  </button>
-</div>
+        <p className="mt-1 text-sm text-slate-500">
+          Fill in sample details and measurements.
+        </p>
       </div>
+
+      <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+        <button
+          type="button"
+          onClick={() => navigate(`/edit/${reportId}`)}
+          className="h-11 rounded-2xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+        >
+          Back to Report
+        </button>
+
+        <button
+          type="button"
+          onClick={() => handleSave(false)}
+          disabled={saving}
+          className="h-11 rounded-2xl bg-brand-600 px-4 text-sm font-semibold text-white hover:bg-brand-500 disabled:opacity-60"
+        >
+          {saving ? "Saving..." : "Save"}
+        </button>
+
+        <button
+          type="button"
+          onClick={() => handleSave(true)}
+          disabled={saving}
+          className="h-11 rounded-2xl bg-slate-900 px-4 text-sm font-semibold text-white hover:bg-slate-800 disabled:opacity-60"
+        >
+          {saving ? "Saving..." : "Save and Back"}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
 
       {/* tabs */}
       <div className="mb-6 rounded-2xl border border-slate-200 bg-white shadow-sm">
